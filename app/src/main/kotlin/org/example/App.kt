@@ -3,6 +3,11 @@
  */
 package org.example
 
+import net.dv8tion.jda.api.JDABuilder
+import java.io.File
+import java.util.*
+
+
 class App {
     val greeting: String
         get() {
@@ -11,5 +16,11 @@ class App {
 }
 
 fun main() {
-    println(App().greeting)
+    val props = Properties()
+    val inputStream = File("config.properties").inputStream()
+    inputStream.use {
+        props.load(inputStream)
+    }
+
+    val api = JDABuilder.createDefault(props.getProperty("bot.token")).build()
 }
