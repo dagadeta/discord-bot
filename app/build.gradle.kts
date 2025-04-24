@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.guava)
     implementation(libs.jda)
     implementation(libs.logback.classic)
+    implementation(libs.kotlin.logging)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

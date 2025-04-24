@@ -4,6 +4,7 @@
 package de.dagadeta.schlauerbot
 
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.requests.GatewayIntent
 import java.io.File
 import java.util.*
 
@@ -22,5 +23,8 @@ fun main() {
         props.load(inputStream)
     }
 
-    val api = JDABuilder.createDefault(props.getProperty("bot.token")).build()
+    val api = JDABuilder
+        .createLight(props.getProperty("bot.token"), GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
+        .addEventListeners(DingDongListener())
+        .build()
 }
