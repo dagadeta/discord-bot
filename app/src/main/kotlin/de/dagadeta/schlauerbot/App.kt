@@ -27,4 +27,6 @@ fun main() {
         .createLight(props.getProperty("bot.token"), GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
         .addEventListeners(DingDongListener())
         .build()
+
+    configureDingDongCommands(api)
 }
