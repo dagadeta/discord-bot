@@ -25,22 +25,22 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
-    implementation(libs.guava)
     implementation(libs.jda)
     implementation(libs.logback.classic)
+    implementation(libs.slf4j.api)
     implementation(libs.kotlin.logging)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.AppKt"
+    mainClass = "de.dagadeta.schlauerbot.AppKt"
 }
 
 tasks.named<Test>("test") {

@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# Build the project
-if ! ./gradlew build; then
-  echo "Build failed. Exiting."
-  exit 1
-fi
+set -ex
 
-# Run the project in a new screen session
-screen -dmS gradle_run ./gradlew run
-echo "Application is running in a detached screen session named 'gradle_run'."
+rm -f out.log err.log
+echo "Starting the app..." | tee -a out.log | tee -a err.log
+app/bin/app >> out.log 2>> err.log
