@@ -18,3 +18,7 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 ### Deployment
 To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).
 This will build the project, copy the jar file to the server, and start the bot in a detached screen session.
+
+## Functions
+### Commands
+* `/ding` - Responds with "Dong!" and only works in the channel "🤖｜bot-spielplatz"
