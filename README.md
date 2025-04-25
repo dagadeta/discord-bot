@@ -1,18 +1,20 @@
 # Discord Bot
-This is a simple Discord bot written in Kotlin that uses JDA.
+This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
-## Setup
-There is a setup script that will set up the project. Run the following command:
-```
-curl -O https://github.com/dagadeta/discord-bot/setup.sh && chmod +x setup.sh && ./setup.sh
-```
-After you run the setup script, you should be in the `discord-bot` directory. You will need to set some properties in the `config.properties` file. To do this, open the file via `nano config.properties` and set the following properties:
-* `bot.token`: The API-token for your bot. You can get this on the [Discord Developer Portal](https://discord.com/developers/applications).
+## Setup & Deployment
+### Prerequisites
+* Ubuntu Server with:
+  * Java 17 or higher
+  * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
 
-After setting up the properties, press `CTRL+X`, then `Y` and `ENTER` to save the file.
+### Local setup
+1. Clone the repository
+2. Add a `config.properties` file in the root directory with the following content:
+    ```
+    bot.token=ENTER_YOUR_BOT_TOKEN
+    ```
+    You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
 
-## Running the bot
-To run the bot, you can use the run script. Run the following command:
-```
-./run.sh
-```
+### Deployment
+To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).
+This will build the project, copy the jar file to the server, and start the bot in a detached screen session.
