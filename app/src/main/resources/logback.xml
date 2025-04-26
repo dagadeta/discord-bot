@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"/>
+    <import class="ch.qos.logback.core.rolling.RollingFileAppender"/>
+    <import class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"/>
+
+    <timestamp key="startTimestamp" datePattern="yyyy-MM-dd_HH-mm-ss"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %boldCyan(%-34.-34thread) %red(%10.10X{jda.shard}) %boldGreen(%-15.-15logger{0}) %highlight(%-6level) %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="FILE" class="RollingFileAppender">
+        <file>${LOG_DIR:-logs}/logFile_${startTimestamp}.log</file>
+        <rollingPolicy class="TimeBasedRollingPolicy">
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} %thread %X{jda.shard} %logger{35} %level %msg%n</pattern>
+        </encoder>
+    </appender>
 
     <root level="info">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
 </configuration>
