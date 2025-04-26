@@ -28,5 +28,10 @@ fun main() {
         .addEventListeners(DingDongListener())
         .build()
 
+    api.awaitReady()
+
     configureDingDongCommands(api)
+
+    val logging = Logging(api, props.getProperty("logging.guildId").toLong(), props.getProperty("logging.channelId").toLong())
+    logging.log("Bot started")
 }

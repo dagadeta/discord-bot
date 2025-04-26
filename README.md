@@ -16,8 +16,18 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 2. Add a `config.properties` file in the root directory with the following content:
     ```
     bot.token=ENTER_YOUR_BOT_TOKEN
+    
+    logging.guildId=ENTER_YOUR_LOGGING_GUILD_ID
+    logging.channelId=ENTER_YOUR_LOGGING_CHANNEL_ID
     ```
     You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
+    
+    `logging.guildId` and `logging.channelId` are the IDs of the Discord server and channel where you want to log messages. 
+    You can get them by opening Discord in your browser and navigating to the channel you want to log messages to.
+    Then, click into the address bar and copy the IDs out of the URL:
+    ```
+    https://discord.com/channels/[GUILD_ID]/[CHANNEL_ID]
+    ```
 
 ### Deployment
 To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).
