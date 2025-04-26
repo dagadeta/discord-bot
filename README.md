@@ -1,11 +1,15 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
+
 ## Setup & Deployment
+
 ### Prerequisites
-* Ubuntu Server with:
-  * Java 17 or higher
-  * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
+* Java 17 or higher on your local machine to build the project
+* Debian/Ubuntu Server with:
+    * SSH access
+    * Java 17 or higher
+    * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
 
 ### Local setup
 1. Clone the repository
@@ -17,7 +21,13 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 
 ### Deployment
 To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).
-This will build the project, copy the jar file to the server, and start the bot in a detached screen session.
+This will build the project locally, copy the jar file to the server, and start the bot in a detached screen session.
+When using this script, you'll get asked to enter the server's hostname/IP-address and username.
+
+You could also build the project on the server and run it there by yourself,
+but this script automates the process for you
+and creates a good [directory structure](#directory-structure) and a logging configuration on the server.
+
 
 ## On the server
 
@@ -38,11 +48,20 @@ To read the logs, you have two options:
     ```bash
     screen -DR "bot_run"
     ```
+  To detach from the screen session again without stopping it, press `CTRL+A` and then `D`.
 * Read the log files in the `logs` directory which are named with a timestamp.
   Every new run will create a new log file.
   * `ls -l` in the `discord-bot/logs` directory will show you the names of the log files with their timestamps.
   * `cat [FILE NAME]` in the same directory will show you the content of the log file.
 
+### Stopping the bot
+To stop the bot, enter the following command on the server:
+```bash
+screen -XS bot_run quit
+```
+
+
 ## Functions
+
 ### Commands
-* `/ding` - Responds with "Dong!" and only works in the channel "🤖｜bot-spielplatz"
+* `/ding` - Responds with "Dong!" and only works in the channel with the name "🤖｜bot-spielplatz"
