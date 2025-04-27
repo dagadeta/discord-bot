@@ -23,15 +23,22 @@ fun main() {
         props.load(inputStream)
     }
 
+    val wordChainGame = WordChainGame(props.getProperty("wordChainGame.channelId").toLong())
     val api = JDABuilder
         .createLight(props.getProperty("bot.token"), GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS)
-        .addEventListeners(DingDongListener())
+        .addEventListeners(
+            DingDongListener(),
+            wordChainGame,
+            WordChainCommandListener(wordChainGame)
+        )
         .build()
 
     api.awaitReady()
 
     configureDingDongCommands(api)
+    configureWordChainCommands(api)
 
     val logging = Logging(api, props.getProperty("logging.guildId").toLong(), props.getProperty("logging.channelId").toLong())
+
     logging.log("Bot started")
 }
