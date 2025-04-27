@@ -6,6 +6,7 @@ printf "\nPlease enter your username on the target host: "
 read -r TARGET_USER
 printf "\nPlease enter the hostname or IP address of the target host: "
 read -r TARGET_HOST
+printf "\n"
 
 set -x
 
@@ -14,6 +15,7 @@ TARGET_DIR=/home/$TARGET_USER/discord-bot/bin
 ./gradlew distZip
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "screen -XS bot_run quit" || true
+# shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "rm -rf $TARGET_DIR && mkdir -p $TARGET_DIR"
 scp app/build/distributions/app.zip "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
 scp run.sh "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"

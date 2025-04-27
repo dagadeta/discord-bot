@@ -19,15 +19,25 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
     
     logging.guildId=ENTER_YOUR_LOGGING_GUILD_ID
     logging.channelId=ENTER_YOUR_LOGGING_CHANNEL_ID
+    
+    wordChainGame.channelId=ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
+    dictionary.language=ENTER_YOUR_DICTIONARY_LANGUAGE
     ```
     You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
     
     `logging.guildId` and `logging.channelId` are the IDs of the Discord server and channel where you want to log messages. 
-    You can get them by opening Discord in your browser and navigating to the channel you want to log messages to.
+    `wordChainGame.channelId` is the ID of the channel where the word chain game will be played.
+    
+    You can get the guild and channel IDs by opening Discord in your browser
+    and navigating to the channel you want to log messages to.
     Then, click into the address bar and copy the IDs out of the URL:
     ```
     https://discord.com/channels/[GUILD_ID]/[CHANNEL_ID]
     ```
+    
+    `dictionary.language` is the language of the dictionary that will be used for the word chain game. Tested languages are:
+    * `en` - English
+    * `de` - German
 
 ### Deployment
 To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).

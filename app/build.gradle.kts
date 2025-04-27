@@ -29,6 +29,8 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.slf4j.api)
     implementation(libs.kotlin.logging)
+    implementation(libs.okhttp)
+    implementation(libs.json)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
