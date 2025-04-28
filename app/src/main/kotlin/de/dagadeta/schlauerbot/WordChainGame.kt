@@ -2,10 +2,12 @@ package de.dagadeta.schlauerbot
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,8 +22,8 @@ class WordChainGame(private val channelId: Long, private val language: String, v
 
         if (wasAlreadyStarted) {
             clearMemory()
-            event.hook.sendMessage("As WordChainGame was already started, I erased its word memory and restarted the game with language $language!").queue()
-        } else event.hook.sendMessage("WordChainGame started with language $language!").queue()
+            event.hook.sendMessage("As WordChainGame was already started, I erased its word memory and restarted the game with language \"$language\"!").queue()
+        } else event.hook.sendMessage("WordChainGame started with language \"$language\"!").queue()
 
         logger.info { "WordChainGame started" }
     }
@@ -43,6 +45,14 @@ class WordChainGame(private val channelId: Long, private val language: String, v
         logger.info { "WordChainGame memory cleared" }
     }
 
+    private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
+        originalMessage.reply(replyMessage).queue { reply ->
+            sleep(3000)
+            originalMessage.delete().queue()
+            reply.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
+        }
+    }
+
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.id.toLong() != channelId || event.author.isBot) return
 
@@ -50,27 +60,27 @@ class WordChainGame(private val channelId: Long, private val language: String, v
         val word = message.contentDisplay
 
         if (!started) {
-            message.reply("WordChainGame is not started! Use `/start-word-chain-game` to start it").queue()
+            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/start-word-chain-game` to start it")
             return
         }
         if (word.length < 3) {
-            message.reply("Word must be at least 3 characters long!").queue()
+            sendInvalidWordMessage(message, "Word must be at least 3 characters long!")
             return
         }
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
-            message.reply("Word must only contain valid letters (a-z, äöüß)!").queue()
+            sendInvalidWordMessage(message, "Word must only contain valid letters (a-z, äöüß)!")
             return
         }
         if (lastWord.isNotEmpty() && word[0].uppercaseChar() != lastWord.last().uppercaseChar()) {
-            message.reply("Word must start with the last letter of the last word!").queue()
+            sendInvalidWordMessage(message, "Word must start with the last letter of the last word!")
             return
         }
         if (usedWords.contains(word)) {
-            message.reply("Word already used in this round!").queue()
+            sendInvalidWordMessage(message, "Word already used in this round!")
             return
         }
         if (!wordChecker.isValidWord(word)) {
-            message.reply("Word does not exist in language $language!").queue()
+            sendInvalidWordMessage(message, "Word does not exist in language \"$language\"!")
             return
         }
 
