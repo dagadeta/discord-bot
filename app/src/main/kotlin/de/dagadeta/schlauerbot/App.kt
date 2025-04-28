@@ -1,6 +1,8 @@
 package de.dagadeta.schlauerbot
 
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.io.File
 import java.util.*
@@ -57,6 +59,13 @@ fun main() {
 
     logging.log("Bot started")
 
-    configureDingDongCommands(api)
-    configureWordChainCommands(api)
+    configureCommands(api)
+}
+
+fun configureCommands(guild: JDA) {
+    guild.updateCommands().addCommands(
+        Commands.slash("ding", "Answers Dong"),
+        Commands.slash(startGameCommand, "Starts the WordChain game"),
+        Commands.slash(stopGameCommand, "Stops the WordChain game"),
+    ).queue()
 }

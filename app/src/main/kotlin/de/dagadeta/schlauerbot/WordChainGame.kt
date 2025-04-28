@@ -1,12 +1,10 @@
 package de.dagadeta.schlauerbot
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 
 private val logger = KotlinLogging.logger {}
 
@@ -104,11 +102,4 @@ class WordChainCommandListener(private val game: WordChainGame) : ListenerAdapte
             }
         }
     }
-}
-
-fun configureWordChainCommands(guild: JDA) {
-    guild.updateCommands().addCommands(
-        Commands.slash(startGameCommand, "Starts the WordChain game"),
-        Commands.slash(stopGameCommand, "Stops the WordChain game"),
-    ).queue()
 }
