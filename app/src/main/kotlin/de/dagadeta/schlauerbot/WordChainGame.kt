@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
 
@@ -47,8 +46,7 @@ class WordChainGame(private val channelId: Long, private val language: String, v
 
     private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
         originalMessage.reply(replyMessage).queue { reply ->
-            sleep(3000)
-            originalMessage.delete().queue()
+            originalMessage.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
             reply.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
         }
     }
