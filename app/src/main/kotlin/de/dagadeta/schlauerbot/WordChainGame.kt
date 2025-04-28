@@ -2,6 +2,7 @@ package de.dagadeta.schlauerbot
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -11,6 +12,7 @@ private val logger = KotlinLogging.logger {}
 class WordChainGame(private val channelId: Long, private val language: String, var wordChecker: WordChecker) : ListenerAdapter() {
     private var started: Boolean = false
     private var lastWord: String = ""
+    private var lastUser: User? = null
     private var usedWords: MutableList<String> = mutableListOf()
 
     fun startGame(event: SlashCommandInteractionEvent) {
@@ -38,6 +40,7 @@ class WordChainGame(private val channelId: Long, private val language: String, v
     }
     private fun clearMemory() {
         lastWord = ""
+        lastUser = null
         usedWords.clear()
         logger.info { "WordChainGame memory cleared" }
     }
@@ -57,6 +60,10 @@ class WordChainGame(private val channelId: Long, private val language: String, v
 
         if (!started) {
             sendInvalidWordMessage(message, "WordChainGame is not started! Use `/start-word-chain-game` to start it")
+            return
+        }
+        if (lastUser != null && lastUser == event.author) {
+            sendInvalidWordMessage(message, "You're not alone here! Let the others write words too!")
             return
         }
         if (word.length < 3) {
@@ -82,6 +89,7 @@ class WordChainGame(private val channelId: Long, private val language: String, v
 
         logger.info { "received WordChain word" }
         lastWord = word
+        lastUser = event.author
         usedWords.add(word)
     }
 }
