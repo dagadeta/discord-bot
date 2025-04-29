@@ -4,7 +4,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 
-class WordChecker(private val language: String, private val logger: Logging) {
+class WordChecker(private val language: String, var logger: Logging) {
     private val client = OkHttpClient()
 
     /**

@@ -9,11 +9,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 private val logger = KotlinLogging.logger {}
 
-class WordChainGame(private val channelId: Long, private val language: String, var wordChecker: WordChecker) : ListenerAdapter() {
+class WordChainGame(private val channelId: Long, private val language: String, private var wordChecker: WordChecker) : ListenerAdapter() {
     private var started: Boolean = false
     private var lastWord: String = ""
     private var lastUser: User? = null
-    private var usedWords: MutableList<String> = mutableListOf()
+    private val usedWords: MutableList<String> = mutableListOf()
     private var wordCount: Int = 0
 
     fun startGame(event: SlashCommandInteractionEvent) {
@@ -87,7 +87,7 @@ class WordChainGame(private val channelId: Long, private val language: String, v
             return
         }
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
-            sendInvalidWordMessage(message, "Word must only contain valid letters (a-z, äöüß)!")
+            sendInvalidWordMessage(message, "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
             return
         }
         if (lastWord.isNotEmpty() && word[0].uppercaseChar() != lastWord.last().uppercaseChar()) {

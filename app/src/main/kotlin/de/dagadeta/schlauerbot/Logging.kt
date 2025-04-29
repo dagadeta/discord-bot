@@ -16,4 +16,8 @@ class Logging(private val guild: JDA?, private val guildId: Long, private val ch
         val channel = guild.getGuildById(guildId)?.getTextChannelById(channelId)
         channel?.sendMessage(message)?.queue()
     }
+
+    companion object {
+        val INITIAL = Logging(null, 0, 0)
+    }
 }

@@ -22,12 +22,11 @@ fun main() {
         props.load(inputStream)
     }
 
-    // Create a placeholder WordChecker
-    val placeholderWordChecker = WordChecker(props.getProperty("dictionary.language"), Logging(null, 0, 0))
+    val wordChecker = WordChecker(props.getProperty("dictionary.language"), Logging.INITIAL)
     val wordChainGame = WordChainGame(
         props.getProperty("wordChainGame.channelId").toLong(),
         props.getProperty("dictionary.language"),
-        placeholderWordChecker
+        wordChecker
     )
 
     val api = JDABuilder
@@ -52,10 +51,9 @@ fun main() {
         props.getProperty("logging.guildId").toLong(),
         props.getProperty("logging.channelId").toLong()
     )
-    val wordChecker = WordChecker(props.getProperty("dictionary.language"), logging)
 
-    // Update the WordChainGame instance with the correct WordChecker
-    wordChainGame.wordChecker = wordChecker
+    // Update the WordChecker instance with the correct logging configuration
+    wordChecker.logger = logging
 
     logging.log("Bot started")
 
