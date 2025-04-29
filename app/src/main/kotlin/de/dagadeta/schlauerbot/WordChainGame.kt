@@ -14,20 +14,20 @@ class WordChainGame(private val channelId: Long, private val language: String, v
     private var lastWord: String = ""
     private var lastUser: User? = null
     private var usedWords: MutableList<String> = mutableListOf()
+    private var wordCount: Int = 0
 
     fun startGame(event: SlashCommandInteractionEvent) {
-        val wasAlreadyStarted = started
+        if (started) {
+            event.hook.sendMessage("As WordChainGame is already started. Use `/$stopWordChainGameCommand` to stop the game or `/$restartWordChainGameCommand` to restart the game.").queue()
+            return
+        }
+
         started = true
-
-        if (wasAlreadyStarted) {
-            clearMemory()
-            event.hook.sendMessage("As WordChainGame was already started, I erased its word memory and restarted the game with language \"$language\"!").queue()
-        } else event.hook.sendMessage("WordChainGame started with language \"$language\"!").queue()
-
+        event.hook.sendMessage("WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/$restartWordChainGameCommand`" else ""}").queue()
         logger.info { "WordChainGame started" }
     }
     fun stopGame(event: SlashCommandInteractionEvent) {
-        if (!started) {
+        if (!started && wordCount == 0) {
             event.hook.sendMessage("WordChainGame is already stopped!").queue()
             return
         }
@@ -35,13 +35,29 @@ class WordChainGame(private val channelId: Long, private val language: String, v
         clearMemory()
 
         started = false
-        event.hook.sendMessage("WordChainGame stopped!").queue()
+        event.hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.").queue()
         logger.info { "WordChainGame stopped" }
+    }
+    fun pauseGame(event: SlashCommandInteractionEvent) {
+        if (!started) {
+            event.hook.sendMessage("WordChainGame is already paused or stopped!").queue()
+            return
+        }
+
+        started = false
+        event.hook.sendMessage("WordChainGame paused!").queue()
+    }
+    fun restartGame(event: SlashCommandInteractionEvent) {
+        if (!started) { started = true }
+        clearMemory()
+        event.hook.sendMessage("WordChainGame restarted with a refreshed memory!").queue()
+        logger.info { "WordChainGame restarted" }
     }
     private fun clearMemory() {
         lastWord = ""
         lastUser = null
         usedWords.clear()
+        wordCount = 0
         logger.info { "WordChainGame memory cleared" }
     }
 
@@ -59,7 +75,7 @@ class WordChainGame(private val channelId: Long, private val language: String, v
         val word = message.contentDisplay
 
         if (!started) {
-            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/start-word-chain-game` to start it")
+            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/$startWordChainGameCommand` to start it")
             return
         }
         if (lastUser != null && lastUser == event.author) {
@@ -91,22 +107,33 @@ class WordChainGame(private val channelId: Long, private val language: String, v
         lastWord = word
         lastUser = event.author
         usedWords.add(word)
+        wordCount++
     }
 }
 
-const val startGameCommand = "start-word-chain-game"
-const val stopGameCommand = "stop-word-chain-game"
+const val startWordChainGameCommand = "start-word-chain-game"
+const val stopWordChainGameCommand = "stop-word-chain-game"
+const val pauseWordChainGameCommand = "pause-word-chain-game"
+const val restartWordChainGameCommand = "restart-word-chain-game"
 
 class WordChainCommandListener(private val game: WordChainGame) : ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         when (event.name) {
-            startGameCommand -> {
+            startWordChainGameCommand -> {
                 event.deferReply().queue()
                 game.startGame(event)
             }
-            stopGameCommand -> {
+            stopWordChainGameCommand -> {
                 event.deferReply().queue()
                 game.stopGame(event)
+            }
+            pauseWordChainGameCommand -> {
+                event.deferReply().queue()
+                game.pauseGame(event)
+            }
+            restartWordChainGameCommand -> {
+                event.deferReply().queue()
+                game.restartGame(event)
             }
         }
     }

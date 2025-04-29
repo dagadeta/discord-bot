@@ -65,7 +65,9 @@ fun main() {
 fun configureCommands(guild: JDA) {
     guild.updateCommands().addCommands(
         Commands.slash("ding", "Answers Dong"),
-        Commands.slash(startGameCommand, "Starts the WordChain game"),
-        Commands.slash(stopGameCommand, "Stops the WordChain game"),
+        Commands.slash(startWordChainGameCommand, "Starts the WordChain game"),
+        Commands.slash(stopWordChainGameCommand, "Stops the WordChain game (Memory will be cleared)"),
+        Commands.slash(pauseWordChainGameCommand, "Pauses the WordChain game (Memory will remain)"),
+        Commands.slash(restartWordChainGameCommand, "Restarts the WordChain game"),
     ).queue()
 }
