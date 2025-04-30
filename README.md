@@ -48,6 +48,16 @@ You could also build the project on the server and run it there by yourself,
 but this script automates the process for you
 and creates a good [directory structure](#directory-structure) and a logging configuration on the server.
 
+### Run the tests
+The deployment script already runs all tests before packaging the application.
+
+You can run them separately with the Gradle task `check`:
+
+```shell
+./gradlew check
+```
+
+Find the test results in [the test report](app/build/reports/tests/test/index.html) afterwards.
 
 ## On the server
 
