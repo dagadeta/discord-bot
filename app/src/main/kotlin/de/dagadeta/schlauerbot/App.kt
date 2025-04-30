@@ -8,13 +8,6 @@ import java.io.File
 import java.util.*
 
 
-class App {
-    val greeting: String
-        get() {
-            return "Hello World!"
-        }
-}
-
 fun main() {
     val props = Properties()
     val inputStream = File("config.properties").inputStream()
