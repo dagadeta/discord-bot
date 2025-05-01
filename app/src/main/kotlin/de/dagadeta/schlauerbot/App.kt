@@ -15,7 +15,7 @@ fun main() {
         props.load(inputStream)
     }
 
-    val wordChecker = WordChecker(props.getProperty("dictionary.language"), Logging.INITIAL)
+    val wordChecker = WiktionaryWordChecker(props.getProperty("dictionary.language"), Logging.INITIAL)
     val wordChainGame = WordChainGame(
         props.getProperty("wordChainGame.channelId").toLong(),
         props.getProperty("dictionary.language"),

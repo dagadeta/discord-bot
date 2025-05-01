@@ -4,16 +4,20 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 
-class WordChecker(private val language: String, var logger: Logging) {
-    private val client = OkHttpClient()
-
+interface WordChecker {
     /**
      * Checks, if a word exists in the dictionary.
      *
      * @param word the word to check
      * @return true if the word exists, false otherwise
      */
-    fun isValidWord(word: String): Boolean {
+    fun isValidWord(word: String): Boolean
+}
+
+class WiktionaryWordChecker(private val language: String, var logger: Logging) : WordChecker {
+    private val client = OkHttpClient()
+
+    override fun isValidWord(word: String): Boolean {
         val url = "https://$language.wiktionary.org/w/api.php?action=query&titles=${word.trim()}&format=json"
 
         val request = Request.Builder()
