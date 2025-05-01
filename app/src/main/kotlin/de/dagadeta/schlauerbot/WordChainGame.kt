@@ -72,7 +72,6 @@ class WordChainGame(private val channelId: Long, private val language: String, p
         if (event.channel.id.toLong() != channelId || event.author.isBot) return
 
         val message = event.message
-        val word = message.contentDisplay
 
         if (!started) {
             sendInvalidWordMessage(message, "WordChainGame is not started! Use `/$startWordChainGameCommand` to start it")
@@ -82,6 +81,9 @@ class WordChainGame(private val channelId: Long, private val language: String, p
             sendInvalidWordMessage(message, "You're not alone here! Let the others write words too!")
             return
         }
+
+        val word = message.contentDisplay
+
         if (word.length < 3) {
             sendInvalidWordMessage(message, "Word must be at least 3 characters long!")
             return

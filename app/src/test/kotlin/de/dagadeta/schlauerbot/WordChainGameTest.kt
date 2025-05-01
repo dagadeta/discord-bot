@@ -4,15 +4,20 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+
+private const val channelId = 0L
 
 class WordChainGameTest {
 
-    val game = WordChainGame(0, "en") { true }
+    val game = WordChainGame(channelId, "en") { true }
 
     val event = mockk<SlashCommandInteractionEvent>()
     val hook = mockk<InteractionHook>(relaxed = true)
@@ -57,5 +62,39 @@ class WordChainGameTest {
 
         verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
         verify { hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.") }
+    }
+
+    @Nested
+    inner class `When a user sends a message` {
+        val messageReceived = mockk<MessageReceivedEvent>()
+        val message = mockk<Message>(relaxed = true)
+
+        @BeforeEach
+        fun prepareMocks() {
+            every { messageReceived.channel.id } returns "$channelId"
+            every { messageReceived.author.isBot } returns false
+            every { messageReceived.message } returns message
+        }
+
+        @Test
+        fun `a word is not accepted on a not-yet started game`() {
+            every { message.contentDisplay } returns "Lollipop"
+
+            game.onMessageReceived(messageReceived)
+
+            verify { message.reply("WordChainGame is not started! Use `/start-word-chain-game` to start it") }
+        }
+
+        @Test
+        fun `the first word on a newly started game is accepted`() {
+            game.startGame(event)
+            every { message.contentDisplay } returns "Lollipop"
+
+            game.onMessageReceived(messageReceived)
+
+            verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
+            verify { message.contentDisplay }
+            confirmVerified(message)
+        }
     }
 }
