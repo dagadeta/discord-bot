@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test
 
 class WordChainGameTest {
 
-    val wordChecker = mockk<WordChecker>()
-    val game = WordChainGame(0, "en", wordChecker)
+    val game = WordChainGame(0, "en") { true }
 
     val event = mockk<SlashCommandInteractionEvent>()
     val hook = mockk<InteractionHook>(relaxed = true)
