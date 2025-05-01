@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 class WordChainGameTest {
 
     val wordChecker = mockk<WordChecker>()
-    val game = WordChainGame(0, "English", wordChecker)
+    val game = WordChainGame(0, "en", wordChecker)
 
     val event = mockk<SlashCommandInteractionEvent>()
     val hook = mockk<InteractionHook>(relaxed = true)
@@ -32,7 +32,7 @@ class WordChainGameTest {
     fun `a game can be started`() {
         game.startGame(event)
 
-        verify { hook.sendMessage("WordChainGame started with language \"English\"!") }
+        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
     }
 
     @Test
@@ -40,7 +40,7 @@ class WordChainGameTest {
         game.startGame(event)
         game.startGame(event)
 
-        verify { hook.sendMessage("WordChainGame started with language \"English\"!") }
+        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
         verify { hook.sendMessage("As WordChainGame is already started. Use `/stop-word-chain-game` to stop the game or `/restart-word-chain-game` to restart the game.") }
     }
 
@@ -56,7 +56,7 @@ class WordChainGameTest {
         game.startGame(event)
         game.stopGame(event)
 
-        verify { hook.sendMessage("WordChainGame started with language \"English\"!") }
+        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
         verify { hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.") }
     }
 }
