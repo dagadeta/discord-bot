@@ -5,10 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.InteractionHook
-import org.junit.jupiter.api.AfterEach
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,49 +17,74 @@ class WordChainGameTest {
 
     val game = WordChainGame(channelId, "en") { true }
 
-    val event = mockk<SlashCommandInteractionEvent>()
-    val hook = mockk<InteractionHook>(relaxed = true)
-
-    @BeforeEach
-    fun prepareMocks() {
-        every { event.hook } returns hook
-    }
-
-    @AfterEach
-    fun `check if all recorded calls were verified`() {
-        confirmVerified(hook)
-    }
-
     @Test
     fun `a game can be started`() {
-        game.startGame(event)
+        val message = game.startGame()
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
+        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
     }
 
     @Test
     fun `a game can not be started twice`() {
-        game.startGame(event)
-        game.startGame(event)
+        game.startGame()
+        val message = game.startGame()
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
-        verify { hook.sendMessage("As WordChainGame is already started. Use `/stop-word-chain-game` to stop the game or `/restart-word-chain-game` to restart the game.") }
+        assertThat(message).isEqualTo("As WordChainGame is already started. Use `/stop-word-chain-game` to stop the game or `/restart-word-chain-game` to restart the game.")
     }
 
     @Test
     fun `a not running game can not be stopped`() {
-        game.stopGame(event)
+        val message = game.stopGame()
 
-        verify { hook.sendMessage("WordChainGame is already stopped!") }
+        assertThat(message).isEqualTo("WordChainGame is already stopped!")
     }
 
     @Test
     fun `a started game can be stopped`() {
-        game.startGame(event)
-        game.stopGame(event)
+        game.startGame()
+        val message = game.stopGame()
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
-        verify { hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.") }
+        assertThat(message).isEqualTo("WordChainGame stopped! The next game will have a refreshed memory.")
+    }
+
+    @Test
+    fun `a not running game can not be paused`() {
+        val message = game.pauseGame()
+
+        assertThat(message).isEqualTo("WordChainGame is already paused or stopped!")
+    }
+
+    @Test
+    fun `a started game can be paused`() {
+        game.startGame()
+        val message = game.pauseGame()
+
+        assertThat(message).isEqualTo("WordChainGame paused!")
+    }
+
+    @Test
+    fun `a paused game can be started again`() {
+        game.startGame()
+
+        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.pauseGame()
+        val message = game.startGame()
+
+        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
+    }
+
+    @Test
+    fun `a game can always be restarted`() {
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        game.startGame()
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        game.stopGame()
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
     }
 
     @Nested
@@ -87,12 +110,11 @@ class WordChainGameTest {
 
         @Test
         fun `the first word on a newly started game is accepted`() {
-            game.startGame(event)
+            game.startGame()
             every { message.contentDisplay } returns "Lollipop"
 
             game.onMessageReceived(messageReceived)
 
-            verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
             verify { message.contentDisplay }
             confirmVerified(message)
         }

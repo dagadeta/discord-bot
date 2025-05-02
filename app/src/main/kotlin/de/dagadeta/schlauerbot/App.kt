@@ -2,7 +2,6 @@ package de.dagadeta.schlauerbot
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.io.File
 import java.util.*
@@ -16,11 +15,12 @@ fun main() {
     }
 
     val wordChecker = WiktionaryWordChecker(props.getProperty("dictionary.language"), Logging.INITIAL)
-    val wordChainGame = WordChainGame(
+    val wordChainGame = DiscordWordChainGame(
         props.getProperty("wordChainGame.channelId").toLong(),
         props.getProperty("dictionary.language"),
         wordChecker
     )
+    val dingDong = DingDongListener()
 
     val api = JDABuilder
         .createLight(
@@ -30,9 +30,8 @@ fun main() {
             GatewayIntent.GUILD_MEMBERS
         )
         .addEventListeners(
-            DingDongListener(),
+            dingDong,
             wordChainGame,
-            WordChainCommandListener(wordChainGame)
         )
         .build()
 
@@ -50,15 +49,11 @@ fun main() {
 
     logging.log("Bot started")
 
-    configureCommands(api)
+    configureCommands(api, dingDong, wordChainGame)
 }
 
-fun configureCommands(guild: JDA) {
+fun configureCommands(guild: JDA, vararg commandsProvider: WithSlashCommands) {
     guild.updateCommands().addCommands(
-        Commands.slash("ding", "Answers Dong"),
-        Commands.slash(startWordChainGameCommand, "Starts the WordChain game"),
-        Commands.slash(stopWordChainGameCommand, "Stops the WordChain game (Memory will be cleared)"),
-        Commands.slash(pauseWordChainGameCommand, "Pauses the WordChain game (Memory will remain)"),
-        Commands.slash(restartWordChainGameCommand, "Restarts the WordChain game"),
+        commandsProvider.flatMap(WithSlashCommands::getSlashCommands)
     ).queue()
 }
