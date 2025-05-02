@@ -1,9 +1,6 @@
 package de.dagadeta.schlauerbot
 
-import de.dagadeta.schlauerbot.WordChainGameCommand.Pause
-import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
-import de.dagadeta.schlauerbot.WordChainGameCommand.Start
-import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
+import de.dagadeta.schlauerbot.WordChainGameCommand.*
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -13,28 +10,15 @@ class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordC
     val game = WordChainGame(channelId, language, wordChecker)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        when (event.name) {
-            Start.command -> {
-                event.deferReply().queue()
-                val message = game.startGame()
-                event.hook.sendMessage(message).queue()
-            }
-            Stop.command -> {
-                event.deferReply().queue()
-                val message = game.stopGame()
-                event.hook.sendMessage(message).queue()
-            }
-            Pause.command -> {
-                event.deferReply().queue()
-                val message = game.pauseGame()
-                event.hook.sendMessage(message).queue()
-            }
-            Restart.command -> {
-                event.deferReply().queue()
-                val message = game.restartGame()
-                event.hook.sendMessage(message).queue()
-            }
+        event.deferReply().queue()
+        val message = when (event.name) {
+            Start.command -> game.startGame()
+            Stop.command -> game.stopGame()
+            Pause.command -> game.pauseGame()
+            Restart.command -> game.restartGame()
+            else -> "Unnknown command '${event.name}'"
         }
+        event.hook.sendMessage(message).queue()
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) = game.onMessageReceived(event)
