@@ -117,26 +117,3 @@ const val startWordChainGameCommand = "start-word-chain-game"
 const val stopWordChainGameCommand = "stop-word-chain-game"
 const val pauseWordChainGameCommand = "pause-word-chain-game"
 const val restartWordChainGameCommand = "restart-word-chain-game"
-
-class WordChainCommandListener(private val game: WordChainGame) : ListenerAdapter() {
-    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        when (event.name) {
-            startWordChainGameCommand -> {
-                event.deferReply().queue()
-                game.startGame(event)
-            }
-            stopWordChainGameCommand -> {
-                event.deferReply().queue()
-                game.stopGame(event)
-            }
-            pauseWordChainGameCommand -> {
-                event.deferReply().queue()
-                game.pauseGame(event)
-            }
-            restartWordChainGameCommand -> {
-                event.deferReply().queue()
-                game.restartGame(event)
-            }
-        }
-    }
-}

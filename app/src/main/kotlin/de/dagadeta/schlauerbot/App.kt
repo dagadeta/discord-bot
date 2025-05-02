@@ -16,7 +16,7 @@ fun main() {
     }
 
     val wordChecker = WiktionaryWordChecker(props.getProperty("dictionary.language"), Logging.INITIAL)
-    val wordChainGame = WordChainGame(
+    val wordChainGame = DiscordWordChainGame(
         props.getProperty("wordChainGame.channelId").toLong(),
         props.getProperty("dictionary.language"),
         wordChecker
@@ -32,7 +32,6 @@ fun main() {
         .addEventListeners(
             DingDongListener(),
             wordChainGame,
-            WordChainCommandListener(wordChainGame)
         )
         .build()
 
