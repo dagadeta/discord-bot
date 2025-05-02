@@ -21,15 +21,18 @@ class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordC
             }
             Stop.command -> {
                 event.deferReply().queue()
-                game.stopGame(event)
+                val message = game.stopGame()
+                event.hook.sendMessage(message).queue()
             }
             Pause.command -> {
                 event.deferReply().queue()
-                game.pauseGame(event)
+                val message = game.pauseGame()
+                event.hook.sendMessage(message).queue()
             }
             Restart.command -> {
                 event.deferReply().queue()
-                game.restartGame(event)
+                val message = game.restartGame()
+                event.hook.sendMessage(message).queue()
             }
         }
     }

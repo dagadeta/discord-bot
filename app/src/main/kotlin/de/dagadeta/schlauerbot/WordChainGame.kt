@@ -6,7 +6,6 @@ import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
@@ -28,33 +27,35 @@ class WordChainGame(private val channelId: Long, private val language: String, p
         logger.info { "WordChainGame started" }
         return "WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
-    fun stopGame(event: SlashCommandInteractionEvent) {
+
+    fun stopGame(): String {
         if (!started && wordCount == 0) {
-            event.hook.sendMessage("WordChainGame is already stopped!").queue()
-            return
+            return "WordChainGame is already stopped!"
         }
 
         clearMemory()
 
         started = false
-        event.hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.").queue()
         logger.info { "WordChainGame stopped" }
+        return "WordChainGame stopped! The next game will have a refreshed memory."
     }
-    fun pauseGame(event: SlashCommandInteractionEvent) {
+
+    fun pauseGame(): String {
         if (!started) {
-            event.hook.sendMessage("WordChainGame is already paused or stopped!").queue()
-            return
+            return "WordChainGame is already paused or stopped!"
         }
 
         started = false
-        event.hook.sendMessage("WordChainGame paused!").queue()
+        return "WordChainGame paused!"
     }
-    fun restartGame(event: SlashCommandInteractionEvent) {
+
+    fun restartGame(): String {
         if (!started) { started = true }
         clearMemory()
-        event.hook.sendMessage("WordChainGame restarted with a refreshed memory!").queue()
         logger.info { "WordChainGame restarted" }
+        return "WordChainGame restarted with a refreshed memory!"
     }
+
     private fun clearMemory() {
         lastWord = ""
         lastUser = null

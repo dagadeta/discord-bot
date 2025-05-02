@@ -5,11 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.interactions.InteractionHook
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,19 +16,6 @@ private const val channelId = 0L
 class WordChainGameTest {
 
     val game = WordChainGame(channelId, "en") { true }
-
-    val event = mockk<SlashCommandInteractionEvent>()
-    val hook = mockk<InteractionHook>(relaxed = true)
-
-    @BeforeEach
-    fun prepareMocks() {
-        every { event.hook } returns hook
-    }
-
-    @AfterEach
-    fun `check if all recorded calls were verified`() {
-        confirmVerified(hook)
-    }
 
     @Test
     fun `a game can be started`() {
@@ -50,17 +34,17 @@ class WordChainGameTest {
 
     @Test
     fun `a not running game can not be stopped`() {
-        game.stopGame(event)
+        val message = game.stopGame()
 
-        verify { hook.sendMessage("WordChainGame is already stopped!") }
+        assertThat(message).isEqualTo("WordChainGame is already stopped!")
     }
 
     @Test
     fun `a started game can be stopped`() {
         game.startGame()
-        game.stopGame(event)
+        val message = game.stopGame()
 
-        verify { hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.") }
+        assertThat(message).isEqualTo("WordChainGame stopped! The next game will have a refreshed memory.")
     }
 
     @Nested
