@@ -19,15 +19,14 @@ class WordChainGame(private val channelId: Long, private val language: String, p
     private val usedWords: MutableList<String> = mutableListOf()
     private var wordCount: Int = 0
 
-    fun startGame(event: SlashCommandInteractionEvent) {
+    fun startGame(): String {
         if (started) {
-            event.hook.sendMessage("As WordChainGame is already started. Use `/${Stop.command}` to stop the game or `/${Restart.command}` to restart the game.").queue()
-            return
+            return "As WordChainGame is already started. Use `/${Stop.command}` to stop the game or `/${Restart.command}` to restart the game."
         }
 
         started = true
-        event.hook.sendMessage("WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}").queue()
         logger.info { "WordChainGame started" }
+        return "WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
     fun stopGame(event: SlashCommandInteractionEvent) {
         if (!started && wordCount == 0) {

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -34,18 +35,17 @@ class WordChainGameTest {
 
     @Test
     fun `a game can be started`() {
-        game.startGame(event)
+        val message = game.startGame()
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
+        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
     }
 
     @Test
     fun `a game can not be started twice`() {
-        game.startGame(event)
-        game.startGame(event)
+        game.startGame()
+        val message = game.startGame()
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
-        verify { hook.sendMessage("As WordChainGame is already started. Use `/stop-word-chain-game` to stop the game or `/restart-word-chain-game` to restart the game.") }
+        assertThat(message).isEqualTo("As WordChainGame is already started. Use `/stop-word-chain-game` to stop the game or `/restart-word-chain-game` to restart the game.")
     }
 
     @Test
@@ -57,10 +57,9 @@ class WordChainGameTest {
 
     @Test
     fun `a started game can be stopped`() {
-        game.startGame(event)
+        game.startGame()
         game.stopGame(event)
 
-        verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
         verify { hook.sendMessage("WordChainGame stopped! The next game will have a refreshed memory.") }
     }
 
@@ -87,12 +86,11 @@ class WordChainGameTest {
 
         @Test
         fun `the first word on a newly started game is accepted`() {
-            game.startGame(event)
+            game.startGame()
             every { message.contentDisplay } returns "Lollipop"
 
             game.onMessageReceived(messageReceived)
 
-            verify { hook.sendMessage("WordChainGame started with language \"en\"!") }
             verify { message.contentDisplay }
             confirmVerified(message)
         }

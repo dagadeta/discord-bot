@@ -16,7 +16,8 @@ class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordC
         when (event.name) {
             Start.command -> {
                 event.deferReply().queue()
-                game.startGame(event)
+                val message = game.startGame()
+                event.hook.sendMessage(message).queue()
             }
             Stop.command -> {
                 event.deferReply().queue()
