@@ -16,7 +16,7 @@ class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordC
             Stop.command -> game.stopGame()
             Pause.command -> game.pauseGame()
             Restart.command -> game.restartGame()
-            else -> "Unnknown command '${event.name}'"
+            else -> "Unknown command '${event.name}'"
         }
         event.hook.sendMessage(message).queue()
     }
