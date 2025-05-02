@@ -47,6 +47,46 @@ class WordChainGameTest {
         assertThat(message).isEqualTo("WordChainGame stopped! The next game will have a refreshed memory.")
     }
 
+    @Test
+    fun `a not running game can not be paused`() {
+        val message = game.pauseGame()
+
+        assertThat(message).isEqualTo("WordChainGame is already paused or stopped!")
+    }
+
+    @Test
+    fun `a started game can be paused`() {
+        game.startGame()
+        val message = game.pauseGame()
+
+        assertThat(message).isEqualTo("WordChainGame paused!")
+    }
+
+    @Test
+    fun `a paused game can be started again`() {
+        game.startGame()
+
+        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.pauseGame()
+        val message = game.startGame()
+
+        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
+    }
+
+    @Test
+    fun `a game can always be restarted`() {
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        game.startGame()
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+
+        game.stopGame()
+        assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
+    }
+
     @Nested
     inner class `When a user sends a message` {
         val messageReceived = mockk<MessageReceivedEvent>()
