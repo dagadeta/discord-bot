@@ -1,5 +1,8 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
+import de.dagadeta.schlauerbot.WordChainGameCommand.Start
+import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
@@ -18,12 +21,12 @@ class WordChainGame(private val channelId: Long, private val language: String, p
 
     fun startGame(event: SlashCommandInteractionEvent) {
         if (started) {
-            event.hook.sendMessage("As WordChainGame is already started. Use `/$stopWordChainGameCommand` to stop the game or `/$restartWordChainGameCommand` to restart the game.").queue()
+            event.hook.sendMessage("As WordChainGame is already started. Use `/${Stop.command}` to stop the game or `/${Restart.command}` to restart the game.").queue()
             return
         }
 
         started = true
-        event.hook.sendMessage("WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/$restartWordChainGameCommand`" else ""}").queue()
+        event.hook.sendMessage("WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}").queue()
         logger.info { "WordChainGame started" }
     }
     fun stopGame(event: SlashCommandInteractionEvent) {
@@ -74,7 +77,7 @@ class WordChainGame(private val channelId: Long, private val language: String, p
         val message = event.message
 
         if (!started) {
-            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/$startWordChainGameCommand` to start it")
+            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/${Start.command}` to start it")
             return
         }
         if (lastUser != null && lastUser == event.author) {
@@ -113,7 +116,9 @@ class WordChainGame(private val channelId: Long, private val language: String, p
     }
 }
 
-const val startWordChainGameCommand = "start-word-chain-game"
-const val stopWordChainGameCommand = "stop-word-chain-game"
-const val pauseWordChainGameCommand = "pause-word-chain-game"
-const val restartWordChainGameCommand = "restart-word-chain-game"
+enum class WordChainGameCommand(val command: String, val description: String) {
+    Start("start-word-chain-game", "Starts the WordChain game"),
+    Stop("stop-word-chain-game", "Stops the WordChain game (Memory will be cleared)"),
+    Pause("pause-word-chain-game", "Pauses the WordChain game (Memory will remain)"),
+    Restart("restart-word-chain-game", "Restarts the WordChain game"),
+}
