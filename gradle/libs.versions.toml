@@ -3,13 +3,13 @@
 
 [versions]
 slf4j = "2.0.17"
-junit-jupiter = "5.10.3"
+junit-jupiter = "5.12.2"
 jda = "5.4.0"
 logback = "1.5.18"
-kotlin-logging = "7.0.3"
+kotlin-logging = "7.0.7"
 okhttp = "4.10.0"
 json = "20231013"
-mockk = "1.9.3"
+mockk = "1.14.2"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
