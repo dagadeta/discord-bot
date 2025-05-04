@@ -79,7 +79,7 @@ class WordChainGameTest {
 
     @Test
     fun `a word is not accepted on a not-yet started game`() {
-        val result = game.onMessageReceived("user-1", "Lollipop")
+        val result = game.onMessageReceived("user-1", "lollipop")
 
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("WordChainGame is not started! Use `/start-word-chain-game` to start it")
@@ -89,8 +89,44 @@ class WordChainGameTest {
     fun `the first word on a newly started game is accepted`() {
         game.startGame()
 
-        val result = game.onMessageReceived("user-1", "Lollipop")
+        val result = game.onMessageReceived("user-1", "lollipop")
 
         assertThat(result.isSuccess).isTrue
+    }
+
+    @Test
+    fun `a subsequent word has to start with the last char of the previous`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "lollipop")
+        val result1 = game.onMessageReceived("user-2", "water")
+
+        assertThat(result1.isFailure).isTrue
+        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word!")
+
+        val result2 = game.onMessageReceived("user-2", "plus")
+
+        assertThat(result2.isSuccess).isTrue
+    }
+
+    @Test
+    fun `the same user is not allowed to write twice in a row`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "lollipop")
+        val result = game.onMessageReceived("user-1", "plus")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("You're not alone here! Let the others write words too!")
+    }
+
+    @Test
+    fun `a too short word gets rejected`() {
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "to")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word must be at least 3 characters long!")
     }
 }
