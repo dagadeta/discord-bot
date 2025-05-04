@@ -6,17 +6,13 @@ import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
 import de.dagadeta.schlauerbot.WordChainGameCommand.Start
 import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 private val logger = KotlinLogging.logger {}
 
-class WordChainGame(private val channelId: Long, private val language: String, private var wordChecker: WordChecker) {
+class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
     private var lastWord: String = ""
-    private var lastUser: User? = null
+    private var lastUserId: String? = null
     private val usedWords: MutableList<String> = mutableListOf()
     private var wordCount: Int = 0
 
@@ -60,23 +56,19 @@ class WordChainGame(private val channelId: Long, private val language: String, p
 
     private fun clearMemory() {
         lastWord = ""
-        lastUser = null
+        lastUserId = null
         usedWords.clear()
         wordCount = 0
         logger.info { "WordChainGame memory cleared" }
     }
 
-    fun onMessageReceived(event: MessageReceivedEvent ): Result<Unit> {
-        val message = event.message
-
+    fun onMessageReceived(userId: String, word: String): Result<Unit> {
         if (!started) {
             return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
-        if (lastUser != null && lastUser == event.author) {
+        if (lastUserId != null && lastUserId == userId) {
             return failure( "You're not alone here! Let the others write words too!")
         }
-
-        val word = message.contentDisplay
 
         if (word.length < 3) {
             return failure( "Word must be at least 3 characters long!")
@@ -96,7 +88,7 @@ class WordChainGame(private val channelId: Long, private val language: String, p
 
         logger.info { "received WordChain word" }
         lastWord = word
-        lastUser = event.author
+        lastUserId = userId
         usedWords.add(word)
         wordCount++
         return success(Unit)

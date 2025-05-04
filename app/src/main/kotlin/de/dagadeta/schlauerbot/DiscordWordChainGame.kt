@@ -8,8 +8,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import java.util.concurrent.TimeUnit.SECONDS
 
-class DiscordWordChainGame(private val channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(), WithSlashCommands {
-    val game = WordChainGame(channelId, language, wordChecker)
+class DiscordWordChainGame(private val channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(),
+    WithSlashCommands {
+    val game = WordChainGame(language, wordChecker)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         event.deferReply().queue()
@@ -25,7 +26,7 @@ class DiscordWordChainGame(private val channelId: Long, language: String, wordCh
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.id.toLong() != channelId || event.author.isBot) return
-        game.onMessageReceived(event)
+        game.onMessageReceived(event.author.id, event.message.contentDisplay)
             .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
     }
 

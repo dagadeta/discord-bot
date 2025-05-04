@@ -1,21 +1,11 @@
 package de.dagadeta.schlauerbot
 
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-
-private const val channelId = 0L
 
 class WordChainGameTest {
 
-    val game = WordChainGame(channelId, "en") { true }
+    private val game = WordChainGame("en") { true }
 
     @Test
     fun `a game can be started`() {
@@ -87,37 +77,20 @@ class WordChainGameTest {
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
     }
 
-    @Nested
-    inner class `When a user sends a message` {
-        val messageReceived = mockk<MessageReceivedEvent>()
-        val message = mockk<Message>(relaxed = true)
+    @Test
+    fun `a word is not accepted on a not-yet started game`() {
+        val result = game.onMessageReceived("user-1", "Lollipop")
 
-        @BeforeEach
-        fun prepareMocks() {
-            every { messageReceived.channel.id } returns "$channelId"
-            every { messageReceived.author.isBot } returns false
-            every { messageReceived.message } returns message
-        }
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("WordChainGame is not started! Use `/start-word-chain-game` to start it")
+    }
 
-        @Test
-        fun `a word is not accepted on a not-yet started game`() {
-            every { message.contentDisplay } returns "Lollipop"
+    @Test
+    fun `the first word on a newly started game is accepted`() {
+        game.startGame()
 
-            val result = game.onMessageReceived(messageReceived)
+        val result = game.onMessageReceived("user-1", "Lollipop")
 
-            assertThat(result.isFailure).isTrue
-            assertThat(result.failureOrNull()).isEqualTo("WordChainGame is not started! Use `/start-word-chain-game` to start it")
-        }
-
-        @Test
-        fun `the first word on a newly started game is accepted`() {
-            game.startGame()
-            every { message.contentDisplay } returns "Lollipop"
-
-            game.onMessageReceived(messageReceived)
-
-            verify { message.contentDisplay }
-            confirmVerified(message)
-        }
+        assertThat(result.isSuccess).isTrue
     }
 }
