@@ -6,15 +6,6 @@ import net.dv8tion.jda.api.JDA
 
 class Logging(private val guild: JDA?, private val guildId: Long, private val channelId: Long) {
     private val logger = KotlinLogging.logger {}
-    init {
-        if (guild != null) {
-            Runtime.getRuntime().addShutdownHook(object : Thread() {
-                override fun run() {
-                    log("Bot stopped")
-                }
-            })
-        }
-    }
 
     fun log(message: String) {
         logger.info { message }
@@ -24,6 +15,12 @@ class Logging(private val guild: JDA?, private val guildId: Long, private val ch
     private fun sendMessageToDiscordChannelById(guild: JDA, guildId: Long, channelId: Long, message: String) {
         val channel = guild.getGuildById(guildId)?.getTextChannelById(channelId)
         channel?.sendMessage(message)?.queue()
+    }
+
+    fun logOnShutdown(message: String) {
+        Runtime.getRuntime().addShutdownHook(object : Thread() {
+            override fun run() = log(message)
+        })
     }
 
     companion object {

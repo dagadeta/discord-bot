@@ -48,6 +48,7 @@ fun main() {
     wordChecker.logger = logging
 
     logging.log("Bot started")
+    logging.logOnShutdown("Bot stopped")
 
     configureCommands(api, dingDong, wordChainGame)
 }
