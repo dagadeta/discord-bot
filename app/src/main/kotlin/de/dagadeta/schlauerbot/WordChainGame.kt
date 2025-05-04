@@ -1,5 +1,7 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.Result.Companion.failure
+import de.dagadeta.schlauerbot.Result.Companion.success
 import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
 import de.dagadeta.schlauerbot.WordChainGameCommand.Start
 import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
@@ -11,7 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 private val logger = KotlinLogging.logger {}
 
-class WordChainGame(private val channelId: Long, private val language: String, private var wordChecker: WordChecker) : ListenerAdapter() {
+class WordChainGame(private val channelId: Long, private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
     private var lastWord: String = ""
     private var lastUser: User? = null
@@ -64,46 +66,32 @@ class WordChainGame(private val channelId: Long, private val language: String, p
         logger.info { "WordChainGame memory cleared" }
     }
 
-    private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
-        originalMessage.reply(replyMessage).queue { reply ->
-            originalMessage.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
-            reply.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
-        }
-    }
-
-    override fun onMessageReceived(event: MessageReceivedEvent) {
+    fun onMessageReceived(event: MessageReceivedEvent ): Result<Unit> {
         val message = event.message
 
         if (!started) {
-            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/${Start.command}` to start it")
-            return
+            return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
         if (lastUser != null && lastUser == event.author) {
-            sendInvalidWordMessage(message, "You're not alone here! Let the others write words too!")
-            return
+            return failure( "You're not alone here! Let the others write words too!")
         }
 
         val word = message.contentDisplay
 
         if (word.length < 3) {
-            sendInvalidWordMessage(message, "Word must be at least 3 characters long!")
-            return
+            return failure( "Word must be at least 3 characters long!")
         }
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
-            sendInvalidWordMessage(message, "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
-            return
+            return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
         if (lastWord.isNotEmpty() && word[0].uppercaseChar() != lastWord.last().uppercaseChar()) {
-            sendInvalidWordMessage(message, "Word must start with the last letter of the last word!")
-            return
+            return failure( "Word must start with the last letter of the last word!")
         }
         if (usedWords.contains(word)) {
-            sendInvalidWordMessage(message, "Word already used in this round!")
-            return
+            return failure( "Word already used in this round!")
         }
         if (!wordChecker.isValidWord(word)) {
-            sendInvalidWordMessage(message, "Word does not exist in language \"$language\"!")
-            return
+            return failure( "Word does not exist in language \"$language\"!")
         }
 
         logger.info { "received WordChain word" }
@@ -111,6 +99,7 @@ class WordChainGame(private val channelId: Long, private val language: String, p
         lastUser = event.author
         usedWords.add(word)
         wordCount++
+        return success(Unit)
     }
 }
 

@@ -103,9 +103,10 @@ class WordChainGameTest {
         fun `a word is not accepted on a not-yet started game`() {
             every { message.contentDisplay } returns "Lollipop"
 
-            game.onMessageReceived(messageReceived)
+            val result = game.onMessageReceived(messageReceived)
 
-            verify { message.reply("WordChainGame is not started! Use `/start-word-chain-game` to start it") }
+            assertThat(result.isFailure).isTrue
+            assertThat(result.failureOrNull()).isEqualTo("WordChainGame is not started! Use `/start-word-chain-game` to start it")
         }
 
         @Test
