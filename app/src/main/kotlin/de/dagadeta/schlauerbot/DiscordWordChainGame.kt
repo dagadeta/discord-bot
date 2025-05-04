@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 
-class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(), WithSlashCommands {
+class DiscordWordChainGame(private val channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(), WithSlashCommands {
     val game = WordChainGame(channelId, language, wordChecker)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -21,7 +21,10 @@ class DiscordWordChainGame(channelId: Long, language: String, wordChecker: WordC
         event.hook.sendMessage(message).queue()
     }
 
-    override fun onMessageReceived(event: MessageReceivedEvent) = game.onMessageReceived(event)
+    override fun onMessageReceived(event: MessageReceivedEvent) {
+        if (event.channel.id.toLong() != channelId || event.author.isBot) return
+        game.onMessageReceived(event)
+    }
 
     override fun getSlashCommands() = WordChainGameCommand.entries.map {
         Commands.slash(it.command, it.description)

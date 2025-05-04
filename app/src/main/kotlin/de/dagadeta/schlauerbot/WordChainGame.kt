@@ -72,8 +72,6 @@ class WordChainGame(private val channelId: Long, private val language: String, p
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.channel.id.toLong() != channelId || event.author.isBot) return
-
         val message = event.message
 
         if (!started) {
