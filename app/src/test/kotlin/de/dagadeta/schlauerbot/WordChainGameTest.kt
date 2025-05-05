@@ -55,12 +55,19 @@ class WordChainGameTest {
     @Test
     fun `a paused game can be started again`() {
         game.startGame()
-
-        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.onMessageReceived("user-1", "unterflurhydrantenstraßenkappendeckelsteg")
+        game.onMessageReceived("user-2", "grundflächenversiegelungsantragsbescheid")
         game.pauseGame()
+
         val message = game.startGame()
 
-        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
+        assertThat(message).isEqualTo(
+            """
+                WordChainGame started with language "en"!
+                
+                HINT: The game still has 2 words in its memory. If you want to start a game without memory, use `/restart-word-chain-game`
+            """.trimIndent()
+        )
     }
 
     @Test
@@ -70,7 +77,8 @@ class WordChainGameTest {
         game.startGame()
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
 
-        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.onMessageReceived("user-1", "word")
+        game.onMessageReceived("user-2", "desk")
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
 
         game.stopGame()
@@ -128,5 +136,26 @@ class WordChainGameTest {
 
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("Word must be at least 3 characters long!")
+    }
+
+    @Test
+    fun `a word containing illegal letters gets rejected`() {
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "users'")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
+    }
+
+    @Test
+    fun `an already used word gets rejected`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "aibohphobia")
+        val result = game.onMessageReceived("user-2", "aibohphobia")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
     }
 }

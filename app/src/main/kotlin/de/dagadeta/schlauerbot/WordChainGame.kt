@@ -76,7 +76,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
             return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        if (lastWord.isNotEmpty() && word[0].uppercaseChar() != lastWord.last().uppercaseChar()) {
+        if (lastWord.isNotEmpty() && word.first().uppercaseChar() != lastWord.last().uppercaseChar()) {
             return failure( "Word must start with the last letter of the last word!")
         }
         if (usedWords.contains(word)) {
