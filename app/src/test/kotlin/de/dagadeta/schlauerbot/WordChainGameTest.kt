@@ -1,21 +1,11 @@
 package de.dagadeta.schlauerbot
 
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-
-private const val channelId = 0L
 
 class WordChainGameTest {
 
-    val game = WordChainGame(channelId, "en") { true }
+    private val game = WordChainGame("en") { true }
 
     @Test
     fun `a game can be started`() {
@@ -65,12 +55,19 @@ class WordChainGameTest {
     @Test
     fun `a paused game can be started again`() {
         game.startGame()
-
-        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.onMessageReceived("user-1", "unterflurhydrantenstraßenkappendeckelsteg")
+        game.onMessageReceived("user-2", "grundflächenversiegelungsantragsbescheid")
         game.pauseGame()
+
         val message = game.startGame()
 
-        assertThat(message).isEqualTo("WordChainGame started with language \"en\"!")
+        assertThat(message).isEqualTo(
+            """
+                WordChainGame started with language "en"!
+                
+                HINT: The game still has 2 words in its memory. If you want to start a game without memory, use `/restart-word-chain-game`
+            """.trimIndent()
+        )
     }
 
     @Test
@@ -80,43 +77,85 @@ class WordChainGameTest {
         game.startGame()
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
 
-        // TODO: send some words as soon as onMessageReceived() doesn't need mocks anymore
+        game.onMessageReceived("user-1", "word")
+        game.onMessageReceived("user-2", "desk")
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
 
         game.stopGame()
         assertThat(game.restartGame()).isEqualTo("WordChainGame restarted with a refreshed memory!")
     }
 
-    @Nested
-    inner class `When a user sends a message` {
-        val messageReceived = mockk<MessageReceivedEvent>()
-        val message = mockk<Message>(relaxed = true)
+    @Test
+    fun `a word is not accepted on a not-yet started game`() {
+        val result = game.onMessageReceived("user-1", "lollipop")
 
-        @BeforeEach
-        fun prepareMocks() {
-            every { messageReceived.channel.id } returns "$channelId"
-            every { messageReceived.author.isBot } returns false
-            every { messageReceived.message } returns message
-        }
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("WordChainGame is not started! Use `/start-word-chain-game` to start it")
+    }
 
-        @Test
-        fun `a word is not accepted on a not-yet started game`() {
-            every { message.contentDisplay } returns "Lollipop"
+    @Test
+    fun `the first word on a newly started game is accepted`() {
+        game.startGame()
 
-            game.onMessageReceived(messageReceived)
+        val result = game.onMessageReceived("user-1", "lollipop")
 
-            verify { message.reply("WordChainGame is not started! Use `/start-word-chain-game` to start it") }
-        }
+        assertThat(result.isSuccess).isTrue
+    }
 
-        @Test
-        fun `the first word on a newly started game is accepted`() {
-            game.startGame()
-            every { message.contentDisplay } returns "Lollipop"
+    @Test
+    fun `a subsequent word has to start with the last char of the previous`() {
+        game.startGame()
 
-            game.onMessageReceived(messageReceived)
+        game.onMessageReceived("user-1", "lollipop")
+        val result1 = game.onMessageReceived("user-2", "water")
 
-            verify { message.contentDisplay }
-            confirmVerified(message)
-        }
+        assertThat(result1.isFailure).isTrue
+        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word!")
+
+        val result2 = game.onMessageReceived("user-2", "plus")
+
+        assertThat(result2.isSuccess).isTrue
+    }
+
+    @Test
+    fun `the same user is not allowed to write twice in a row`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "lollipop")
+        val result = game.onMessageReceived("user-1", "plus")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("You're not alone here! Let the others write words too!")
+    }
+
+    @Test
+    fun `a too short word gets rejected`() {
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "to")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word must be at least 3 characters long!")
+    }
+
+    @Test
+    fun `a word containing illegal letters gets rejected`() {
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "users'")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
+    }
+
+    @Test
+    fun `an already used word gets rejected`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "aibohphobia")
+        val result = game.onMessageReceived("user-2", "aibohphobia")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
     }
 }

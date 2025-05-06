@@ -1,20 +1,18 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.Result.Companion.failure
+import de.dagadeta.schlauerbot.Result.Companion.success
 import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
 import de.dagadeta.schlauerbot.WordChainGameCommand.Start
 import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 private val logger = KotlinLogging.logger {}
 
-class WordChainGame(private val channelId: Long, private val language: String, private var wordChecker: WordChecker) : ListenerAdapter() {
+class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
     private var lastWord: String = ""
-    private var lastUser: User? = null
+    private var lastUserId: String? = null
     private val usedWords: MutableList<String> = mutableListOf()
     private var wordCount: Int = 0
 
@@ -58,61 +56,42 @@ class WordChainGame(private val channelId: Long, private val language: String, p
 
     private fun clearMemory() {
         lastWord = ""
-        lastUser = null
+        lastUserId = null
         usedWords.clear()
         wordCount = 0
         logger.info { "WordChainGame memory cleared" }
     }
 
-    private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
-        originalMessage.reply(replyMessage).queue { reply ->
-            originalMessage.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
-            reply.delete().queueAfter(3, java.util.concurrent.TimeUnit.SECONDS)
-        }
-    }
-
-    override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.channel.id.toLong() != channelId || event.author.isBot) return
-
-        val message = event.message
-
+    fun onMessageReceived(userId: String, word: String): Result<Unit> {
         if (!started) {
-            sendInvalidWordMessage(message, "WordChainGame is not started! Use `/${Start.command}` to start it")
-            return
+            return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
-        if (lastUser != null && lastUser == event.author) {
-            sendInvalidWordMessage(message, "You're not alone here! Let the others write words too!")
-            return
+        if (lastUserId != null && lastUserId == userId) {
+            return failure( "You're not alone here! Let the others write words too!")
         }
-
-        val word = message.contentDisplay
 
         if (word.length < 3) {
-            sendInvalidWordMessage(message, "Word must be at least 3 characters long!")
-            return
+            return failure( "Word must be at least 3 characters long!")
         }
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
-            sendInvalidWordMessage(message, "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
-            return
+            return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        if (lastWord.isNotEmpty() && word[0].uppercaseChar() != lastWord.last().uppercaseChar()) {
-            sendInvalidWordMessage(message, "Word must start with the last letter of the last word!")
-            return
+        if (lastWord.isNotEmpty() && word.first().uppercaseChar() != lastWord.last().uppercaseChar()) {
+            return failure( "Word must start with the last letter of the last word!")
         }
         if (usedWords.contains(word)) {
-            sendInvalidWordMessage(message, "Word already used in this round!")
-            return
+            return failure( "Word already used in this round!")
         }
         if (!wordChecker.isValidWord(word)) {
-            sendInvalidWordMessage(message, "Word does not exist in language \"$language\"!")
-            return
+            return failure( "Word does not exist in language \"$language\"!")
         }
 
         logger.info { "received WordChain word" }
         lastWord = word
-        lastUser = event.author
+        lastUserId = userId
         usedWords.add(word)
         wordCount++
+        return success(Unit)
     }
 }
 
