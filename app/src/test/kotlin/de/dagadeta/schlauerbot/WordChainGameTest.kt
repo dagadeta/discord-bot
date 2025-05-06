@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.wordchaingame.WordChainGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

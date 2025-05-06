@@ -1,10 +1,12 @@
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.wordchaingame
 
+import de.dagadeta.schlauerbot.Result
 import de.dagadeta.schlauerbot.Result.Companion.failure
 import de.dagadeta.schlauerbot.Result.Companion.success
-import de.dagadeta.schlauerbot.WordChainGameCommand.Restart
-import de.dagadeta.schlauerbot.WordChainGameCommand.Start
-import de.dagadeta.schlauerbot.WordChainGameCommand.Stop
+import de.dagadeta.schlauerbot.WordChecker
+import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Restart
+import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Start
+import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Stop
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
