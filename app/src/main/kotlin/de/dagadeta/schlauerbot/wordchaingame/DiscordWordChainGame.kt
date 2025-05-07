@@ -12,9 +12,13 @@ import java.util.concurrent.TimeUnit
 
 class DiscordWordChainGame(private val channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(),
     WithSlashCommands {
-    val game = WordChainGame(language, wordChecker)
+    private val game = WordChainGame(language, wordChecker)
+    private val allCommandNames = WordChainGameCommand.entries.map(WordChainGameCommand::command)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
+        // don't react on unknown commands; there might be others that are not word chain game related
+        if (event.name !in allCommandNames) return
+
         event.deferReply().queue()
         val message = when (event.name) {
             WordChainGameCommand.Start.command -> game.startGame()
