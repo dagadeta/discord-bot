@@ -4,14 +4,15 @@ import de.dagadeta.schlauerbot.Result
 import de.dagadeta.schlauerbot.Result.Companion.failure
 import de.dagadeta.schlauerbot.Result.Companion.success
 import de.dagadeta.schlauerbot.WordChecker
-import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Restart
-import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Start
-import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.Stop
+import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
 class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
+    private val minWordLength = 3
+    private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
+
     private var started: Boolean = false
     private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
@@ -23,7 +24,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
 
         started = true
         logger.info { "WordChainGame started" }
-        return "WordChainGame started with language \"$language\"!${ if(usedWords.isNotEmpty()) "\n\nHINT: The game still has ${usedWords.size} words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
+        return "WordChainGame started with language \"$language\"!${if (usedWords.isNotEmpty()) "\n\nHINT: The game still has ${usedWords.size} words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
 
     fun stopGame(): String {
@@ -60,34 +61,34 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         logger.info { "WordChainGame memory cleared" }
     }
 
-    fun onMessageReceived(userId: String, word: String): Result<Unit> {
-        if (!started) {
-            return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
+    fun onMessageReceived(userId: String, word: String): Result<Unit> = when {
+        !started -> {
+            failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
-        if (lastUserId == userId) {
-            return failure( "You're not alone here! Let the others write words too!")
+        lastUserId == userId -> {
+            failure("You're not alone here! Let the others write words too!")
         }
-
-        if (word.length < 3) {
-            return failure( "Word must be at least 3 characters long!")
+        word.length < minWordLength -> {
+            failure("Word must be at least $minWordLength characters long!")
         }
-        if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
-            return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
+        !wordRegex.matches(word) -> {
+            failure("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        if (usedWords.isNotEmpty() && word.first().uppercaseChar() != usedWords.last().last().uppercaseChar()) {
-            return failure( "Word must start with the last letter of the last word!")
+        usedWords.isNotEmpty() && !word.first().equals(usedWords.last().last(), true) -> {
+            failure("Word must start with the last letter of the last word!")
         }
-        if (usedWords.contains(word)) {
-            return failure( "Word already used in this round!")
+        usedWords.contains(word) -> {
+            failure("Word already used in this round!")
         }
-        if (!wordChecker.isValidWord(word)) {
-            return failure( "Word does not exist in language \"$language\"!")
+        !wordChecker.isValidWord(word) -> {
+            failure("Word does not exist in language \"$language\"!")
         }
-
-        logger.info { "received WordChain word" }
-        lastUserId = userId
-        usedWords.add(word)
-        return success(Unit)
+        else -> {
+            logger.info { "received WordChain word" }
+            lastUserId = userId
+            usedWords.add(word)
+            success(Unit)
+        }
     }
 }
 

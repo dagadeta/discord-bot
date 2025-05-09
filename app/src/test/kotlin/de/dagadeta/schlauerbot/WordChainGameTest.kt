@@ -129,6 +129,16 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `the case of the first and last char may differ`() {
+        game.startGame()
+
+        assertThat(game.onMessageReceived("user-1", "Lollipop").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-2", "Plus").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-1", "Salt").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-2", "Tissue").isSuccess).isTrue
+    }
+
+    @Test
     fun `the same user is not allowed to write twice in a row`() {
         game.startGame()
 
