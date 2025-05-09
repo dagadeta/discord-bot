@@ -49,7 +49,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
     }
 
     fun restartGame(): String {
-        if (!started) { started = true }
+        started = true
         clearMemory()
         logger.info { "WordChainGame restarted" }
         return "WordChainGame restarted with a refreshed memory!"
