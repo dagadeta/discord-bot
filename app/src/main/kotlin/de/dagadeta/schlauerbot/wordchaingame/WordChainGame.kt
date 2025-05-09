@@ -13,7 +13,6 @@ private val logger = KotlinLogging.logger {}
 
 class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
-    private var lastWord: String = ""
     private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
 
@@ -56,7 +55,6 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
     }
 
     private fun clearMemory() {
-        lastWord = ""
         lastUserId = ""
         usedWords.clear()
         logger.info { "WordChainGame memory cleared" }
@@ -76,7 +74,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
             return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        if (lastWord.isNotEmpty() && word.first().uppercaseChar() != lastWord.last().uppercaseChar()) {
+        if (usedWords.isNotEmpty() && word.first().uppercaseChar() != usedWords.last().last().uppercaseChar()) {
             return failure( "Word must start with the last letter of the last word!")
         }
         if (usedWords.contains(word)) {
@@ -87,7 +85,6 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         }
 
         logger.info { "received WordChain word" }
-        lastWord = word
         lastUserId = userId
         usedWords.add(word)
         return success(Unit)
