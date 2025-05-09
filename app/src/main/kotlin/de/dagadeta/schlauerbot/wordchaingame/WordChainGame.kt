@@ -14,7 +14,7 @@ private val logger = KotlinLogging.logger {}
 class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
     private var lastWord: String = ""
-    private var lastUserId: String? = null
+    private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
 
     fun startGame(): String {
@@ -57,7 +57,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
 
     private fun clearMemory() {
         lastWord = ""
-        lastUserId = null
+        lastUserId = ""
         usedWords.clear()
         logger.info { "WordChainGame memory cleared" }
     }
@@ -66,7 +66,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         if (!started) {
             return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
-        if (lastUserId != null && lastUserId == userId) {
+        if (lastUserId == userId) {
             return failure( "You're not alone here! Let the others write words too!")
         }
 
