@@ -16,7 +16,6 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
     private var lastWord: String = ""
     private var lastUserId: String? = null
     private val usedWords: MutableList<String> = mutableListOf()
-    private var wordCount: Int = 0
 
     fun startGame(): String {
         if (started) {
@@ -25,11 +24,11 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
 
         started = true
         logger.info { "WordChainGame started" }
-        return "WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
+        return "WordChainGame started with language \"$language\"!${ if(usedWords.isNotEmpty()) "\n\nHINT: The game still has ${usedWords.size} words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
 
     fun stopGame(): String {
-        if (!started && wordCount == 0) {
+        if (!started && usedWords.isEmpty()) {
             return "WordChainGame is already stopped!"
         }
 
@@ -60,7 +59,6 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         lastWord = ""
         lastUserId = null
         usedWords.clear()
-        wordCount = 0
         logger.info { "WordChainGame memory cleared" }
     }
 
@@ -92,7 +90,6 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         lastWord = word
         lastUserId = userId
         usedWords.add(word)
-        wordCount++
         return success(Unit)
     }
 }
