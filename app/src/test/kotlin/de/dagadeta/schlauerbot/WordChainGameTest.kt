@@ -54,6 +54,16 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `a paused game can be stopped`() {
+        game.startGame()
+        game.onMessageReceived("user-1", "flower")
+        game.pauseGame()
+        val message = game.stopGame()
+
+        assertThat(message).isEqualTo("WordChainGame stopped! The next game will have a refreshed memory.")
+    }
+
+    @Test
     fun `a paused game can be started again`() {
         game.startGame()
         game.onMessageReceived("user-1", "unterflurhydrantenstraßenkappendeckelsteg")
@@ -158,5 +168,16 @@ class WordChainGameTest {
 
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
+    }
+
+    @Test
+    fun `an invalid word gets rejected`() {
+        val game = WordChainGame("en") { false }
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "sdoitskl")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word does not exist in language \"en\"!")
     }
 }

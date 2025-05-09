@@ -13,10 +13,8 @@ private val logger = KotlinLogging.logger {}
 
 class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
     private var started: Boolean = false
-    private var lastWord: String = ""
-    private var lastUserId: String? = null
+    private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
-    private var wordCount: Int = 0
 
     fun startGame(): String {
         if (started) {
@@ -25,11 +23,11 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
 
         started = true
         logger.info { "WordChainGame started" }
-        return "WordChainGame started with language \"$language\"!${ if(wordCount>0) "\n\nHINT: The game still has $wordCount words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
+        return "WordChainGame started with language \"$language\"!${ if(usedWords.isNotEmpty()) "\n\nHINT: The game still has ${usedWords.size} words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
 
     fun stopGame(): String {
-        if (!started && wordCount == 0) {
+        if (!started && usedWords.isEmpty()) {
             return "WordChainGame is already stopped!"
         }
 
@@ -50,17 +48,15 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
     }
 
     fun restartGame(): String {
-        if (!started) { started = true }
+        started = true
         clearMemory()
         logger.info { "WordChainGame restarted" }
         return "WordChainGame restarted with a refreshed memory!"
     }
 
     private fun clearMemory() {
-        lastWord = ""
-        lastUserId = null
+        lastUserId = ""
         usedWords.clear()
-        wordCount = 0
         logger.info { "WordChainGame memory cleared" }
     }
 
@@ -68,7 +64,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         if (!started) {
             return failure("WordChainGame is not started! Use `/${Start.command}` to start it")
         }
-        if (lastUserId != null && lastUserId == userId) {
+        if (lastUserId == userId) {
             return failure( "You're not alone here! Let the others write words too!")
         }
 
@@ -78,7 +74,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         if (!Regex("^[a-zA-ZäöüÄÖÜß]+$").matches(word)) {
             return failure( "Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        if (lastWord.isNotEmpty() && word.first().uppercaseChar() != lastWord.last().uppercaseChar()) {
+        if (usedWords.isNotEmpty() && word.first().uppercaseChar() != usedWords.last().last().uppercaseChar()) {
             return failure( "Word must start with the last letter of the last word!")
         }
         if (usedWords.contains(word)) {
@@ -89,10 +85,8 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         }
 
         logger.info { "received WordChain word" }
-        lastWord = word
         lastUserId = userId
         usedWords.add(word)
-        wordCount++
         return success(Unit)
     }
 }
