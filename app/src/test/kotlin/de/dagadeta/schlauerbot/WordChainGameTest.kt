@@ -1,14 +1,14 @@
 package de.dagadeta.schlauerbot
 
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
-import de.dagadeta.schlauerbot.persistance.WordChainGameStateRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 
 class WordChainGameTest {
-    private val gameStateRepo = mock<WordChainGameStateRepository>()
+    private val gameStateRepo = mock<WordChainGameStatePersistenceService>()
     private val usedWordRepo = mock<UsedWordRepository>()
 
     private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo)

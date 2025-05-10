@@ -7,8 +7,7 @@ import de.dagadeta.schlauerbot.WordChecker
 import de.dagadeta.schlauerbot.persistance.UsedWord
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameState
-import de.dagadeta.schlauerbot.persistance.WordChainGameStateRepository
-import de.dagadeta.schlauerbot.persistance.upsert
+import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -17,7 +16,7 @@ private val logger = KotlinLogging.logger {}
 class WordChainGame(
     private val language: String,
     private var wordChecker: WordChecker,
-    private val gameStateRepo: WordChainGameStateRepository,
+    private val gameStateRepo: WordChainGameStatePersistenceService,
     private val usedWordRepo: UsedWordRepository
 ) {
     private val minWordLength = 3
@@ -27,6 +26,15 @@ class WordChainGame(
     private var started: Boolean = false
     private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
+
+    init {
+        gameStateRepo.findByIdOrNull(theGameId)?.let {
+            started = it.started
+            lastUserId = it.lastUser
+        }
+
+        usedWordRepo.findAll().forEach { usedWords.add(it.word) }
+    }
 
     fun startGame(): String {
         if (started) {
@@ -107,6 +115,17 @@ class WordChainGame(
 
             success(Unit)
         }
+    }
+
+    fun describeInitialState(): String {
+        return if (usedWords.isNotEmpty()) {
+            """
+                Server was restarted.
+                
+                Resuming WordChainGame with ${usedWords.size} words in memory. Last word was ${usedWords.last()}
+                ${if (!started) "Game paused." else ""}
+            """.trimIndent()
+        } else ""
     }
 
     private fun saveState() = gameStateRepo.upsert(WordChainGameState(theGameId, started, lastUserId))
