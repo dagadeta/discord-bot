@@ -8,6 +8,7 @@ import de.dagadeta.schlauerbot.persistance.UsedWord
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameState
 import de.dagadeta.schlauerbot.persistance.WordChainGameStateRepository
+import de.dagadeta.schlauerbot.persistance.upsert
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -108,9 +109,7 @@ class WordChainGame(
         }
     }
 
-    private fun saveState() {
-        gameStateRepo.save(WordChainGameState(theGameId, started, lastUserId))
-    }
+    private fun saveState() = gameStateRepo.upsert(WordChainGameState(theGameId, started, lastUserId))
 }
 
 enum class WordChainGameCommand(val command: String, val description: String) {
