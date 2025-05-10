@@ -4,14 +4,24 @@ import de.dagadeta.schlauerbot.Result
 import de.dagadeta.schlauerbot.Result.Companion.failure
 import de.dagadeta.schlauerbot.Result.Companion.success
 import de.dagadeta.schlauerbot.WordChecker
+import de.dagadeta.schlauerbot.persistance.UsedWord
+import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameState
+import de.dagadeta.schlauerbot.persistance.WordChainGameStateRepository
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGameCommand.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-class WordChainGame(private val language: String, private var wordChecker: WordChecker) {
+class WordChainGame(
+    private val language: String,
+    private var wordChecker: WordChecker,
+    private val gameStateRepo: WordChainGameStateRepository,
+    private val usedWordRepo: UsedWordRepository
+) {
     private val minWordLength = 3
     private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
+    private val theGameId = 0
 
     private var started: Boolean = false
     private var lastUserId: String = ""
@@ -23,6 +33,7 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         }
 
         started = true
+        saveState()
         logger.info { "WordChainGame started" }
         return "WordChainGame started with language \"$language\"!${if (usedWords.isNotEmpty()) "\n\nHINT: The game still has ${usedWords.size} words in its memory. If you want to start a game without memory, use `/${Restart.command}`" else ""}"
     }
@@ -32,9 +43,8 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
             return "WordChainGame is already stopped!"
         }
 
-        clearMemory()
+        resetGame(false)
 
-        started = false
         logger.info { "WordChainGame stopped" }
         return "WordChainGame stopped! The next game will have a refreshed memory."
     }
@@ -45,19 +55,22 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
         }
 
         started = false
+        saveState()
         return "WordChainGame paused!"
     }
 
     fun restartGame(): String {
-        started = true
-        clearMemory()
+        resetGame(true)
         logger.info { "WordChainGame restarted" }
         return "WordChainGame restarted with a refreshed memory!"
     }
 
-    private fun clearMemory() {
+    private fun resetGame(start: Boolean) {
+        started = start
         lastUserId = ""
         usedWords.clear()
+        saveState()
+        usedWordRepo.deleteAll()
         logger.info { "WordChainGame memory cleared" }
     }
 
@@ -87,8 +100,16 @@ class WordChainGame(private val language: String, private var wordChecker: WordC
             logger.info { "received WordChain word" }
             lastUserId = userId
             usedWords.add(word)
+
+            saveState()
+            usedWordRepo.save(UsedWord(word))
+
             success(Unit)
         }
+    }
+
+    private fun saveState() {
+        gameStateRepo.save(WordChainGameState(theGameId, started, lastUserId))
     }
 }
 

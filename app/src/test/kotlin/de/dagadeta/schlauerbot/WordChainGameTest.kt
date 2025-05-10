@@ -1,12 +1,17 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameStateRepository
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
 
 class WordChainGameTest {
+    private val gameStateRepo = mock<WordChainGameStateRepository>()
+    private val usedWordRepo = mock<UsedWordRepository>()
 
-    private val game = WordChainGame("en") { true }
+    private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo)
 
     @Test
     fun `a game can be started`() {
@@ -182,7 +187,7 @@ class WordChainGameTest {
 
     @Test
     fun `an invalid word gets rejected`() {
-        val game = WordChainGame("en") { false }
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo)
         game.startGame()
 
         val result = game.onMessageReceived("user-1", "sdoitskl")
