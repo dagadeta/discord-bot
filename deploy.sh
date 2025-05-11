@@ -10,7 +10,7 @@ printf "\n"
 
 set -x
 
-VERSION=0.0.1-SNAPSHOT
+VERSION=1.0.0
 TARGET_DIR=/home/$TARGET_USER/discord-bot/bin
 
 ./gradlew app:bootDistZip

@@ -1,8 +1,14 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
+![version](https://img.shields.io/badge/version-1.0.0-5865F2?style=flat)
 
 ## Setup & Deployment
+
+> [!IMPORTANT]
+> These setup instructions are not 100% up-to-date.
+> For example, the setup of a PostreSQL database is not included yet.
+> It is planned to add this soon.
 
 ### Prerequisites
 * Java 17 or higher on your local machine to build the project

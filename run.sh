@@ -2,7 +2,7 @@
 
 set -ex
 
-VERSION=0.0.1-SNAPSHOT
+VERSION=1.0.0
 
 echo "Starting the app..."
 export JAVA_OPTS="-DLOG_DIR=../logs"
