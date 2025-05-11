@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/discordbot
+    username: pguser
+    password: pguser
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+zonky:
+  test:
+    database:
+      postgres:
+        docker:
+          image: postgres:16.9

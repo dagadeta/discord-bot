@@ -15,7 +15,6 @@ group = "de.dagadeta"
 version = "0.0.1-SNAPSHOT"
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
@@ -27,14 +26,18 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.json)
     implementation("org.springframework.boot:spring-boot-starter")
-    //implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    // runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql")
+
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     testImplementation(libs.assertj)
+    testImplementation(libs.zonky)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.postgresql:postgresql")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -66,7 +69,7 @@ tasks {
         useJUnitPlatform()
     }
 
-    distZip {
+    bootDistZip {
         dependsOn(check)
     }
 }

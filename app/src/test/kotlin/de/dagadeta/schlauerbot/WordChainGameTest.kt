@@ -1,12 +1,17 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.WordChainGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
 
 class WordChainGameTest {
+    private val gameStateRepo = mock<WordChainGameStatePersistenceService>()
+    private val usedWordRepo = mock<UsedWordRepository>()
 
-    private val game = WordChainGame("en") { true }
+    private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo)
 
     @Test
     fun `a game can be started`() {
@@ -121,7 +126,7 @@ class WordChainGameTest {
         val result1 = game.onMessageReceived("user-2", "water")
 
         assertThat(result1.isFailure).isTrue
-        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word!")
+        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word which is 'p'!")
 
         val result2 = game.onMessageReceived("user-2", "plus")
 
@@ -182,12 +187,40 @@ class WordChainGameTest {
 
     @Test
     fun `an invalid word gets rejected`() {
-        val game = WordChainGame("en") { false }
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo)
         game.startGame()
 
         val result = game.onMessageReceived("user-1", "sdoitskl")
 
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("Word does not exist in language \"en\"!")
+    }
+
+    @Test
+    fun `on a new game instance, describeInitialState() says the game is not yet started`() {
+        assertThat(game.describeInitialState()).isEqualTo("WordChainGame is not yet started.")
+    }
+
+    @Test
+    fun `on a started game, describeInitialState() says the game is started and has no words`() {
+        game.startGame()
+        assertThat(game.describeInitialState()).isEqualTo("WordChainGame is already started, but has no words in memory.")
+    }
+
+    @Test
+    fun `on a started game with words, describeInitialState() returns the number of words and the last one`() {
+        game.startGame()
+        game.onMessageReceived("user-1", "something")
+        assertThat(game.describeInitialState()).isEqualTo("""Resuming WordChainGame with 1 word(s) in memory. Last word was "something".""")
+    }
+
+    @Test
+    fun `on a paused game with words, describeInitialState() returns the number of words and the last one`() {
+        game.startGame()
+        game.onMessageReceived("user-1", "something")
+        game.pauseGame()
+        assertThat(game.describeInitialState()).isEqualTo("""
+            Resuming WordChainGame with 1 word(s) in memory. Last word was "something".
+            Game paused.""".trimIndent())
     }
 }

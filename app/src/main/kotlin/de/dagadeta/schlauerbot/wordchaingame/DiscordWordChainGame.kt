@@ -1,8 +1,11 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
+import de.dagadeta.schlauerbot.Logging
 import de.dagadeta.schlauerbot.WithSlashCommands
 import de.dagadeta.schlauerbot.WordChecker
 import de.dagadeta.schlauerbot.onFailure
+import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -10,9 +13,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import java.util.concurrent.TimeUnit
 
-class DiscordWordChainGame(private val channelId: Long, language: String, wordChecker: WordChecker) : ListenerAdapter(),
-    WithSlashCommands {
-    private val game = WordChainGame(language, wordChecker)
+class DiscordWordChainGame(
+    private val channelId: Long,
+    language: String,
+    wordChecker: WordChecker,
+    gameStateRepo: WordChainGameStatePersistenceService,
+    usedWordRepo: UsedWordRepository,
+) : ListenerAdapter(), WithSlashCommands {
+    private val game = WordChainGame(language, wordChecker, gameStateRepo, usedWordRepo)
     private val allCommandNames = WordChainGameCommand.entries.map(WordChainGameCommand::command)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -45,5 +53,9 @@ class DiscordWordChainGame(private val channelId: Long, language: String, wordCh
             originalMessage.delete().queueAfter(3, TimeUnit.SECONDS)
             reply.delete().queueAfter(3, TimeUnit.SECONDS)
         }
+    }
+
+    fun writeInitialStateTo(logging: Logging) {
+        logging.log(game.describeInitialState())
     }
 }

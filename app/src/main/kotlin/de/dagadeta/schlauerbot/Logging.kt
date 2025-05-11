@@ -9,11 +9,11 @@ class Logging(private val guild: JDA?, private val guildId: Long, private val ch
 
     fun log(message: String) {
         logger.info { message }
-        if (guild != null) sendMessageToDiscordChannelById(guild, guildId, channelId, message)
+        if (guild != null) sendMessageToDiscordChannelById(channelId, message)
     }
 
-    private fun sendMessageToDiscordChannelById(guild: JDA, guildId: Long, channelId: Long, message: String) {
-        val channel = guild.getGuildById(guildId)?.getTextChannelById(channelId)
+    fun sendMessageToDiscordChannelById(channelId: Long, message: String) {
+        val channel = guild?.getGuildById(guildId)?.getTextChannelById(channelId)
         channel?.sendMessage(message)?.queue()
     }
 

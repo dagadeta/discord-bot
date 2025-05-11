@@ -1,5 +1,7 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.DiscordWordChainGame
 import jakarta.annotation.PostConstruct
 import net.dv8tion.jda.api.JDA
@@ -7,11 +9,13 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.stereotype.Component
 import java.io.File
-import java.util.Properties
+import java.util.*
 
 @Component
-class DiscordBot {
-
+class DiscordBot(
+    val gameStateRepo: WordChainGameStatePersistenceService,
+    val usedWordRepo: UsedWordRepository
+) {
     @PostConstruct
     fun startBot() {
         val props = Properties()
@@ -24,7 +28,9 @@ class DiscordBot {
         val wordChainGame = DiscordWordChainGame(
             props.getProperty("wordChainGame.channelId").toLong(),
             props.getProperty("dictionary.language"),
-            wordChecker
+            wordChecker,
+            gameStateRepo,
+            usedWordRepo,
         )
         val dingDong = DingDongListener()
 
@@ -50,8 +56,8 @@ class DiscordBot {
             props.getProperty("logging.channelId").toLong()
         )
 
-        // Update the WordChecker instance with the correct logging configuration
         wordChecker.logger = logging
+        wordChainGame.writeInitialStateTo(logging)
 
         logging.log("Bot started")
         logging.logOnShutdown("Bot stopped")
