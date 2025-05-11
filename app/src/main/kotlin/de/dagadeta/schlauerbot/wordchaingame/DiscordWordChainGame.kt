@@ -56,6 +56,6 @@ class DiscordWordChainGame(
     }
 
     fun writeInitialStateTo(logging: Logging) {
-        logging.sendMessageToDiscordChannelById(channelId, game.describeInitialState())
+        logging.log(game.describeInitialState())
     }
 }
