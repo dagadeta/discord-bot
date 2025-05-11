@@ -19,6 +19,14 @@ class DatabaseIntegrationTest() {
     }
 
     @Test
+    fun `a saved gameStage can be read`() {
+        gameStateRepo.save(WordChainGameState(0, true, "user-1"))
+        val persistenceService = WordChainGameStatePersistenceService(gameStateRepo)
+
+        assertThat(persistenceService.findByIdOrNull(0)).isEqualTo(WordChainGameState(0, true, "user-1"))
+    }
+
+    @Test
     fun `the WordChainGameState can be upserted`() {
         val persistenceService = WordChainGameStatePersistenceService(gameStateRepo)
         val first = persistenceService.upsert(WordChainGameState(0, false, ""))
