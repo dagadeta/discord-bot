@@ -126,7 +126,7 @@ class WordChainGameTest {
         val result1 = game.onMessageReceived("user-2", "water")
 
         assertThat(result1.isFailure).isTrue
-        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word!")
+        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word which is 'p'!")
 
         val result2 = game.onMessageReceived("user-2", "plus")
 

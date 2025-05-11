@@ -97,7 +97,7 @@ class WordChainGame(
             failure("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
         usedWords.isNotEmpty() && !word.first().equals(usedWords.last().last(), true) -> {
-            failure("Word must start with the last letter of the last word!")
+            failure("Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
         }
         usedWords.contains(word) -> {
             failure("Word already used in this round!")
