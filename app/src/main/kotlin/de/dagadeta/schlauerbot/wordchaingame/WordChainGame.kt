@@ -120,13 +120,11 @@ class WordChainGame(
     fun describeInitialState(): String {
         return if (usedWords.isNotEmpty()) {
             """
-                Resuming WordChainGame with word(s) in memory. Last word was "${usedWords.last()}"
+                Resuming WordChainGame with ${usedWords.size} word(s) in memory. Last word was "${usedWords.last()}".
                 ${if (!started) "Game paused." else ""}
-            """.trimIndent()
+            """.trimIndent().trim()
         } else {
-            """
-                ${if (started) "WordChainGame is already started, but has no words in memory." else "WordChainGame is not yet started."}
-            """.trimIndent()
+            if (started) "WordChainGame is already started, but has no words in memory." else "WordChainGame is not yet started."
         }
     }
 

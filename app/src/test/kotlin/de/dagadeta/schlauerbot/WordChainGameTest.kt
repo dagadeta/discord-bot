@@ -195,4 +195,32 @@ class WordChainGameTest {
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("Word does not exist in language \"en\"!")
     }
+
+    @Test
+    fun `on a new game instance, describeInitialState() says the game is not yet started`() {
+        assertThat(game.describeInitialState()).isEqualTo("WordChainGame is not yet started.")
+    }
+
+    @Test
+    fun `on a started game, describeInitialState() says the game is started and has no words`() {
+        game.startGame()
+        assertThat(game.describeInitialState()).isEqualTo("WordChainGame is already started, but has no words in memory.")
+    }
+
+    @Test
+    fun `on a started game with words, describeInitialState() returns the number of words and the last one`() {
+        game.startGame()
+        game.onMessageReceived("user-1", "something")
+        assertThat(game.describeInitialState()).isEqualTo("""Resuming WordChainGame with 1 word(s) in memory. Last word was "something".""")
+    }
+
+    @Test
+    fun `on a paused game with words, describeInitialState() returns the number of words and the last one`() {
+        game.startGame()
+        game.onMessageReceived("user-1", "something")
+        game.pauseGame()
+        assertThat(game.describeInitialState()).isEqualTo("""
+            Resuming WordChainGame with 1 word(s) in memory. Last word was "something".
+            Game paused.""".trimIndent())
+    }
 }
