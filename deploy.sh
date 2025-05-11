@@ -13,16 +13,16 @@ set -x
 VERSION=0.0.1-SNAPSHOT
 TARGET_DIR=/home/$TARGET_USER/discord-bot/bin
 
-./gradlew distZip
+./gradlew app:bootDistZip
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "screen -XS bot_run quit" || true
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "rm -rf $TARGET_DIR && mkdir -p $TARGET_DIR"
-scp app/build/distributions/app-$VERSION.zip "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
+scp app/build/distributions/app-boot-$VERSION.zip "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
 scp run.sh "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
 scp config.properties "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
 # shellcheck disable=SC2029
-ssh "$TARGET_USER@$TARGET_HOST" "cd $TARGET_DIR && unzip app-$VERSION.zip && chmod +x run.sh"
+ssh "$TARGET_USER@$TARGET_HOST" "cd $TARGET_DIR && unzip app-boot-$VERSION.zip && chmod +x run.sh"
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "cd $TARGET_DIR && screen -dmS bot_run ./run.sh"
 

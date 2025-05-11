@@ -69,7 +69,7 @@ tasks {
         useJUnitPlatform()
     }
 
-    distZip {
+    bootDistZip {
         dependsOn(check)
     }
 }
