@@ -5,14 +5,14 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 
 ## Setup & Deployment
 
-> [!IMPORTANT]
-> These setup instructions are not 100% up-to-date.
-> For example, the setup of a PostreSQL database is not included yet.
-> It is planned to add this soon.
 
 ### Prerequisites
-* Java 17 or higher on your local machine to build the project
+* Local machine with:
+    * Java 17 or higher
+    * OCI-runtime (e.g. Docker)
+    * docker-compose v2
 * Debian/Ubuntu Server with:
+    * docker-compose
     * SSH access
     * Java 17 or higher
     * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
@@ -46,7 +46,9 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
     * `de` - German
 
 ### Deployment
-To deploy the bot, you can run the deployment script [`deploy.sh`](deploy.sh).
+To deploy the bot, you first need to copy the [`docker-compose.yml`](docker-compose.yml) file to the server and run `docker-compose up -d`.
+
+After that, you can run the deployment script [`deploy.sh`](deploy.sh).
 This will build the project locally, copy the jar file to the server, and start the bot in a detached screen session.
 When using this script, you'll get asked to enter the server's hostname/IP-address and username.
 
