@@ -1,8 +1,7 @@
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
-import de.dagadeta.schlauerbot.wordchaingame.WordChainGame
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock

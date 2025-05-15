@@ -1,8 +1,12 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.dingdong.DingDongListener
+import de.dagadeta.schlauerbot.discord.Logging
+import de.dagadeta.schlauerbot.discord.WithSlashCommands
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.DiscordWordChainGame
+import de.dagadeta.schlauerbot.wordchaingame.WiktionaryWordChecker
 import jakarta.annotation.PostConstruct
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder

@@ -1,5 +1,6 @@
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.dingdong
 
+import de.dagadeta.schlauerbot.discord.WithSlashCommands
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter

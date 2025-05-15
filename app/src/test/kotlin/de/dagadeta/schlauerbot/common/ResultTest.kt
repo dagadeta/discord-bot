@@ -1,10 +1,7 @@
-package de.dagadeta.schlauerbot.result
+package de.dagadeta.schlauerbot.common
 
-import de.dagadeta.schlauerbot.Result.Companion.failure
-import de.dagadeta.schlauerbot.Result.Companion.success
-import de.dagadeta.schlauerbot.getOrElse
-import de.dagadeta.schlauerbot.onFailure
-import de.dagadeta.schlauerbot.onSuccess
+import de.dagadeta.schlauerbot.common.Result.Companion.failure
+import de.dagadeta.schlauerbot.common.Result.Companion.success
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
