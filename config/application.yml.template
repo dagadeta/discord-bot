@@ -1,0 +1,9 @@
+bot-auth.token: ENTER_YOUR_BOT_TOKEN
+
+logging:
+  guild-id: ENTER_YOUR_LOGGING_GUILD_ID
+  channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
+
+word-chain-game:
+  channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
+  language: ENTER_YOUR_DICTIONARY_LANGUAGE
