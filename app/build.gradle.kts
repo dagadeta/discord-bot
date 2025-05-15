@@ -1,13 +1,17 @@
-plugins {
-    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    alias(libs.plugins.kotlin.jvm)
+buildscript {
+    dependencies {
+        classpath("org.flywaydb:flyway-database-postgresql:${libs.versions.flyway.plugin.get()}")
+    }
+}
 
+plugins {
+    alias(libs.plugins.kotlin.jvm)
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
+    alias(libs.plugins.flyway)
 
-    // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
 
@@ -31,6 +35,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    developmentOnly("org.flywaydb:flyway-database-postgresql")
 
     testImplementation(libs.assertj)
     testImplementation(libs.zonky)
@@ -38,6 +43,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.postgresql:postgresql")
+    testRuntimeOnly("org.flywaydb:flyway-core")
+    testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -60,8 +67,15 @@ allOpen {
 }
 
 application {
-    // Define the main class for the application.
     mainClass = "de.dagadeta.schlauerbot.AppKt"
+}
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/discordbot"
+    user = "pguser"
+    password = "pguser"
+    schemas = arrayOf("wordchaingame")
+    baselineOnMigrate = true
 }
 
 tasks {
