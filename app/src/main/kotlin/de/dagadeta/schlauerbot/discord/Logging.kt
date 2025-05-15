@@ -1,8 +1,7 @@
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.discord
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
-
 
 class Logging(private val guild: JDA?, private val guildId: Long, private val channelId: Long) {
     private val logger = KotlinLogging.logger {}
