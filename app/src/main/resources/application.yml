@@ -17,3 +17,20 @@ zonky:
       postgres:
         docker:
           image: postgres:16.9
+
+
+# The following values have to be configured in a config/application.yml
+# on the target machine. See README.md for details.
+#
+# Here, some default values are provided so that the App can start locally
+# without having to configure anything.
+
+bot-auth.token: offline
+
+logging:
+  guild-id: 0
+  channel-id: 0
+
+word-chain-game:
+  channel-id: 0
+  language: 0

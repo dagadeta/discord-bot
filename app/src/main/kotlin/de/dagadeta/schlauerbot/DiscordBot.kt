@@ -32,6 +32,7 @@ class DiscordBot(
     val usedWordRepo: UsedWordRepository,
 ) {
     private val logger = KotlinLogging.logger {}
+
     @PostConstruct
     fun startBot() {
         val wordChecker = WiktionaryWordChecker(wordChainGameConfig.language, Logging.INITIAL)
@@ -43,6 +44,17 @@ class DiscordBot(
             usedWordRepo,
         )
         val dingDong = DingDongListener()
+
+        if (authConfig.token == "offline") {
+            logger.warn {
+                """
+                    No token to authenticate with a discord server provided. Shutting down.
+                    Configure the discord server and the channels to use in config/application.yml
+                    See the project's README.md for details.
+                """.trimIndent()
+            }
+            return
+        }
 
         val api = JDABuilder
             .createLight(
