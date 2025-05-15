@@ -14,6 +14,7 @@ VERSION=1.0.0
 TARGET_DIR=/home/$TARGET_USER/discord-bot/bin
 
 ./gradlew app:bootDistZip
+./gradlew app:flywayMigrate -Dflyway.url="jdbc:postgresql://$TARGET_HOST:5432/discordbot"
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "screen -XS bot_run quit" || true
 # shellcheck disable=SC2029

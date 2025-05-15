@@ -5,7 +5,7 @@ spring:
     password: pguser
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
 
 zonky:
