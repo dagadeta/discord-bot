@@ -7,7 +7,7 @@ okhttp = "4.10.0"
 json = "20231013"
 assertj = "3.27.3"
 zonky = "2.6.0"
-flyway-plugin = "11.8.1"
+flyway-plugin = "11.8.2"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
