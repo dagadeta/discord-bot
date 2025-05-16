@@ -1,4 +1,4 @@
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.discord
 
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 

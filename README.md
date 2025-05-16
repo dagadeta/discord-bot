@@ -19,16 +19,19 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 
 ### Local setup
 1. Clone the repository
-2. Add a `config.properties` file in the root directory with the following content:
-    ```
-    bot.token=ENTER_YOUR_BOT_TOKEN
+2. In a `config` directory, add an `applicaion.yml` file with the following content:
+    ```yaml
+    bot-auth.token: ENTER_YOUR_BOT_TOKEN
     
-    logging.guildId=ENTER_YOUR_LOGGING_GUILD_ID
-    logging.channelId=ENTER_YOUR_LOGGING_CHANNEL_ID
+    logging:
+      guild-id: ENTER_YOUR_LOGGING_GUILD_ID
+      channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
     
-    wordChainGame.channelId=ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
-    dictionary.language=ENTER_YOUR_DICTIONARY_LANGUAGE
+    word-chain-game:
+      channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
+      language: ENTER_YOUR_DICTIONARY_LANGUAGE
     ```
+    Find a template to copy in [config/application.yml.template](config/application.yml.template).
     You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
     
     `logging.guildId` and `logging.channelId` are the IDs of the Discord server and channel where you want to log messages. 

@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package de.dagadeta.schlauerbot
+package de.dagadeta.schlauerbot.common
 
 
 @JvmInline

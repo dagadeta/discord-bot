@@ -1,9 +1,8 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
-import de.dagadeta.schlauerbot.Logging
-import de.dagadeta.schlauerbot.WithSlashCommands
-import de.dagadeta.schlauerbot.WordChecker
-import de.dagadeta.schlauerbot.onFailure
+import de.dagadeta.schlauerbot.discord.Logging
+import de.dagadeta.schlauerbot.discord.WithSlashCommands
+import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import net.dv8tion.jda.api.entities.Message
