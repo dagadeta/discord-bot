@@ -1,28 +1,21 @@
 package de.dagadeta.schlauerbot.discord
 
+import de.dagadeta.schlauerbot.config.LoggingConfig
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import org.springframework.stereotype.Component
 
-class Logging(private val guild: JDA?, private val guildId: Long, private val channelId: Long) {
+@Component
+class Logging(private val guild: JDA?, private val config: LoggingConfig) {
     private val logger = KotlinLogging.logger {}
 
     fun log(message: String) {
         logger.info { message }
-        if (guild != null) sendMessageToDiscordChannelById(channelId, message)
+        if (guild != null) sendMessageToDiscordChannelById(config.channelId, message)
     }
 
     fun sendMessageToDiscordChannelById(channelId: Long, message: String) {
-        val channel = guild?.getGuildById(guildId)?.getTextChannelById(channelId)
+        val channel = guild?.getGuildById(config.guildId)?.getTextChannelById(channelId)
         channel?.sendMessage(message)?.queue()
-    }
-
-    fun logOnShutdown(message: String) {
-        Runtime.getRuntime().addShutdownHook(object : Thread() {
-            override fun run() = log(message)
-        })
-    }
-
-    companion object {
-        val INITIAL = Logging(null, 0, 0)
     }
 }

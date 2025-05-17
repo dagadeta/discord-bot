@@ -11,6 +11,7 @@ import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.DiscordWordChainGame
 import de.dagadeta.schlauerbot.wordchaingame.WiktionaryWordChecker
 import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
@@ -23,19 +24,13 @@ import org.springframework.stereotype.Component
 )
 class DiscordBot(
     val wordChainGameConfig: WordChainGameConfig,
-    val loggingConfig: LoggingConfig,
+    val logging: Logging,
     val gameStateRepo: WordChainGameStatePersistenceService,
     val usedWordRepo: UsedWordRepository,
     val api: JDA,
 ) {
     @PostConstruct
     fun startBot() {
-        val logging = Logging(
-            api,
-            loggingConfig.guildId,
-            loggingConfig.channelId,
-        )
-
         val dingDong = DingDongListener()
 
         val wordChainGame = DiscordWordChainGame(
@@ -50,7 +45,6 @@ class DiscordBot(
         wordChainGame.writeInitialStateTo(logging)
 
         logging.log("Bot started")
-        logging.logOnShutdown("Bot stopped")
 
         configureCommands(api, dingDong, wordChainGame)
     }
@@ -60,4 +54,7 @@ class DiscordBot(
             commandsProvider.flatMap(WithSlashCommands::getSlashCommands)
         ).queue()
     }
+
+    @PreDestroy
+    fun logOnShutdown() = logging.log("Bot stopped")
 }
