@@ -11,7 +11,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
     alias(libs.plugins.flyway)
-
+    id("org.barfuin.gradle.jacocolog") version "3.1.0"
     application
 }
 
