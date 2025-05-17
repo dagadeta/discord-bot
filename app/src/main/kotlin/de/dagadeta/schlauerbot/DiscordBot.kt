@@ -10,11 +10,8 @@ import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import de.dagadeta.schlauerbot.wordchaingame.DiscordWordChainGame
 import de.dagadeta.schlauerbot.wordchaingame.WiktionaryWordChecker
-import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.requests.GatewayIntent
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
 
@@ -27,35 +24,12 @@ import org.springframework.stereotype.Component
 class DiscordBot(
     val wordChainGameConfig: WordChainGameConfig,
     val loggingConfig: LoggingConfig,
-    val authConfig: BotAuthConfig,
     val gameStateRepo: WordChainGameStatePersistenceService,
     val usedWordRepo: UsedWordRepository,
+    val api: JDA,
 ) {
-    private val logger = KotlinLogging.logger {}
-
     @PostConstruct
     fun startBot() {
-        if (authConfig.token == "offline") {
-            logger.warn {
-                """
-                    No token to authenticate with a discord server provided. Shutting down.
-                    Configure the discord server and the channels to use in config/application.yml
-                    See the project's README.md for details.
-                """.trimIndent()
-            }
-            return
-        }
-
-        val api = JDABuilder
-            .createLight(
-                authConfig.token,
-                GatewayIntent.GUILD_MESSAGES,
-                GatewayIntent.MESSAGE_CONTENT,
-                GatewayIntent.GUILD_MEMBERS
-            )
-            .build()
-            .awaitReady()
-
         val logging = Logging(
             api,
             loggingConfig.guildId,
