@@ -35,16 +35,6 @@ class DiscordBot(
 
     @PostConstruct
     fun startBot() {
-        val wordChecker = WiktionaryWordChecker(wordChainGameConfig.language, Logging.INITIAL)
-        val wordChainGame = DiscordWordChainGame(
-            wordChainGameConfig.channelId,
-            wordChainGameConfig.language,
-            wordChecker,
-            gameStateRepo,
-            usedWordRepo,
-        )
-        val dingDong = DingDongListener()
-
         if (authConfig.token == "offline") {
             logger.warn {
                 """
@@ -63,22 +53,26 @@ class DiscordBot(
                 GatewayIntent.MESSAGE_CONTENT,
                 GatewayIntent.GUILD_MEMBERS
             )
-            .addEventListeners(
-                dingDong,
-                wordChainGame,
-            )
             .build()
+            .awaitReady()
 
-        api.awaitReady()
-
-        // Initialize Logging and WordChecker with the actual API instance
         val logging = Logging(
             api,
             loggingConfig.guildId,
             loggingConfig.channelId,
         )
 
-        wordChecker.logger = logging
+        val dingDong = DingDongListener()
+
+        val wordChainGame = DiscordWordChainGame(
+            wordChainGameConfig.channelId,
+            wordChainGameConfig.language,
+            WiktionaryWordChecker(wordChainGameConfig.language, logging),
+            gameStateRepo,
+            usedWordRepo,
+        )
+
+        api.addEventListener(dingDong, wordChainGame)
         wordChainGame.writeInitialStateTo(logging)
 
         logging.log("Bot started")
