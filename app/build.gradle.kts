@@ -23,9 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("ch.qos.logback:logback-classic")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.slf4j:slf4j-api")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation(libs.jda)
@@ -37,13 +35,10 @@ dependencies {
     developmentOnly("org.flywaydb:flyway-database-postgresql")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
-    testImplementation("org.assertj:assertj-core")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(libs.zonky)
-    testRuntimeOnly("org.flywaydb:flyway-core")
     testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.postgresql:postgresql")
 }
 
