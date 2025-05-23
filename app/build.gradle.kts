@@ -24,8 +24,8 @@ repositories {
 
 dependencies {
     implementation(libs.jda)
-    implementation(libs.logback.classic)
-    implementation(libs.slf4j.api)
+    implementation("ch.qos.logback:logback-classic")
+    implementation("org.slf4j:slf4j-api")
     implementation(libs.kotlin.logging)
     implementation(libs.okhttp)
     implementation(libs.json)
@@ -37,7 +37,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     developmentOnly("org.flywaydb:flyway-database-postgresql")
 
-    testImplementation(libs.assertj)
+    testImplementation("org.assertj:assertj-core")
     testImplementation(libs.zonky)
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
