@@ -12,9 +12,9 @@ zonky = "2.6.0"
 
 [libraries]
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+json = { module = "org.json:json", version.ref = "json" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
-json = { module = "org.json:json", version.ref = "json" }
 zonky = { module = "io.zonky.test:embedded-database-spring-test", version.ref = "zonky" }
 
 [plugins]
