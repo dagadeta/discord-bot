@@ -5,13 +5,13 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    kotlin("plugin.spring") version "2.1.21"
-    id("org.springframework.boot") version "3.4.5"
-    id("io.spring.dependency-management") version "1.1.7"
-    kotlin("plugin.jpa") version "2.1.21"
     alias(libs.plugins.flyway)
-    id("org.barfuin.gradle.jacocolog") version "3.1.0"
+    alias(libs.plugins.jacocolog)
+    alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
     application
 }
 
@@ -23,28 +23,23 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.jda)
-    implementation(libs.logback.classic)
-    implementation(libs.slf4j.api)
-    implementation(libs.kotlin.logging)
-    implementation(libs.okhttp)
-    implementation(libs.json)
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.jda)
+    implementation(libs.json)
+    implementation(libs.kotlin.logging)
+    implementation(libs.okhttp)
     runtimeOnly("org.postgresql:postgresql")
 
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     developmentOnly("org.flywaydb:flyway-database-postgresql")
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
-    testImplementation(libs.assertj)
-    testImplementation(libs.zonky)
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("org.postgresql:postgresql")
-    testRuntimeOnly("org.flywaydb:flyway-core")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(libs.zonky)
     testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+    testRuntimeOnly("org.postgresql:postgresql")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
