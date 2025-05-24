@@ -1,9 +1,8 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
-import de.dagadeta.schlauerbot.Result
-import de.dagadeta.schlauerbot.Result.Companion.failure
-import de.dagadeta.schlauerbot.Result.Companion.success
-import de.dagadeta.schlauerbot.WordChecker
+import de.dagadeta.schlauerbot.common.Result
+import de.dagadeta.schlauerbot.common.Result.Companion.failure
+import de.dagadeta.schlauerbot.common.Result.Companion.success
 import de.dagadeta.schlauerbot.persistance.UsedWord
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameState
