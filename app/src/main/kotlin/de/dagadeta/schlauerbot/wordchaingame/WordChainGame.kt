@@ -16,7 +16,8 @@ class WordChainGame(
     private val language: String,
     private var wordChecker: WordChecker,
     private val gameStateRepo: WordChainGameStatePersistenceService,
-    private val usedWordRepo: UsedWordRepository
+    private val usedWordRepo: UsedWordRepository,
+    private val checkWordExistence: Boolean,
 ) {
     private val minWordLength = 3
     private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
@@ -101,7 +102,7 @@ class WordChainGame(
         usedWords.contains(word) -> {
             failure("Word already used in this round!")
         }
-        !wordChecker.isValidWord(word) -> {
+        checkWordExistence && !wordChecker.isValidWord(word) -> {
             failure("Word does not exist in language \"$language\"!")
         }
         else -> {

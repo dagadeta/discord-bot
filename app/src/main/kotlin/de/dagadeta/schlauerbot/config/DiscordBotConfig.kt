@@ -15,4 +15,5 @@ data class LoggingConfig(
 data class WordChainGameConfig(
     val channelId: Long,
     val language: String,
+    val checkWordExistence: Boolean,
 )

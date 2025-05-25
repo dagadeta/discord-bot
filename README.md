@@ -32,6 +32,7 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
       language: ENTER_YOUR_DICTIONARY_LANGUAGE
     ```
     Find a template to copy in [config/application.yml.template](config/application.yml.template).
+    
     You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
     
     `logging.guildId` and `logging.channelId` are the IDs of the Discord server and channel where you want to log messages. 
@@ -44,9 +45,11 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
     https://discord.com/channels/[GUILD_ID]/[CHANNEL_ID]
     ```
     
-    `dictionary.language` is the language of the dictionary that will be used for the word chain game. Tested languages are:
+    `wordChainGame.language` is the language of the dictionary that will be used for the word chain game. Tested languages are:
     * `en` - English
     * `de` - German
+    
+    `wordChainGame.checkWordExistence` is a boolean value that determines whether the bot should dictionary-check the word sent in the word chain game.
 
 ### Deployment
 To deploy the bot, you first need to copy the [`docker-compose.yml`](docker-compose.yml) file to the server and run `docker-compose up -d`.

@@ -39,6 +39,7 @@ class DiscordBot(
             WiktionaryWordChecker(wordChainGameConfig.language, logging),
             gameStateRepo,
             usedWordRepo,
+            wordChainGameConfig.checkWordExistence,
         )
 
         api.addEventListener(dingDong, wordChainGame)

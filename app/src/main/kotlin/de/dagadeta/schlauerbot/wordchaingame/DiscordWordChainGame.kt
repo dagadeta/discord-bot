@@ -18,8 +18,9 @@ class DiscordWordChainGame(
     wordChecker: WordChecker,
     gameStateRepo: WordChainGameStatePersistenceService,
     usedWordRepo: UsedWordRepository,
+    checkWordExistence: Boolean,
 ) : ListenerAdapter(), WithSlashCommands {
-    private val game = WordChainGame(language, wordChecker, gameStateRepo, usedWordRepo)
+    private val game = WordChainGame(language, wordChecker, gameStateRepo, usedWordRepo, checkWordExistence)
     private val allCommandNames = WordChainGameCommand.entries.map(WordChainGameCommand::command)
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {

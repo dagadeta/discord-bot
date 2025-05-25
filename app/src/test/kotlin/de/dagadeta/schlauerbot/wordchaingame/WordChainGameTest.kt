@@ -10,7 +10,7 @@ class WordChainGameTest {
     private val gameStateRepo = mock<WordChainGameStatePersistenceService>()
     private val usedWordRepo = mock<UsedWordRepository>()
 
-    private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo)
+    private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo, true)
 
     @Test
     fun `a game can be started`() {
@@ -186,7 +186,7 @@ class WordChainGameTest {
 
     @Test
     fun `an invalid word gets rejected`() {
-        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo)
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, true)
         game.startGame()
 
         val result = game.onMessageReceived("user-1", "sdoitskl")
