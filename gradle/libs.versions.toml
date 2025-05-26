@@ -2,7 +2,7 @@
 flyway-plugin = "11.8.2"
 jacocolog = "3.1.0"
 jda = "5.5.1"
-json = "20231013"
+json = "20250517"
 kotlin = "2.1.21"
 kotlin-logging = "7.0.7"
 okhttp = "4.12.0"
