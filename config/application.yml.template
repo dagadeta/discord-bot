@@ -1,9 +1,15 @@
+# You can get your bot token in the Discord Developer Portal (https://discord.com/developers/applications).
 bot-auth.token: ENTER_YOUR_BOT_TOKEN
 
+# The guild-id and channel-id are the IDs of the Discord server and channel where you want to log messages.
 logging:
   guild-id: ENTER_YOUR_LOGGING_GUILD_ID
   channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
 
+# The channel-id is the ID of the Discord channel where the word chain game will be played.
+# The language is the language of the dictionary that will be used for the word chain game.
+#   It should be in the two-letter language code. Tested languages are: "de", "en"
+# The check-word-existence option is a boolean value that determines whether the bot should dictionary-check the word sent in the word chain game.
 word-chain-game:
   channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
   language: ENTER_YOUR_DICTIONARY_LANGUAGE

@@ -19,37 +19,7 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 
 ### Local setup
 1. Clone the repository
-2. In a `config` directory, add an `applicaion.yml` file with the following content:
-    ```yaml
-    bot-auth.token: ENTER_YOUR_BOT_TOKEN
-    
-    logging:
-      guild-id: ENTER_YOUR_LOGGING_GUILD_ID
-      channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
-    
-    word-chain-game:
-      channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
-      language: ENTER_YOUR_DICTIONARY_LANGUAGE
-    ```
-    Find a template to copy in [config/application.yml.template](config/application.yml.template).
-    
-    You can get your bot token in the [Discord Developer Portal](https://discord.com/developers/applications).
-    
-    `logging.guildId` and `logging.channelId` are the IDs of the Discord server and channel where you want to log messages. 
-    `wordChainGame.channelId` is the ID of the channel where the word chain game will be played.
-    
-    You can get the guild and channel IDs by opening Discord in your browser
-    and navigating to the channel you want to log messages to.
-    Then, click into the address bar and copy the IDs out of the URL:
-    ```
-    https://discord.com/channels/[GUILD_ID]/[CHANNEL_ID]
-    ```
-    
-    `wordChainGame.language` is the language of the dictionary that will be used for the word chain game. Tested languages are:
-    * `en` - English
-    * `de` - German
-    
-    `wordChainGame.checkWordExistence` is a boolean value that determines whether the bot should dictionary-check the word sent in the word chain game.
+2. In the `config` directory, add an `application.yml` file. Find a template with explanations to copy in [config/application.yml.template](config/application.yml.template).
 
 ### Deployment
 To deploy the bot, you first need to copy the [`docker-compose.yml`](docker-compose.yml) file to the server and run `docker-compose up -d`.
