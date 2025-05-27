@@ -196,6 +196,17 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `an invalid word is not rejected when wordChecker is disabled`() {
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, false)
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "sdoitskl")
+
+        assertThat(result.isFailure).isFalse
+        assertThat(result.failureOrNull()).isNull()
+    }
+
+    @Test
     fun `on a new game instance, describeInitialState() says the game is not yet started`() {
         assertThat(game.describeInitialState()).isEqualTo("WordChainGame is not yet started.")
     }
