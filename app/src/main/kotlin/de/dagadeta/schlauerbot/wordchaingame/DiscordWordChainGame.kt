@@ -49,10 +49,22 @@ class DiscordWordChainGame(
     }
 
     private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
-        originalMessage.reply(replyMessage).queue { reply ->
-            originalMessage.delete().queueAfter(3, TimeUnit.SECONDS)
-            reply.delete().queueAfter(3, TimeUnit.SECONDS)
+        fun temporaryReplyFallback() {
+            originalMessage.reply(replyMessage).queue { reply ->
+                originalMessage.delete().queueAfter(3, TimeUnit.SECONDS)
+                reply.delete().queueAfter(3, TimeUnit.SECONDS)
+            }
         }
+
+        originalMessage.author.openPrivateChannel()
+            .queue({ channel ->
+                channel.sendMessage(replyMessage).queue(
+                    { _ -> originalMessage.delete().queue() },
+                    { _ -> temporaryReplyFallback() }
+                )
+            }, { _ ->
+                temporaryReplyFallback()
+            })
     }
 
     fun writeInitialStateTo(logging: Logging) {
