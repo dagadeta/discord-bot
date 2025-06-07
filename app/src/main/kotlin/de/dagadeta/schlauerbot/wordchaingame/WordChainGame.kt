@@ -19,7 +19,7 @@ class WordChainGame(
     private val usedWordRepo: UsedWordRepository,
     private val checkWordExistence: Boolean,
 ) {
-    private val minWordLength = 3
+    private val minWordLength = 2
     private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
     private val theGameId = 0
 

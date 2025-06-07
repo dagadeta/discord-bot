@@ -157,10 +157,10 @@ class WordChainGameTest {
     fun `a too short word gets rejected`() {
         game.startGame()
 
-        val result = game.onMessageReceived("user-1", "to")
+        val result = game.onMessageReceived("user-1", "t")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word must be at least 3 characters long!")
+        assertThat(result.failureOrNull()).isEqualTo("Word must be at least 2 characters long!")
     }
 
     @Test
