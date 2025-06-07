@@ -93,6 +93,9 @@ class WordChainGame(
         word.length < minWordLength -> {
             failure("Word must be at least $minWordLength characters long!")
         }
+        word.all { it == word[0] } -> {
+            failure("Word must not consist of the same letter repeated multiple times!")
+        }
         !wordRegex.matches(word) -> {
             failure("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }

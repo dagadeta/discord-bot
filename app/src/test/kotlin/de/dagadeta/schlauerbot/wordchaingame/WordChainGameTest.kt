@@ -164,6 +164,16 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `a word consisting of the same letter gets rejected`() {
+        game.startGame()
+
+        val result = game.onMessageReceived("user-1", "aaaaaa")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word must not consist of the same letter repeated multiple times!")
+    }
+
+    @Test
     fun `a word containing illegal letters gets rejected`() {
         game.startGame()
 
