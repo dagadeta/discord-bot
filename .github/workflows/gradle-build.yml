@@ -27,6 +27,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Run integration tests
+      env:
+        AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        GUILD_ID: ${{ vars.GUILD_ID }}
+        LOGGING_CHANNEL_ID: ${{ vars.LOGGING_CHANNEL_ID }}
+        WORDCHAINGAME_CHANNEL_ID: ${{ vars.WORDCHAINGAME_CHANNEL_ID }}
       run: ./gradlew app:integrationTest
     - name: Test Report
       uses: dorny/test-reporter@v2
