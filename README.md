@@ -33,7 +33,9 @@ but this script automates the process for you
 and creates a good [directory structure](#directory-structure) and a logging configuration on the server.
 
 ### Run the tests
-The deployment script already runs all tests before packaging the application.
+
+#### Unit Tests
+The deployment script already runs all unit tests before packaging the application.
 
 You can run them separately with the Gradle task `check`:
 
@@ -42,6 +44,22 @@ You can run them separately with the Gradle task `check`:
 ```
 
 Find the test results in [the test report](app/build/reports/tests/test/index.html) afterwards.
+
+#### Integration Tests
+Additionally to the unit tests, there are some integration tests that connect to a local database (in a docker container
+using [Zonky Embedded Database](https://github.com/zonkyio/embedded-database-spring-test)), to the Wiktionary API, and
+to a Discord server.
+
+While the database runs completely locally, the Discord server has to be a "real" one.
+In order for the Discord-related integration tests to run, see configuration file [application.yml](app/src/integTest/resources/application.yml)
+in the integration test source set (`integTest`) and set the environment variables that are needed there. Use e.g., a
+run configuration in your IDE for that.
+
+You can run the integration tests with the Gradle task `integrationTest`:
+
+```shell
+./gradlew app:integrationTest
+```
 
 ## On the server
 
