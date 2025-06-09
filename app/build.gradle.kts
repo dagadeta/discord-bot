@@ -22,6 +22,20 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    create("integTest") {
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+}
+
+val integTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+val integTestRuntimeOnly by configurations.getting
+
+configurations["integTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter")
@@ -36,11 +50,13 @@ dependencies {
     developmentOnly("org.flywaydb:flyway-database-postgresql")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation(libs.zonky)
-    testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
-    testRuntimeOnly("org.postgresql:postgresql")
+
+    integTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    integTestImplementation(libs.zonky)
+    integTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    integTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+    integTestRuntimeOnly("org.postgresql:postgresql")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -77,9 +93,26 @@ flyway {
 tasks {
     named<Test>("test") {
         useJUnitPlatform()
+        finalizedBy(jacocoTestReport)
     }
 
     bootDistZip {
         dependsOn(check)
+    }
+
+    register<Test>("integrationTest") {
+        description = "Runs integration tests."
+        group = "verification"
+
+        testClassesDirs = sourceSets["integTest"].output.classesDirs
+        classpath = sourceSets["integTest"].runtimeClasspath
+        shouldRunAfter("test")
+        finalizedBy(jacocoAggregatedReport)
+
+        useJUnitPlatform()
+
+        testLogging {
+            events("passed")
+        }
     }
 }
