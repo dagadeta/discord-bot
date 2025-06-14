@@ -133,6 +133,15 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `equalised chars work`() {
+        game.startGame()
+
+        assertThat(game.onMessageReceived("user-1", "Spaß").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-2", "Sau").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-1", "über").isSuccess).isTrue
+    }
+
+    @Test
     fun `the case of the first and last char may differ`() {
         game.startGame()
 

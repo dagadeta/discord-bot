@@ -23,6 +23,21 @@ class WordChainGame(
     private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
     private val theGameId = 0
 
+    private val equalisedChars = mapOf(
+        'ẞ' to 's',
+        'ß' to 's',
+        'Ä' to 'a',
+        'ä' to 'a',
+        'Ö' to 'o',
+        'ö' to 'o',
+        'Ü' to 'u',
+        'ü' to 'u',
+    )
+
+    private fun normalizeChar(c: Char): Char {
+        return equalisedChars[c] ?: c.lowercaseChar()
+    }
+
     private var started: Boolean = false
     private var lastUserId: String = ""
     private val usedWords: MutableList<String> = mutableListOf()
@@ -99,7 +114,7 @@ class WordChainGame(
         !wordRegex.matches(word) -> {
             failure("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
         }
-        usedWords.isNotEmpty() && !word.first().equals(usedWords.last().last(), true) -> {
+        usedWords.isNotEmpty() && normalizeChar(word.first()) != normalizeChar(usedWords.last().last()) -> {
             failure("Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
         }
         usedWords.contains(word) -> {
