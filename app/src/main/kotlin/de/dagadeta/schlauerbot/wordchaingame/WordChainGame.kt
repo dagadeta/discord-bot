@@ -20,18 +20,33 @@ class WordChainGame(
     private val checkWordExistence: Boolean,
 ) {
     private val minWordLength = 2
-    private val wordRegex = Regex("^[a-zA-ZäöüÄÖÜß]+$")
+    private val wordRegex = Regex("^\\p{L}+$")
     private val theGameId = 0
 
     private val equalisedChars = mapOf(
-        'ẞ' to 's',
-        'ß' to 's',
-        'Ä' to 'a',
-        'ä' to 'a',
-        'Ö' to 'o',
-        'ö' to 'o',
-        'Ü' to 'u',
-        'ü' to 'u',
+        'ß' to 's', 'ẞ' to 's',
+        'ä' to 'a', 'Ä' to 'a',
+        'ö' to 'o', 'Ö' to 'o',
+        'ü' to 'u', 'Ü' to 'u',
+
+        'á' to 'a', 'Á' to 'a',
+        'à' to 'a', 'À' to 'a',
+        'é' to 'e', 'É' to 'e',
+        'è' to 'e', 'È' to 'e',
+        'í' to 'i', 'Í' to 'i',
+        'ì' to 'i', 'Ì' to 'i',
+        'ó' to 'o', 'Ó' to 'o',
+        'ò' to 'o', 'Ò' to 'o',
+        'ú' to 'u', 'Ú' to 'u',
+        'ù' to 'u', 'Ù' to 'u',
+
+        'â' to 'a', 'Â' to 'a',
+        'ê' to 'e', 'Ê' to 'e',
+        'î' to 'i', 'Î' to 'i',
+        'ô' to 'o', 'Ô' to 'o',
+        'û' to 'u', 'Û' to 'u',
+
+        'ç' to 'c', 'Ç' to 'c',
     )
 
     private fun normalizeChar(c: Char): Char {
@@ -112,7 +127,7 @@ class WordChainGame(
             failure("Word must not consist of the same letter repeated multiple times!")
         }
         !wordRegex.matches(word) -> {
-            failure("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
+            failure("Word must only contain valid letters!")
         }
         usedWords.isNotEmpty() && normalizeChar(word.first()) != normalizeChar(usedWords.last().last()) -> {
             failure("Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
@@ -121,7 +136,7 @@ class WordChainGame(
             failure("Word already used in this round!")
         }
         checkWordExistence && !wordChecker.isValidWord(word) -> {
-            failure("Word does not exist in language \"$language\"!")
+            failure("Word does not exist in the configured dictionary!")
         }
         else -> {
             logger.info { "received WordChain word" }

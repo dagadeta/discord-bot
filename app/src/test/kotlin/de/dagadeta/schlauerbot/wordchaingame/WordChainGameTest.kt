@@ -133,12 +133,29 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `all chars that should get accepted get accepted`() {
+        game.startGame()
+        assertThat(game.onMessageReceived("user-1", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").isSuccess).isTrue
+
+        game.restartGame()
+        assertThat(game.onMessageReceived("user-1", "äöüÄÖÜßẞ").isSuccess).isTrue
+
+        game.restartGame()
+        assertThat(game.onMessageReceived("user-1", "áàâéèêíìîóòôúùûÁÀÂÉÈÊÍÌÎÓÒÔÚÙÛ").isSuccess).isTrue
+
+        game.restartGame()
+        assertThat(game.onMessageReceived("user-1", "çÇ").isSuccess).isTrue
+    }
+
+    @Test
     fun `equalised chars work`() {
         game.startGame()
 
         assertThat(game.onMessageReceived("user-1", "Spaß").isSuccess).isTrue
         assertThat(game.onMessageReceived("user-2", "Sau").isSuccess).isTrue
         assertThat(game.onMessageReceived("user-1", "über").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-2", "regardé").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-1", "être").isSuccess).isTrue
     }
 
     @Test
@@ -189,7 +206,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "users'")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word must only contain valid letters (a-z, ä, ö, ü, ß)!")
+        assertThat(result.failureOrNull()).isEqualTo("Word must only contain valid letters!")
     }
 
     @Test
@@ -211,7 +228,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "sdoitskl")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word does not exist in language \"en\"!")
+        assertThat(result.failureOrNull()).isEqualTo("Word does not exist in the configured dictionary!")
     }
 
     @Test

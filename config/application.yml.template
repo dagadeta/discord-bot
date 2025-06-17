@@ -8,7 +8,7 @@ logging:
 
 # The channel-id is the ID of the Discord channel where the word chain game will be played.
 # The language is the language of the dictionary that will be used for the word chain game.
-#   It should be in the two-letter language code. Tested languages are: "de", "en"
+#   It should be in the two-letter language code. Tested languages are: "de", "en", "fr"
 # The check-word-existence option is a boolean value that determines whether the bot should dictionary-check the word sent in the word chain game.
 word-chain-game:
   channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
