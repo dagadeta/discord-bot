@@ -24,33 +24,33 @@ class WordChainGame(
     private val theGameId = 0
 
     private val equalisedChars = mapOf(
-        'ß' to 's', 'ẞ' to 's',
-        'ä' to 'a', 'Ä' to 'a',
-        'ö' to 'o', 'Ö' to 'o',
-        'ü' to 'u', 'Ü' to 'u',
+        'ß' to 's',
+        'ä' to 'a',
+        'ö' to 'o',
+        'ü' to 'u',
 
-        'á' to 'a', 'Á' to 'a',
-        'à' to 'a', 'À' to 'a',
-        'é' to 'e', 'É' to 'e',
-        'è' to 'e', 'È' to 'e',
-        'í' to 'i', 'Í' to 'i',
-        'ì' to 'i', 'Ì' to 'i',
-        'ó' to 'o', 'Ó' to 'o',
-        'ò' to 'o', 'Ò' to 'o',
-        'ú' to 'u', 'Ú' to 'u',
-        'ù' to 'u', 'Ù' to 'u',
+        'á' to 'a',
+        'à' to 'a',
+        'é' to 'e',
+        'è' to 'e',
+        'í' to 'i',
+        'ì' to 'i',
+        'ó' to 'o',
+        'ò' to 'o',
+        'ú' to 'u',
+        'ù' to 'u',
 
-        'â' to 'a', 'Â' to 'a',
-        'ê' to 'e', 'Ê' to 'e',
-        'î' to 'i', 'Î' to 'i',
-        'ô' to 'o', 'Ô' to 'o',
-        'û' to 'u', 'Û' to 'u',
+        'â' to 'a',
+        'ê' to 'e',
+        'î' to 'i',
+        'ô' to 'o',
+        'û' to 'u',
 
-        'ç' to 'c', 'Ç' to 'c',
+        'ç' to 'c',
     )
 
     private fun normalizeChar(c: Char): Char {
-        return equalisedChars[c] ?: c.lowercaseChar()
+        return equalisedChars[c.lowercaseChar()] ?: c.lowercaseChar()
     }
 
     private var started: Boolean = false

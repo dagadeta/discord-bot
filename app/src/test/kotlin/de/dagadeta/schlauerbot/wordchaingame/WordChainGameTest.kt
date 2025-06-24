@@ -154,7 +154,7 @@ class WordChainGameTest {
         assertThat(game.onMessageReceived("user-1", "Spaß").isSuccess).isTrue
         assertThat(game.onMessageReceived("user-2", "Sau").isSuccess).isTrue
         assertThat(game.onMessageReceived("user-1", "über").isSuccess).isTrue
-        assertThat(game.onMessageReceived("user-2", "regardé").isSuccess).isTrue
+        assertThat(game.onMessageReceived("user-2", "REGARDÉ").isSuccess).isTrue
         assertThat(game.onMessageReceived("user-1", "être").isSuccess).isTrue
     }
 
