@@ -2,10 +2,24 @@
 
 set -e
 
-printf "\nPlease enter your username on the target host: "
-read -r TARGET_USER
-printf "\nPlease enter the hostname or IP address of the target host: "
-read -r TARGET_HOST
+while getopts "u:d:" opt; do
+  case $opt in
+    u) TARGET_USER="$OPTARG" ;;
+    d) TARGET_HOST="$OPTARG" ;;
+    *) echo "Usage: $0 [-u user] [-d destination]"; exit 1 ;;
+  esac
+done
+
+if [ -z "$TARGET_USER" ]; then
+  printf "\nPlease enter your username on the target host: "
+  read -r TARGET_USER
+fi
+
+if [ -z "$TARGET_HOST" ]; then
+  printf "\nPlease enter the hostname or IP address of the target host: "
+  read -r TARGET_HOST
+fi
+
 printf "\n"
 
 set -x
