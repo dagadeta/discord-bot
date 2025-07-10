@@ -1,3 +1,7 @@
+# THIS IS A TEMPLATE FOR THE CONFIG FILE.
+# TO CREATE YOUR CONFIG FILE, COPY THE CONTENT OF THIS FILE INTO A FILE IN THE SAME FOLDER NAMED "application.yml"
+# AND ENTER YOUR CONTENT. FOR MORE INFOS, TAKE A LOOK AT THE README.
+
 # You can get your bot token in the Discord Developer Portal (https://discord.com/developers/applications).
 bot-auth.token: ENTER_YOUR_BOT_TOKEN
 
