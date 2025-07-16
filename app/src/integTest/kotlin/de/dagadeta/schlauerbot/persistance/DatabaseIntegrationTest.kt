@@ -19,7 +19,7 @@ class DatabaseIntegrationTest() {
     }
 
     @Test
-    fun `a saved gameStage can be read`() {
+    fun `a saved gameState can be read`() {
         gameStateRepo.save(WordChainGameState(0, true, "user-1"))
         val persistenceService = WordChainGameStatePersistenceService(gameStateRepo)
 
