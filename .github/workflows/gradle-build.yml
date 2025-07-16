@@ -32,7 +32,7 @@ jobs:
         GUILD_ID: ${{ vars.GUILD_ID }}
         LOGGING_CHANNEL_ID: ${{ vars.LOGGING_CHANNEL_ID }}
         WORDCHAINGAME_CHANNEL_ID: ${{ vars.WORDCHAINGAME_CHANNEL_ID }}
-      run: ./gradlew app:integrationTest
+      run: ./gradlew app:integTest
     - name: Test Report
       uses: dorny/test-reporter@v2
       if: ${{ !cancelled() }}  # run this step even if a previous step failed

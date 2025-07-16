@@ -22,19 +22,20 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    create("integTest") {
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
+testing {
+    suites {
+        register<JvmTestSuite>("integTest") {
+            dependencies { implementation(sourceSets.main.get().output) }
+        }
     }
 }
 
 val integTestImplementation: Configuration by configurations.getting {
-    extendsFrom(configurations.implementation.get())
+    extendsFrom(configurations.testImplementation.get())
 }
-val integTestRuntimeOnly by configurations.getting
-
-configurations["integTestRuntimeOnly"].extendsFrom(configurations.runtimeOnly.get())
+val integTestRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.testRuntimeOnly.get())
+}
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -100,19 +101,7 @@ tasks {
         dependsOn(check)
     }
 
-    register<Test>("integrationTest") {
-        description = "Runs integration tests."
-        group = "verification"
-
-        testClassesDirs = sourceSets["integTest"].output.classesDirs
-        classpath = sourceSets["integTest"].runtimeClasspath
-        shouldRunAfter("test")
+    named<Test>("integTest") {
         finalizedBy(jacocoAggregatedReport)
-
-        useJUnitPlatform()
-
-        testLogging {
-            events("passed")
-        }
     }
 }
