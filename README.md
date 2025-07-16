@@ -55,10 +55,10 @@ In order for the Discord-related integration tests to run, see configuration fil
 in the integration test source set (`integTest`) and set the environment variables that are needed there. Use e.g., a
 run configuration in your IDE for that.
 
-You can run the integration tests with the Gradle task `integrationTest`:
+You can run the integration tests with the Gradle task `integTest`:
 
 ```shell
-./gradlew app:integrationTest
+./gradlew app:integTest
 ```
 
 ## On the server
