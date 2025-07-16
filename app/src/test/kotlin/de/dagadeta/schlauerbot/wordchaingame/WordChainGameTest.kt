@@ -221,6 +221,17 @@ class WordChainGameTest {
     }
 
     @Test
+    fun `an already used word with just different case gets rejected`() {
+        game.startGame()
+
+        game.onMessageReceived("user-1", "aibohphobia")
+        val result = game.onMessageReceived("user-2", "aiBohPhoBia")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
+    }
+
+    @Test
     fun `an invalid word gets rejected`() {
         val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, true)
         game.startGame()

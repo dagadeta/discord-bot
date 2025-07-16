@@ -63,7 +63,7 @@ class WordChainGame(
             lastUserId = it.lastUser
         }
 
-        usedWordRepo.findAll().forEach { usedWords.add(it.word) }
+        usedWordRepo.findAll().forEach { usedWords.add(it.word.lowercase()) }
     }
 
     fun startGame(): String {
@@ -132,7 +132,7 @@ class WordChainGame(
         usedWords.isNotEmpty() && normalizeChar(word.first()) != normalizeChar(usedWords.last().last()) -> {
             failure("Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
         }
-        usedWords.contains(word) -> {
+        usedWords.contains(word.lowercase()) -> {
             failure("Word already used in this round!")
         }
         checkWordExistence && !wordChecker.isValidWord(word) -> {
@@ -141,10 +141,10 @@ class WordChainGame(
         else -> {
             logger.info { "received WordChain word" }
             lastUserId = userId
-            usedWords.add(word)
+            usedWords.add(word.lowercase())
 
             saveState()
-            usedWordRepo.save(UsedWord(word))
+            usedWordRepo.save(UsedWord(word.lowercase()))
 
             success(Unit)
         }
