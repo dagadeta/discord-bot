@@ -125,7 +125,7 @@ class WordChainGameTest {
         val result1 = game.onMessageReceived("user-2", "water")
 
         assertThat(result1.isFailure).isTrue
-        assertThat(result1.failureOrNull()).isEqualTo("Word must start with the last letter of the last word which is 'p'!")
+        assertThat(result1.failureOrNull()).isEqualTo("'water': Word must start with the last letter of the last word which is 'p'!")
 
         val result2 = game.onMessageReceived("user-2", "plus")
 
@@ -186,7 +186,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "t")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word must be at least 2 characters long!")
+        assertThat(result.failureOrNull()).isEqualTo("'t': Word must be at least 2 characters long!")
     }
 
     @Test
@@ -196,7 +196,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "aaaaaa")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word must not consist of the same letter repeated multiple times!")
+        assertThat(result.failureOrNull()).isEqualTo("'aaaaaa': Word must not consist of the same letter repeated multiple times!")
     }
 
     @Test
@@ -206,7 +206,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "users'")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word must only contain valid letters!")
+        assertThat(result.failureOrNull()).isEqualTo("'users'': Word must only contain valid letters!")
     }
 
     @Test
@@ -217,7 +217,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-2", "aibohphobia")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
+        assertThat(result.failureOrNull()).isEqualTo("'aibohphobia': Word already used in this round!")
     }
 
     @Test
@@ -228,7 +228,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-2", "aiBohPhoBia")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word already used in this round!")
+        assertThat(result.failureOrNull()).isEqualTo("'aiBohPhoBia': Word already used in this round!")
     }
 
     @Test
@@ -239,7 +239,7 @@ class WordChainGameTest {
         val result = game.onMessageReceived("user-1", "sdoitskl")
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("Word does not exist in the configured dictionary!")
+        assertThat(result.failureOrNull()).isEqualTo("'sdoitskl': Word does not exist in the configured dictionary!")
     }
 
     @Test

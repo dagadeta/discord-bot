@@ -121,22 +121,22 @@ class WordChainGame(
             failure("You're not alone here! Let the others write words too!")
         }
         word.length < minWordLength -> {
-            failure("Word must be at least $minWordLength characters long!")
+            failure("'$word': Word must be at least $minWordLength characters long!")
         }
         word.all { it == word[0] } -> {
-            failure("Word must not consist of the same letter repeated multiple times!")
+            failure("'$word': Word must not consist of the same letter repeated multiple times!")
         }
         !wordRegex.matches(word) -> {
-            failure("Word must only contain valid letters!")
+            failure("'$word': Word must only contain valid letters!")
         }
         usedWords.isNotEmpty() && normalizeChar(word.first()) != normalizeChar(usedWords.last().last()) -> {
-            failure("Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
+            failure("'$word': Word must start with the last letter of the last word which is '${usedWords.last().last()}'!")
         }
         usedWords.contains(word.lowercase()) -> {
-            failure("Word already used in this round!")
+            failure("'$word': Word already used in this round!")
         }
         checkWordExistence && !wordChecker.isValidWord(word) -> {
-            failure("Word does not exist in the configured dictionary!")
+            failure("'$word': Word does not exist in the configured dictionary!")
         }
         else -> {
             logger.info { "received WordChain word" }
