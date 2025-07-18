@@ -15,6 +15,7 @@ import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component
+import java.lang.Thread.sleep
 
 @Component
 @EnableConfigurationProperties(
@@ -45,17 +46,23 @@ class DiscordBot(
         api.addEventListener(dingDong, wordChainGame)
         wordChainGame.writeInitialStateTo(logging)
 
-        logging.log("Bot started")
+        logging.log("Bot started.")
 
-        configureCommands(api, dingDong, wordChainGame)
+        configureCommands(dingDong, wordChainGame)
     }
 
-    private fun configureCommands(guild: JDA, vararg commandsProvider: WithSlashCommands) {
-        guild.updateCommands().addCommands(
+    private fun configureCommands(vararg commandsProvider: WithSlashCommands) {
+        api.updateCommands().addCommands(
             commandsProvider.flatMap(WithSlashCommands::getSlashCommands)
         ).queue()
     }
 
     @PreDestroy
-    fun logOnShutdown() = logging.log("Bot stopped")
+    fun stopBot() {
+        logging.log("Bot shutdown initiated. Removing all event listeners...")
+        api.registeredListeners.forEach(api::removeEventListener)
+        logging.log("Bot stopped. Shutting down.")
+        sleep(3000) // give the asynchronous tasks time to finish before cutting the connection
+        api.shutdown()
+    }
 }
