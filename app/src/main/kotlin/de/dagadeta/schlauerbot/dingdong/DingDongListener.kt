@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot.dingdong
 
+import de.dagadeta.schlauerbot.config.DingDongConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
@@ -16,6 +17,7 @@ const val dingCommand = "ding"
 
 @Service
 class DingDongListener(
+    private val dingDongConfig: DingDongConfig,
     private val logging: Logging,
     private val api: JDA,
 ) : ListenerAdapter() {
@@ -35,7 +37,7 @@ class DingDongListener(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        if (event.channel.name != "\uD83E\uDD16｜bot-spielplatz") return
+        if (event.channel.id != dingDongConfig.channelId) return
         if (event.name != dingCommand) return
 
         logger.info { "received !ding" }
