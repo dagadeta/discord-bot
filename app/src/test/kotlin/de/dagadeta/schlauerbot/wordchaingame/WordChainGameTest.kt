@@ -1,10 +1,13 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
+import de.dagadeta.schlauerbot.persistance.UsedWord
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
+import de.dagadeta.schlauerbot.persistance.WordChainGameState
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 
 class WordChainGameTest {
     private val gameStateRepo = mock<WordChainGameStatePersistenceService>()
@@ -229,6 +232,20 @@ class WordChainGameTest {
 
         assertThat(result.isFailure).isTrue
         assertThat(result.failureOrNull()).isEqualTo("'aiBohPhoBia': Word already used in this round!")
+    }
+
+    @Test
+    fun `saved case-sensitive words are handled case-insensitive after the game is restored`() {
+        whenever(gameStateRepo.findByIdOrNull(0)).thenReturn(WordChainGameState(0, true, "han-solo"))
+        whenever(usedWordRepo.findAll()).thenReturn(listOf(UsedWord("aiBohPhoBia")))
+        val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo, true)
+
+        assertThat(game.describeInitialState()).isEqualTo("Resuming WordChainGame with 1 word(s) in memory. Last word was \"aibohphobia\".")
+
+        val result = game.onMessageReceived("user-1", "aibohphobia")
+
+        assertThat(result.isFailure).isTrue
+        assertThat(result.failureOrNull()).isEqualTo("'aibohphobia': Word already used in this round!")
     }
 
     @Test
