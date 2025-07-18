@@ -8,3 +8,6 @@ word-chain-game:
   channel-id: ${WORDCHAINGAME_CHANNEL_ID}
   language: en
   check-word-existence: true
+
+ding-dong:
+  channel-id: ${DINGDONG_CHANNEL_ID}
