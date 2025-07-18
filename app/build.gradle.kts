@@ -52,6 +52,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(libs.mockito.kotlin)
 
     integTestImplementation("org.springframework.boot:spring-boot-starter-test")
     integTestImplementation(libs.zonky)
