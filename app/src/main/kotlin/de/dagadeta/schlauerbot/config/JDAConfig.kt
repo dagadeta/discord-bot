@@ -30,6 +30,7 @@ class JDAConfig {
                 GatewayIntent.MESSAGE_CONTENT,
                 GatewayIntent.GUILD_MEMBERS
             )
+            .setEnableShutdownHook(false) // handle shutdown explicitly in [DiscordBot]
             .build()
             .awaitReady()
     }
