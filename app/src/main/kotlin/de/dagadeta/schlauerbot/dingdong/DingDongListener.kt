@@ -1,15 +1,39 @@
 package de.dagadeta.schlauerbot.dingdong
 
-import de.dagadeta.schlauerbot.discord.WithSlashCommands
+import de.dagadeta.schlauerbot.discord.Logging
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.annotation.PostConstruct
+import jakarta.annotation.PreDestroy
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.springframework.stereotype.Service
+import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
 const val dingCommand = "ding"
 
-class DingDongListener : ListenerAdapter(), WithSlashCommands {
+@Service
+class DingDongListener(
+    private val logging: Logging,
+    private val api: JDA,
+) : ListenerAdapter() {
+
+    @PostConstruct
+    fun startListener() {
+        api.addEventListener(this)
+        api.upsertCommand(Commands.slash("ding", "Answers Dong")).queue()
+        logging.log("${DingDongListener::class.simpleName} started.")
+    }
+
+    @PreDestroy
+    fun stopListener() {
+        api.removeEventListener(this)
+        logging.log("${DingDongListener::class.simpleName} stopped.")
+        sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
+    }
+
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.channel.name != "\uD83E\uDD16｜bot-spielplatz") return
         if (event.name != dingCommand) return
@@ -18,6 +42,4 @@ class DingDongListener : ListenerAdapter(), WithSlashCommands {
         event.deferReply().queue()
         event.hook.sendMessage("Dong!").queue()
     }
-
-    override fun getSlashCommands() = listOf(Commands.slash("ding", "Answers Dong"))
 }
