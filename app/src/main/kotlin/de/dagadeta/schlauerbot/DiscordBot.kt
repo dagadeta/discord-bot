@@ -32,8 +32,6 @@ class DiscordBot(
 ) {
     @PostConstruct
     fun startBot() {
-        val dingDong = DingDongListener()
-
         val wordChainGame = DiscordWordChainGame(
             wordChainGameConfig.channelId,
             wordChainGameConfig.language,
@@ -43,12 +41,12 @@ class DiscordBot(
             wordChainGameConfig.checkWordExistence,
         )
 
-        api.addEventListener(dingDong, wordChainGame)
+        api.addEventListener(wordChainGame)
         wordChainGame.writeInitialStateTo(logging)
 
         logging.log("Bot started.")
 
-        configureCommands(dingDong, wordChainGame)
+        configureCommands(wordChainGame)
     }
 
     private fun configureCommands(vararg commandsProvider: WithSlashCommands) {
@@ -62,7 +60,6 @@ class DiscordBot(
         logging.log("Bot shutdown initiated. Removing all event listeners...")
         api.registeredListeners.forEach(api::removeEventListener)
         logging.log("Bot stopped. Shutting down.")
-        sleep(3000) // give the asynchronous tasks time to finish before cutting the connection
-        api.shutdown()
+        sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 class JDAConfig {
     private val logger = KotlinLogging.logger {}
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     fun JDA(authConfig: BotAuthConfig): JDA {
         if (authConfig.token == "offline") {
             logger.warn {
