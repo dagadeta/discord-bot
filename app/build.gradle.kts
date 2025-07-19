@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.flyway)
-    alias(libs.plugins.jacocolog)
+    alias(libs.plugins.kover)
     alias(libs.plugins.kotlin.jpa)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.spring)
@@ -95,7 +95,7 @@ flyway {
 tasks {
     named<Test>("test") {
         useJUnitPlatform()
-        finalizedBy(jacocoTestReport)
+        finalizedBy(koverLog)
     }
 
     bootDistZip {
@@ -103,6 +103,6 @@ tasks {
     }
 
     named<Test>("integTest") {
-        finalizedBy(jacocoAggregatedReport)
+        finalizedBy(koverXmlReport, koverLog)
     }
 }

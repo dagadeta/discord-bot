@@ -23,9 +23,9 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
     - name: Set up Docker Compose
-      uses: docker/setup-compose-action@v1
+      uses: docker/setup-compose-action@v1.2.0
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build -x app:integTest
     - name: Run integration tests
       env:
         AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
@@ -34,7 +34,7 @@ jobs:
         WORDCHAINGAME_CHANNEL_ID: ${{ vars.WORDCHAINGAME_CHANNEL_ID }}
       run: ./gradlew app:integTest
     - name: Test Report
-      uses: dorny/test-reporter@v2
+      uses: dorny/test-reporter@v2.1.1
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
       with:
         name: JUnit Tests
@@ -44,7 +44,7 @@ jobs:
       id: jacoco
       uses: madrapps/jacoco-report@v1.7.2
       with:
-        paths: ${{ github.workspace }}/**/build/reports/jacoco/**/jacoco*Report.xml
+        paths: ${{ github.workspace }}/**/build/reports/kover/report.xml
         token: ${{ secrets.GITHUB_TOKEN }}
         min-coverage-overall: 40
         min-coverage-changed-files: 60
