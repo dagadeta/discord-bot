@@ -95,7 +95,6 @@ flyway {
 tasks {
     named<Test>("test") {
         useJUnitPlatform()
-        finalizedBy(koverLog)
     }
 
     bootDistZip {
