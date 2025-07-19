@@ -5,4 +5,5 @@ build
 /.kotlin/
 logs/
 pgdata/
-/config/application.yml
+/config/application-prod.yml
+/config/application-dev.yml

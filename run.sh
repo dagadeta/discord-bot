@@ -9,4 +9,5 @@ set -ex
 
 cd "$DIR"
 export JAVA_OPTS="-DLOG_DIR=../logs"
+export SPRING_PROFILES_ACTIVE=prod
 app-boot-$VERSION/bin/app

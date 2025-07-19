@@ -35,7 +35,7 @@ ssh "$TARGET_USER@$TARGET_HOST" "screen -XS bot_run quit" || true
 ssh "$TARGET_USER@$TARGET_HOST" "rm -rf $TARGET_DIR && mkdir -p $TARGET_DIR/config"
 scp app/build/distributions/app-boot-$VERSION.zip "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
 scp run.sh "$TARGET_USER@$TARGET_HOST:$TARGET_DIR"
-scp config/application.yml "$TARGET_USER@$TARGET_HOST:$TARGET_DIR/config/"
+scp config/application-prod.yml "$TARGET_USER@$TARGET_HOST:$TARGET_DIR/config/"
 # shellcheck disable=SC2029
 ssh "$TARGET_USER@$TARGET_HOST" "cd $TARGET_DIR && unzip app-boot-$VERSION.zip && chmod +x run.sh"
 # shellcheck disable=SC2029

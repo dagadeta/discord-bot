@@ -25,14 +25,24 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 
 ### Local setup
 1. Clone the repository
-2. In the `config` directory, add an `application.yml` file. Find a template with explanations to copy in [config/application.yml.template](config/application.yml.template).
+2. In the `config` directory, add an `application-prod.yml` file. 
+   Find a template with explanations to copy in [config/application-prod.yml.template](config/application-prod.yml.template).
+
+#### When developing
+You can also create a `application-dev.yml` file in the `config` directory.
+This creates a second profile which you can use while developing and debugging.
+It enables you to configure different Discord servers and channels for this purpose while still remaining the prod config.
+This profile is also the default profile.
 
 ### Deployment
 To deploy the bot, you first need to copy the [`docker-compose.yml`](docker-compose.yml) file to the server and run `docker-compose up -d`.
 
 After that, you can run the deployment script [`deploy.sh`](deploy.sh).
-This will build the project locally, copy the jar file to the server, and start the bot in a detached screen session.
-When using this script, you'll get asked to enter the server's hostname/IP-address and username.
+This will build the project locally, copy the jar file to the server, and start the bot in a detached screen session
+**using the prod profile**.
+
+To run the script, you can pass your username and the host name like this: `./deploy.sh -u USERNAME -d HOSTNAME`
+When you just execute the script without passing these arguments, the script will ask you for them.
 
 You could also build the project on the server and run it there by yourself,
 but this script automates the process for you

@@ -17,7 +17,7 @@ class JDAConfig {
             logger.warn {
                 """
                     No token to authenticate with a discord server provided. Shutting down.
-                    Configure the discord server and the channels to use in config/application.yml
+                    Configure the discord server and the channels to use in config/application-prod.yml
                     See the project's README.md for details.
                 """.trimIndent()
             }
