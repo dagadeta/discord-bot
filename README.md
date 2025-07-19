@@ -1,21 +1,27 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
-![version](https://img.shields.io/badge/version-1.0.0-5865F2?style=flat)
-
 ## Setup & Deployment
 
 
 ### Prerequisites
+* A Discord application
+  * Create your Discord application [here](https://discord.com/developers/applications)
+  * You will need the auth token for the app
+  * Once your application is set up, you can open the following invite link in your browser.
+    It includes all the permissions the bot needs. You need to replace the client ID.
+    ```
+    https://discord.com/oauth2/authorize?client_id=[ENTER_YOUR_ID]&permissions=8&integration_type=0&scope=bot
+    ```
 * Local machine with:
-    * Java 17 or higher
-    * OCI-runtime (e.g. Docker)
-    * docker-compose v2
+  * Java 17 or higher
+  * OCI-runtime (e.g. Docker)
+  * docker-compose v2
 * Debian/Ubuntu Server with:
-    * docker-compose
-    * SSH access
-    * Java 17 or higher
-    * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
+  * docker-compose
+  * SSH access
+  * Java 17 or higher
+  * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
 
 ### Local setup
 1. Clone the repository
