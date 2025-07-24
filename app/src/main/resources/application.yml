@@ -38,5 +38,5 @@ word-chain-game:
   language: 0
   check-word-existence: true
 
-ding-dong:
+bottalking:
   channel-id: 0
