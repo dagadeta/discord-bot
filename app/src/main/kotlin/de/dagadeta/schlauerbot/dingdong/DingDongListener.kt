@@ -37,7 +37,7 @@ class DingDongListener(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        if (event.channel.id != dingDongConfig.channelId) return
+        if (event.channel.id.toLong() != dingDongConfig.channelId) return
         if (event.name != dingCommand) return
 
         logger.info { "received !ding" }

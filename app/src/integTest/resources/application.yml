@@ -9,5 +9,5 @@ word-chain-game:
   language: en
   check-word-existence: true
 
-ding-dong:
-  channel-id: ${DINGDONG_CHANNEL_ID}
+bottalking:
+  channel-id: ${BOTTALKING_CHANNEL_ID}
