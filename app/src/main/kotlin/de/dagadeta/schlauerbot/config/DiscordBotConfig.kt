@@ -18,7 +18,7 @@ data class WordChainGameConfig(
     val checkWordExistence: Boolean,
 )
 
-@ConfigurationProperties(prefix = "ding-dong")
+@ConfigurationProperties(prefix = "bottalking")
 data class DingDongConfig(
     val channelId: String,
 )
