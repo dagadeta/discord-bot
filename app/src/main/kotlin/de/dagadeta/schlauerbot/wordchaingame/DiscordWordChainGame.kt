@@ -68,7 +68,7 @@ class DiscordWordChainGame(
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.channel.id.toLong() != wordChainGameConfig.channelId || event.author.isBot) return
+        if (event.channel.id != wordChainGameConfig.channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
             .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
     }
