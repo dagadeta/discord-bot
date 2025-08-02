@@ -37,3 +37,6 @@ word-chain-game:
   channel-id: 0
   language: 0
   check-word-existence: true
+
+bottalking:
+  channel-id: 0
