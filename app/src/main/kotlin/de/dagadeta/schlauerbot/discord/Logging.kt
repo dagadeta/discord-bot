@@ -14,7 +14,7 @@ class Logging(private val guild: JDA?, private val config: LoggingConfig) {
         if (guild != null) sendMessageToDiscordChannelById(config.channelId, message)
     }
 
-    fun sendMessageToDiscordChannelById(channelId: Long, message: String) {
+    fun sendMessageToDiscordChannelById(channelId: String, message: String) {
         val channel = guild?.getGuildById(config.guildId)?.getTextChannelById(channelId)
         channel?.sendMessage(message)?.queue()
     }

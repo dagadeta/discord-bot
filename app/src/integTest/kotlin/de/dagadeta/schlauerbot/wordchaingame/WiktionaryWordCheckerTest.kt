@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 
 class WiktionaryWordCheckerTest {
 
-    private val wordChecker = WiktionaryWordChecker("en", Logging(null, LoggingConfig(0, 0)))
+    private val wordChecker = WiktionaryWordChecker("en", Logging(null, LoggingConfig(0, "0")))
 
     @Test
     fun `a word can be checked`() {
