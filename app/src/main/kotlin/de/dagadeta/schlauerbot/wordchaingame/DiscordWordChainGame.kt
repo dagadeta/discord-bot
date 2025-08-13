@@ -38,7 +38,7 @@ class DiscordWordChainGame(
     fun startListener() {
         api.addEventListener(this)
         WordChainGameCommand.entries.forEach {
-            api.upsertCommand(Commands.slash(it.command, it.description))
+            api.upsertCommand(Commands.slash(it.command, it.description)).queue()
         }
         writeInitialStateTo(logging)
 
