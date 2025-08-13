@@ -13,11 +13,11 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 class WordChainGame(
-    private val language: String,
+    private var language: String,
     private var wordChecker: WordChecker,
     private val gameStateRepo: WordChainGameStatePersistenceService,
     private val usedWordRepo: UsedWordRepository,
-    private val checkWordExistence: Boolean,
+    var checkWordExistence: Boolean,
 ) {
     private val minWordLength = 2
     private val wordRegex = Regex("^\\p{L}+$")
@@ -162,6 +162,11 @@ class WordChainGame(
     }
 
     private fun saveState() = gameStateRepo.upsert(WordChainGameState(theGameId, started, lastUserId))
+
+    fun setLanguage(language: String, wordChecker: WordChecker) {
+        this.language = language
+        this.wordChecker = wordChecker
+    }
 }
 
 enum class WordChainGameCommand(val command: String, val description: String) {

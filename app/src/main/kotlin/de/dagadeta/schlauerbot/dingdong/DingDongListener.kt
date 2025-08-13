@@ -1,6 +1,6 @@
 package de.dagadeta.schlauerbot.dingdong
 
-import de.dagadeta.schlauerbot.config.DingDongConfig
+import de.dagadeta.schlauerbot.botconfig.Bottalking
 import de.dagadeta.schlauerbot.discord.Logging
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
-const val dingCommand = "ding"
+private const val DING_COMMAND_NAME = "ding"
 
 @Service
 class DingDongListener(
-    private val dingDongConfig: DingDongConfig,
+    private val bottalking: Bottalking,
     private val logging: Logging,
     private val api: JDA,
 ) : ListenerAdapter() {
@@ -25,7 +25,7 @@ class DingDongListener(
     @PostConstruct
     fun startListener() {
         api.addEventListener(this)
-        api.upsertCommand(Commands.slash("ding", "Answers Dong")).queue()
+        api.upsertCommand(Commands.slash(DING_COMMAND_NAME, "Answers Dong")).queue()
         logging.log("${DingDongListener::class.simpleName} started.")
     }
 
@@ -37,8 +37,8 @@ class DingDongListener(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        if (event.channel.id != dingDongConfig.channelId) return
-        if (event.name != dingCommand) return
+        if (event.channel.id != bottalking.channelId) return
+        if (event.name != DING_COMMAND_NAME) return
 
         logger.info { "received !ding" }
         event.deferReply().queue()

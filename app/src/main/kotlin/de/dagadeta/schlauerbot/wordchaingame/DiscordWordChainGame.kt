@@ -1,10 +1,12 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
+import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.config.WordChainGameConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
@@ -12,10 +14,19 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
+
+private const val CHANNEL_ID_SUBCOMMAND_NAME = "channel-id"
+private const val CHANNEL_ID_OPTION_NAME = "id"
+private const val LANGUAGE = "language"
+private const val CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME = "check-word-existence"
+private const val CHECK_WORD_EXISTENCE_OPTION_NAME = "check"
 
 @Service
 class DiscordWordChainGame(
@@ -24,7 +35,7 @@ class DiscordWordChainGame(
     private val api: JDA,
     gameStateRepo: WordChainGameStatePersistenceService,
     usedWordRepo: UsedWordRepository,
-) : ListenerAdapter() {
+) : ListenerAdapter(), SubCommandGroupProvider {
     private val game = WordChainGame(
         wordChainGameConfig.language,
         WiktionaryWordChecker(wordChainGameConfig.language, logging),
@@ -32,13 +43,17 @@ class DiscordWordChainGame(
         usedWordRepo,
         wordChainGameConfig.checkWordExistence
     )
+    private val kLogger = KotlinLogging.logger {}
+
     private val allCommandNames = WordChainGameCommand.entries.map(WordChainGameCommand::command)
+
+    private var channelId: String = wordChainGameConfig.channelId
 
     @PostConstruct
     fun startListener() {
         api.addEventListener(this)
         WordChainGameCommand.entries.forEach {
-            api.upsertCommand(Commands.slash(it.command, it.description))
+            api.upsertCommand(Commands.slash(it.command, it.description)).queue()
         }
         writeInitialStateTo(logging)
 
@@ -68,7 +83,7 @@ class DiscordWordChainGame(
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.channel.id != wordChainGameConfig.channelId || event.author.isBot) return
+        if (event.channel.id != channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
             .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
     }
@@ -94,5 +109,43 @@ class DiscordWordChainGame(
 
     fun writeInitialStateTo(logging: Logging) {
         logging.log(game.describeInitialState())
+    }
+
+    override val group = "word-chain-game"
+
+    override fun getConfigureSubCommandGroup(): SubcommandGroupData {
+        val wordChainGameGroup = SubcommandGroupData(group, "configure the WordChain game")
+        wordChainGameGroup.addSubcommands(
+            SubcommandData(CHANNEL_ID_SUBCOMMAND_NAME, "Sets the WordChain game's channel ID (default: ${channelId})")
+                .addOption(OptionType.STRING, CHANNEL_ID_OPTION_NAME, "The channel ID", true),
+            SubcommandData(LANGUAGE, "Sets the WordChain game's language (default: ${wordChainGameConfig.language})")
+                .addOption(OptionType.STRING, LANGUAGE, "e.g. 'en' or 'de'", true),
+            SubcommandData(CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME, "Configure if the WordChain game should check if words exist in the dictionary (default: ${wordChainGameConfig.checkWordExistence})")
+                .addOption(OptionType.BOOLEAN, CHECK_WORD_EXISTENCE_OPTION_NAME, "true or false", true),
+        )
+        return wordChainGameGroup
+    }
+
+
+    override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
+        event.deferReply().queue()
+        val message = when (event.interaction.subcommandName) {
+            CHANNEL_ID_SUBCOMMAND_NAME -> {
+                channelId = event.getOption(CHANNEL_ID_OPTION_NAME)?.asString ?: channelId
+                "Channel ID set to '$channelId'."
+            }
+            LANGUAGE -> {
+                val language = event.getOption(LANGUAGE)?.asString ?: wordChainGameConfig.language
+                game.setLanguage(language, WiktionaryWordChecker(language, logging))
+                "Language set to '$language'."
+            }
+            CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME -> {
+                game.checkWordExistence = event.getOption(CHECK_WORD_EXISTENCE_OPTION_NAME)?.asBoolean ?: wordChainGameConfig.checkWordExistence
+                "Word existence check set to '${game.checkWordExistence}'."
+            }
+            else -> "Unknown subcommand '${event.interaction.subcommandName}'"
+        }
+        kLogger.info { message }
+        event.hook.sendMessage(message).queue()
     }
 }

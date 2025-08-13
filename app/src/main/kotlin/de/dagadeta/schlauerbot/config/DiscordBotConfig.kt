@@ -19,6 +19,6 @@ data class WordChainGameConfig(
 )
 
 @ConfigurationProperties(prefix = "bottalking")
-data class DingDongConfig(
+data class BottalkingConfig(
     val channelId: String,
 )
