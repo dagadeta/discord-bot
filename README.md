@@ -48,6 +48,10 @@ You could also build the project on the server and run it there by yourself,
 but this script automates the process for you
 and creates a good [directory structure](#directory-structure) and a logging configuration on the server.
 
+#### Final Configuration
+After the bot has been deployed, you have to configure the bot in the Discord server.
+To do so, you can use `/config` and its sub-commands.
+
 ### Run the tests
 
 #### Unit Tests

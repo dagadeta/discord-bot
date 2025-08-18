@@ -4,10 +4,6 @@ logging:
   guild-id: ${GUILD_ID}
   channel-id: ${LOGGING_CHANNEL_ID}
 
-word-chain-game:
-  channel-id: ${WORDCHAINGAME_CHANNEL_ID}
-  language: en
-  check-word-existence: true
-
-bottalking:
-  channel-id: ${BOTTALKING_CHANNEL_ID}
+admin:
+  role-id: ${ADMIN_ROLE_ID}
+  channel-id: ${ADMIN_CHANNEL_ID}

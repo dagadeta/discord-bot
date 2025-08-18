@@ -11,7 +11,9 @@ spring:
     # show-sql: true
   # for tests and development: let flyway search for the flyway_schema_history table in the right schema
   flyway:
-    schemas: wordchaingame
+    schemas:
+      - wordchaingame
+      - discordbot
 
 zonky:
   test:
@@ -33,10 +35,6 @@ logging:
   guild-id: 0
   channel-id: 0
 
-word-chain-game:
-  channel-id: 0
-  language: 0
-  check-word-existence: true
-
-bottalking:
+admin:
+  role-id: 0
   channel-id: 0

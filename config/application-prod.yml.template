@@ -10,15 +10,7 @@ logging:
   guild-id: ENTER_YOUR_LOGGING_GUILD_ID
   channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
 
-# The channel-id is the ID of the Discord channel where the word chain game will be played.
-# The language is the language of the dictionary that will be used for the word chain game.
-#   It should be in the two-letter language code. Tested languages are: "de", "en", "fr"
-# The check-word-existence option is a boolean value that determines whether the bot should dictionary-check the word sent in the word chain game.
-word-chain-game:
-  channel-id: ENTER_YOUR_WORD_CHAIN_GAME_CHANNEL_ID
-  language: ENTER_YOUR_DICTIONARY_LANGUAGE
-  check-word-existence: ENTER_TRUE_OR_FALSE
-
-# The channel-id is the ID of the Discord channel where general slash-commands will be executable.
-bottalking:
-  channel-id: ENTER_YOUR_BOTTALKING_CHANNEL_ID
+# The following IDs are used for commands which only administrators can use.
+admin:
+  role-id: ENTER_YOUR_ROLE_ID
+  channel-id: ENTER_YOUR_CHANNEL_ID

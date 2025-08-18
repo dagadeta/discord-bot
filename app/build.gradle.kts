@@ -88,7 +88,7 @@ flyway {
     url = "jdbc:postgresql://localhost:5432/discordbot"
     user = "pguser"
     password = "pguser"
-    schemas = arrayOf("wordchaingame")
+    schemas = arrayOf("wordchaingame", "discordbot")
     baselineOnMigrate = true
 }
 

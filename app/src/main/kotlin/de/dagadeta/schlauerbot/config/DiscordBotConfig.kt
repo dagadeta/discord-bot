@@ -11,14 +11,8 @@ data class LoggingConfig(
     val channelId: String,
 )
 
-@ConfigurationProperties(prefix = "word-chain-game")
-data class WordChainGameConfig(
-    val channelId: String,
-    val language: String,
-    val checkWordExistence: Boolean,
-)
-
-@ConfigurationProperties(prefix = "bottalking")
-data class DingDongConfig(
+@ConfigurationProperties(prefix = "admin")
+data class AdminConfig(
+    val roleId: String,
     val channelId: String,
 )
