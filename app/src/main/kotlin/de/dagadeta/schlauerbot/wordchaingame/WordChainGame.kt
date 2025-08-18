@@ -13,7 +13,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 class WordChainGame(
-    private var language: String,
+    var language: String,
     private var wordChecker: WordChecker,
     private val gameStateRepo: WordChainGameStatePersistenceService,
     private val usedWordRepo: UsedWordRepository,

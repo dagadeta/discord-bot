@@ -1,13 +1,9 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.common.onFailure
-import de.dagadeta.schlauerbot.config.WordChainGameConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
-import de.dagadeta.schlauerbot.persistance.BotConfig
-import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
-import de.dagadeta.schlauerbot.persistance.UsedWordRepository
-import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
+import de.dagadeta.schlauerbot.persistance.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
@@ -30,27 +26,33 @@ private const val LANGUAGE = "language"
 private const val CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME = "check-word-existence"
 private const val CHECK_WORD_EXISTENCE_OPTION_NAME = "check"
 
+private const val DEFAULT_LANGUAGE = "en"
+private const val DEFAULT_CHECK_WORD_EXISTENCE = true
+
 @Service
 class DiscordWordChainGame(
-    private val wordChainGameConfig: WordChainGameConfig,
     private val logging: Logging,
     private val api: JDA,
     gameStateRepo: WordChainGameStatePersistenceService,
     usedWordRepo: UsedWordRepository,
     private val botConfigRepo: BotConfigPersistenceService,
 ) : ListenerAdapter(), SubCommandGroupProvider {
-    private val game = WordChainGame(
-        wordChainGameConfig.language,
-        WiktionaryWordChecker(wordChainGameConfig.language, logging),
-        gameStateRepo,
-        usedWordRepo,
-        wordChainGameConfig.checkWordExistence
-    )
+    override val group = "word-chain-game"
     private val kLogger = KotlinLogging.logger {}
-
     private val allCommandNames = WordChainGameCommand.entries.map(WordChainGameCommand::command)
+    private val game: WordChainGame
+    private var channelId = botConfigRepo.findByIdOrNull(ConfigId(group, CHANNEL_ID_SUBCOMMAND_NAME))?.value ?: ""
 
-    private var channelId: String = wordChainGameConfig.channelId
+    init {
+        val language = botConfigRepo.findByIdOrNull(ConfigId(group, LANGUAGE))?.value ?: DEFAULT_LANGUAGE
+        game = WordChainGame(
+            language,
+            WiktionaryWordChecker(language, logging),
+            gameStateRepo,
+            usedWordRepo,
+            botConfigRepo.findByIdOrNull(ConfigId(group, CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME))?.value?.toBoolean() ?: DEFAULT_CHECK_WORD_EXISTENCE
+        )
+    }
 
     @PostConstruct
     fun startListener() {
@@ -60,7 +62,10 @@ class DiscordWordChainGame(
         }
         writeInitialStateTo(logging)
 
-        logging.log("${DiscordWordChainGame::class.simpleName} started.")
+        logging.log("${DiscordWordChainGame::class.simpleName} started (language=${game.language}, checkWordExistence=${game.checkWordExistence}).")
+        if (channelId.isEmpty()) {
+            logging.log("WARNING: The word chain game channel ID is not yet configured. Use the `/config`-command to set it.")
+        }
     }
 
     @PreDestroy
@@ -114,21 +119,18 @@ class DiscordWordChainGame(
         logging.log(game.describeInitialState())
     }
 
-    override val group = "word-chain-game"
-
     override fun getConfigureSubCommandGroup(): SubcommandGroupData {
         val wordChainGameGroup = SubcommandGroupData(group, "configure the WordChain game")
         wordChainGameGroup.addSubcommands(
-            SubcommandData(CHANNEL_ID_SUBCOMMAND_NAME, "Sets the WordChain game's channel ID (default: ${channelId})")
+            SubcommandData(CHANNEL_ID_SUBCOMMAND_NAME, "Sets the WordChain game's channel ID")
                 .addOption(OptionType.STRING, CHANNEL_ID_OPTION_NAME, "The channel ID", true),
-            SubcommandData(LANGUAGE, "Sets the WordChain game's language (default: ${wordChainGameConfig.language})")
+            SubcommandData(LANGUAGE, "Sets the WordChain game's language (default: $DEFAULT_LANGUAGE)")
                 .addOption(OptionType.STRING, LANGUAGE, "e.g. 'en' or 'de'", true),
-            SubcommandData(CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME, "Configure if the WordChain game should check if words exist in the dictionary (default: ${wordChainGameConfig.checkWordExistence})")
+            SubcommandData(CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME, "Configure if the WordChain game should check if words exist in the dictionary (default: $DEFAULT_CHECK_WORD_EXISTENCE)")
                 .addOption(OptionType.BOOLEAN, CHECK_WORD_EXISTENCE_OPTION_NAME, "true or false", true),
         )
         return wordChainGameGroup
     }
-
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
         event.deferReply().queue()
@@ -139,13 +141,13 @@ class DiscordWordChainGame(
                 "Channel ID set to '$channelId'."
             }
             LANGUAGE -> {
-                val language = event.getOption(LANGUAGE)?.asString ?: wordChainGameConfig.language
+                val language = event.getOption(LANGUAGE)?.asString ?: game.language
                 game.setLanguage(language, WiktionaryWordChecker(language, logging))
                 botConfigRepo.upsert(BotConfig(group, LANGUAGE, language))
                 "Language set to '$language'."
             }
             CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME -> {
-                game.checkWordExistence = event.getOption(CHECK_WORD_EXISTENCE_OPTION_NAME)?.asBoolean ?: wordChainGameConfig.checkWordExistence
+                game.checkWordExistence = event.getOption(CHECK_WORD_EXISTENCE_OPTION_NAME)?.asBoolean ?: game.checkWordExistence
                 botConfigRepo.upsert(BotConfig(group, CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME, game.checkWordExistence.toString()))
                 "Word existence check set to '${game.checkWordExistence}'."
             }

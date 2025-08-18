@@ -10,15 +10,3 @@ data class LoggingConfig(
     val guildId: Long,
     val channelId: String,
 )
-
-@ConfigurationProperties(prefix = "word-chain-game")
-data class WordChainGameConfig(
-    val channelId: String,
-    val language: String,
-    val checkWordExistence: Boolean,
-)
-
-@ConfigurationProperties(prefix = "bottalking")
-data class BottalkingConfig(
-    val channelId: String,
-)

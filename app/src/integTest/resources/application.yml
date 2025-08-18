@@ -3,11 +3,3 @@ bot-auth.token: ${AUTH_TOKEN}
 logging:
   guild-id: ${GUILD_ID}
   channel-id: ${LOGGING_CHANNEL_ID}
-
-word-chain-game:
-  channel-id: ${WORDCHAINGAME_CHANNEL_ID}
-  language: en
-  check-word-existence: true
-
-bottalking:
-  channel-id: ${BOTTALKING_CHANNEL_ID}

@@ -27,6 +27,9 @@ class DingDongListener(
         api.addEventListener(this)
         api.upsertCommand(Commands.slash(DING_COMMAND_NAME, "Answers Dong")).queue()
         logging.log("${DingDongListener::class.simpleName} started.")
+        if (bottalking.channelId.isEmpty()) {
+            logging.log("WARNING: The bottalking channel ID is not yet configured. Use the `/config`-command to set it.")
+        }
     }
 
     @PreDestroy

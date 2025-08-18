@@ -15,7 +15,7 @@ fun interface WordChecker {
     fun isValidWord(word: String): Boolean
 }
 
-class WiktionaryWordChecker(private val language: String, var logger: Logging) : WordChecker {
+class WiktionaryWordChecker(val language: String, var logger: Logging) : WordChecker {
     private val client = OkHttpClient()
 
     override fun isValidWord(word: String): Boolean {
