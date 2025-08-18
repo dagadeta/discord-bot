@@ -3,3 +3,7 @@ bot-auth.token: ${AUTH_TOKEN}
 logging:
   guild-id: ${GUILD_ID}
   channel-id: ${LOGGING_CHANNEL_ID}
+
+admin:
+  role-id: ${ADMIN_ROLE_ID}
+  channel-id: ${ADMIN_CHANNEL_ID}

@@ -34,3 +34,7 @@ bot-auth.token: offline
 logging:
   guild-id: 0
   channel-id: 0
+
+admin:
+  role-id: 0
+  channel-id: 0

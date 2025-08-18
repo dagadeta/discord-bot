@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot.botconfig
 
+import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.persistance.BotConfig
 import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
@@ -17,6 +18,7 @@ private const val CHANNEL_ID_OPTION_NAME = "id"
 @Component
 class Bottalking(
     private val botConfigRepo: BotConfigPersistenceService,
+    private val adminConfig: AdminConfig,
 ) : SubCommandGroupProvider {
     private val kLogger = KotlinLogging.logger {}
     override val group = "bottalking"
@@ -33,7 +35,11 @@ class Bottalking(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
+        if (event.channel.id != adminConfig.channelId) return
+        if (event.member?.roles?.none { it.id == adminConfig.roleId } == true) return
+
         event.deferReply().queue()
+
         val message = when (event.interaction.subcommandName) {
             CHANNEL_ID_SUBCOMMAND_NAME -> {
                 channelId = event.getOption(CHANNEL_ID_OPTION_NAME)?.asString ?: channelId

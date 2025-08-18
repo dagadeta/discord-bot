@@ -10,3 +10,9 @@ data class LoggingConfig(
     val guildId: Long,
     val channelId: String,
 )
+
+@ConfigurationProperties(prefix = "admin")
+data class AdminConfig(
+    val roleId: String,
+    val channelId: String,
+)

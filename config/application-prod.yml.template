@@ -9,3 +9,8 @@ bot-auth.token: ENTER_YOUR_BOT_TOKEN
 logging:
   guild-id: ENTER_YOUR_LOGGING_GUILD_ID
   channel-id: ENTER_YOUR_LOGGING_CHANNEL_ID
+
+# The following IDs are used for commands which only administrators can use.
+admin:
+  role-id: ENTER_YOUR_ROLE_ID
+  channel-id: ENTER_YOUR_CHANNEL_ID

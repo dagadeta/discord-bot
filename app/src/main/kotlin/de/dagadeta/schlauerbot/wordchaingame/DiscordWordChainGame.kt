@@ -1,6 +1,7 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.common.onFailure
+import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.persistance.*
@@ -36,6 +37,7 @@ class DiscordWordChainGame(
     gameStateRepo: WordChainGameStatePersistenceService,
     usedWordRepo: UsedWordRepository,
     private val botConfigRepo: BotConfigPersistenceService,
+    private val adminConfig: AdminConfig,
 ) : ListenerAdapter(), SubCommandGroupProvider {
     override val group = "word-chain-game"
     private val kLogger = KotlinLogging.logger {}
@@ -133,6 +135,9 @@ class DiscordWordChainGame(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
+        if (event.channel.id != adminConfig.channelId) return
+        if (event.member?.roles?.none { it.id == adminConfig.roleId } == true) return
+
         event.deferReply().queue()
         val message = when (event.interaction.subcommandName) {
             CHANNEL_ID_SUBCOMMAND_NAME -> {

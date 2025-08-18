@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot
 
+import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.config.BotAuthConfig
 import de.dagadeta.schlauerbot.config.LoggingConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 @EnableConfigurationProperties(
     BotAuthConfig::class,
     LoggingConfig::class,
+    AdminConfig::class,
 )
 class DiscordBotApplication
 
