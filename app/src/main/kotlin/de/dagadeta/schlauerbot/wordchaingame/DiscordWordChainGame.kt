@@ -1,9 +1,11 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
-import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.config.WordChainGameConfig
 import de.dagadeta.schlauerbot.discord.Logging
+import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
+import de.dagadeta.schlauerbot.persistance.BotConfig
+import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
 import de.dagadeta.schlauerbot.persistance.UsedWordRepository
 import de.dagadeta.schlauerbot.persistance.WordChainGameStatePersistenceService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -35,6 +37,7 @@ class DiscordWordChainGame(
     private val api: JDA,
     gameStateRepo: WordChainGameStatePersistenceService,
     usedWordRepo: UsedWordRepository,
+    private val botConfigRepo: BotConfigPersistenceService,
 ) : ListenerAdapter(), SubCommandGroupProvider {
     private val game = WordChainGame(
         wordChainGameConfig.language,
@@ -132,15 +135,18 @@ class DiscordWordChainGame(
         val message = when (event.interaction.subcommandName) {
             CHANNEL_ID_SUBCOMMAND_NAME -> {
                 channelId = event.getOption(CHANNEL_ID_OPTION_NAME)?.asString ?: channelId
+                botConfigRepo.upsert(BotConfig(group, CHANNEL_ID_SUBCOMMAND_NAME, channelId))
                 "Channel ID set to '$channelId'."
             }
             LANGUAGE -> {
                 val language = event.getOption(LANGUAGE)?.asString ?: wordChainGameConfig.language
                 game.setLanguage(language, WiktionaryWordChecker(language, logging))
+                botConfigRepo.upsert(BotConfig(group, LANGUAGE, language))
                 "Language set to '$language'."
             }
             CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME -> {
                 game.checkWordExistence = event.getOption(CHECK_WORD_EXISTENCE_OPTION_NAME)?.asBoolean ?: wordChainGameConfig.checkWordExistence
+                botConfigRepo.upsert(BotConfig(group, CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME, game.checkWordExistence.toString()))
                 "Word existence check set to '${game.checkWordExistence}'."
             }
             else -> "Unknown subcommand '${event.interaction.subcommandName}'"

@@ -2,6 +2,8 @@ package de.dagadeta.schlauerbot.botconfig
 
 import de.dagadeta.schlauerbot.config.BottalkingConfig
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
+import de.dagadeta.schlauerbot.persistance.BotConfig
+import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -15,6 +17,7 @@ private const val CHANNEL_ID_OPTION_NAME = "id"
 @Component
 class Bottalking(
     private val bottalkingConfig: BottalkingConfig,
+    private val botConfigRepo: BotConfigPersistenceService,
 ) : SubCommandGroupProvider {
     private val kLogger = KotlinLogging.logger {}
     override val group = "bottalking"
@@ -35,6 +38,7 @@ class Bottalking(
         val message = when (event.interaction.subcommandName) {
             CHANNEL_ID_SUBCOMMAND_NAME -> {
                 channelId = event.getOption(CHANNEL_ID_OPTION_NAME)?.asString ?: channelId
+                botConfigRepo.upsert(BotConfig(group, CHANNEL_ID_SUBCOMMAND_NAME, channelId))
                 "Channel ID set to '$channelId'."
             }
             else -> "Unknown subcommand '${event.interaction.subcommandName}'"
