@@ -16,3 +16,8 @@ data class AdminConfig(
     val roleId: String,
     val channelId: String,
 )
+
+@ConfigurationProperties(prefix = "word-checker")
+data class WordCheckerConfig(
+    val userAgent: String,
+)

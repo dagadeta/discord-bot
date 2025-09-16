@@ -24,7 +24,7 @@ zonky:
 
 
 # The following values have to be configured in a config/application.yml
-# on the target machine. See README.md for details.
+# on the target machine. See config/application-prod.yml.template for details.
 #
 # Here, some default values are provided so that the App can start locally
 # without having to configure anything.
@@ -38,3 +38,5 @@ logging:
 admin:
   role-id: 0
   channel-id: 0
+
+word-checker.user-agent: set-me

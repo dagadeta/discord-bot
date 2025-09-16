@@ -7,3 +7,5 @@ logging:
 admin:
   role-id: ${ADMIN_ROLE_ID}
   channel-id: ${ADMIN_CHANNEL_ID}
+
+word-checker.user-agent: ${WIKTIONARY_USER_AGENT}

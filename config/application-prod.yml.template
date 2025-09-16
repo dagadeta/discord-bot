@@ -14,3 +14,6 @@ logging:
 admin:
   role-id: ENTER_YOUR_ROLE_ID
   channel-id: ENTER_YOUR_CHANNEL_ID
+
+# Set a unique User-Agent header for accessing the wiktionary API. See https://en.wiktionary.org/api/rest_v1/ for details.
+word-checker.user-agent: ENTER_YOUR_USER_AGENT
