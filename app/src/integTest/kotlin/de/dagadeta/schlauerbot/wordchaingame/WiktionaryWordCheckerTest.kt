@@ -7,7 +7,11 @@ import org.junit.jupiter.api.Test
 
 class WiktionaryWordCheckerTest {
 
-    private val wordChecker = WiktionaryWordChecker("en", Logging(null, LoggingConfig(0, "0")))
+    private val wordChecker = WiktionaryWordChecker(
+        "en",
+        Logging(null, LoggingConfig(0, "0")),
+        "https://github.com/dagadeta/discord-bot",
+    )
 
     @Test
     fun `a word can be checked`() {

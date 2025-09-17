@@ -2,6 +2,7 @@ package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.config.AdminConfig
+import de.dagadeta.schlauerbot.config.WordCheckerConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.persistance.*
@@ -38,6 +39,7 @@ class DiscordWordChainGame(
     usedWordRepo: UsedWordRepository,
     private val botConfigRepo: BotConfigPersistenceService,
     private val adminConfig: AdminConfig,
+    private val wordCheckerConfig: WordCheckerConfig,
 ) : ListenerAdapter(), SubCommandGroupProvider {
     override val group = "word-chain-game"
     private val kLogger = KotlinLogging.logger {}
@@ -49,7 +51,7 @@ class DiscordWordChainGame(
         val language = botConfigRepo.findByIdOrNull(ConfigId(group, LANGUAGE))?.value ?: DEFAULT_LANGUAGE
         game = WordChainGame(
             language,
-            WiktionaryWordChecker(language, logging),
+            WiktionaryWordChecker(language, logging, wordCheckerConfig.userAgent),
             gameStateRepo,
             usedWordRepo,
             botConfigRepo.findByIdOrNull(ConfigId(group, CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME))?.value?.toBoolean() ?: DEFAULT_CHECK_WORD_EXISTENCE
@@ -147,7 +149,7 @@ class DiscordWordChainGame(
             }
             LANGUAGE -> {
                 val language = event.getOption(LANGUAGE)?.asString ?: game.language
-                game.setLanguage(language, WiktionaryWordChecker(language, logging))
+                game.setLanguage(language, WiktionaryWordChecker(language, logging, wordCheckerConfig.userAgent))
                 botConfigRepo.upsert(BotConfig(group, LANGUAGE, language))
                 "Language set to '$language'."
             }

@@ -15,7 +15,7 @@ fun interface WordChecker {
     fun isValidWord(word: String): Boolean
 }
 
-class WiktionaryWordChecker(val language: String, var logger: Logging) : WordChecker {
+class WiktionaryWordChecker(val language: String, var logger: Logging, val userAgent: String) : WordChecker {
     private val client = OkHttpClient()
 
     override fun isValidWord(word: String): Boolean {
@@ -23,6 +23,8 @@ class WiktionaryWordChecker(val language: String, var logger: Logging) : WordChe
 
         val request = Request.Builder()
             .url(url)
+            .header("Accept", "application/json")
+            .header("User-Agent", userAgent)
             .build()
 
         client.newCall(request).execute().use { response ->
@@ -31,7 +33,7 @@ class WiktionaryWordChecker(val language: String, var logger: Logging) : WordChe
                 return false
             }
 
-            val responseBody = response.body?.string() ?: return false
+            val responseBody = response.body.string()
             val json = JSONObject(responseBody)
             val pages = json.getJSONObject("query").getJSONObject("pages")
             val pageKeys = pages.keys()
