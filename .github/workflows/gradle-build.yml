@@ -50,3 +50,6 @@ jobs:
         min-coverage-changed-files: 60
         title: Code Coverage
         update-comment: true
+        comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
+        fail-emoji: ':apple:'
+        pass-emoji: ':green_apple:'
