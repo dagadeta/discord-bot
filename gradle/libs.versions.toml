@@ -2,7 +2,7 @@
 flyway-plugin = "11.15.0"
 jda = "6.1.0"
 json = "20250517"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 kotlin-logging = "7.0.13"
 kover = "0.9.3"
 mockito-kotlin = "6.1.0"
