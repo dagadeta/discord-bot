@@ -25,14 +25,17 @@ jobs:
     - name: Set up Docker Compose
       uses: docker/setup-compose-action@v1.2.0
     - name: Build with Gradle
-      run: ./gradlew build -x app:integTest
+      run: ./gradlew build -x app:integTest -x app:e2eTest
     - name: Run integration tests
+      run: ./gradlew app:integTest -x app:e2eTest
+    - name: Run end-2-end tests
+      if: ${{ github.repository == 'dagadeta/discord-bot' }}
       env:
         AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
         GUILD_ID: ${{ vars.GUILD_ID }}
         LOGGING_CHANNEL_ID: ${{ vars.LOGGING_CHANNEL_ID }}
         WORDCHAINGAME_CHANNEL_ID: ${{ vars.WORDCHAINGAME_CHANNEL_ID }}
-      run: ./gradlew app:integTest
+      run: ./gradlew app:e2eTest
     - name: Test Report
       uses: dorny/test-reporter@v2.1.1
       if: ${{ !cancelled() }}  # run this step even if a previous step failed
