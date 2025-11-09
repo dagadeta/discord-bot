@@ -5,9 +5,11 @@ import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import jakarta.annotation.PostConstruct
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 @Service
+@Profile("!integTest")
 class BotConfiguration(
     private val api: JDA,
     private val logging: Logging,

@@ -26,17 +26,19 @@ zonky:
 # The following values have to be configured in a config/application.yml
 # on the target machine. See config/application-prod.yml.template for details.
 #
-# Here, some default values are provided so that the App can start locally
-# without having to configure anything.
+# Here,
+# 1. some default values are provided so that the App can start locally
+#    without having to configure anything.
+# 2. Environment variables may override the default values for integration testing.
 
-bot-auth.token: offline
+bot-auth.token: ${AUTH_TOKEN:offline}
 
 logging:
-  guild-id: 0
-  channel-id: 0
+  guild-id: ${GUILD_ID:0}
+  channel-id: ${LOGGING_CHANNEL_ID:0}
 
 admin:
-  role-id: 0
-  channel-id: 0
+  role-id: ${ADMIN_ROLE_ID:0}
+  channel-id: ${ADMIN_CHANNEL_ID:0}
 
-word-checker.user-agent: set-me
+word-checker.user-agent: ${WIKTIONARY_USER_AGENT:set-me}

@@ -7,5 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest
 @SpringBootTest
 @AutoConfigureEmbeddedDatabase
 class AppTests {
-    @Test fun contextLoads() {}
+    @Test
+    fun contextLoads() {}
 }

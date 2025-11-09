@@ -27,6 +27,9 @@ testing {
         register<JvmTestSuite>("integTest") {
             dependencies { implementation(sourceSets.main.get().output) }
         }
+        register<JvmTestSuite>("e2eTest") {
+            dependencies { implementation(sourceSets.main.get().output) }
+        }
     }
 }
 
@@ -35,6 +38,12 @@ val integTestImplementation: Configuration by configurations.getting {
 }
 val integTestRuntimeOnly: Configuration by configurations.getting {
     extendsFrom(configurations.testRuntimeOnly.get())
+}
+val e2eTestImplementation: Configuration by configurations.getting {
+    extendsFrom(integTestImplementation)
+}
+val e2eTestRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(integTestRuntimeOnly)
 }
 
 dependencies {
