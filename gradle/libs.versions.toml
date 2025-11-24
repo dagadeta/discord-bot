@@ -9,7 +9,7 @@ mockito-kotlin = "6.1.0"
 okhttp = "5.3.0"
 spring-boot = "3.5.7"
 spring-dependency-management = "1.1.7"
-zonky = "2.6.0"
+zonky = "2.7.1"
 
 [libraries]
 jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
