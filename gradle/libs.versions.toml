@@ -1,6 +1,6 @@
 [versions]
 flyway-plugin = "11.20.0"
-jda = "6.2.1"
+jda = "6.3.0"
 json = "20251224"
 kotlin = "2.3.0"
 kotlin-logging = "7.0.14"
