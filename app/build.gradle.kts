@@ -58,15 +58,19 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.flywaydb:flyway-database-postgresql")
+    developmentOnly("org.springframework.boot:spring-boot-starter-flyway")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation(libs.mockito.kotlin)
 
     integTestImplementation("org.springframework.boot:spring-boot-starter-test")
+    integTestImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     integTestImplementation(libs.zonky)
     integTestRuntimeOnly("org.junit.platform:junit-platform-launcher")
     integTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+    integTestRuntimeOnly("org.springframework.boot:spring-boot-starter-flyway")
     integTestRuntimeOnly("org.postgresql:postgresql")
 }
 
