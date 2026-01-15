@@ -107,10 +107,6 @@ tasks {
     }
 
     bootDistZip {
-        dependsOn(check)
-    }
-
-    named<Test>("integTest") {
-        finalizedBy(koverXmlReport, koverLog)
+        dependsOn("test", "integTest")
     }
 }
