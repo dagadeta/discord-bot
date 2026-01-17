@@ -1,8 +1,55 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
-## Setup & Deployment
+## Features
+### WordChain game
+The WordChain game is a game where players have to find a word that begins with the letter of the previously written word.
 
+**Rules**:
+* The game starts with any word.
+* A word cannot be written multiple times.
+* Configurable: Only words that exist in the dictionary can be used.
+* The game never ends but can be paused and restarted. If any rule gets violated, the bot will simply delete the word,
+  tell the user why, and continue the game.
+
+**Commands**:
+
+| Command                                        | Description                                                                                   | Parameters          | Requirements                         |
+|:-----------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------|--------------------------------------|
+| `/config word-chain-game channel-id`           | Sets the WordChain game's channel ID                                                          | `id` - String       | An administrator in an admin-channel |
+| `/config word-chain-game check-word-existence` | Configure if the WordChain game should check if words exist in the dictionary (default: true) | `check` - Boolean   | An administrator in an admin-channel |
+| `/config word-chain-game language`             | Sets the WordChain game's language (default: en)                                              | `language` - String | An administrator in an admin-channel |
+| `/start-word-chain-game`                       | Starts the WordChain game                                                                     | None                | None                                 |
+| `/restart-word-chain-game`                     | Restarts the WordChain game                                                                   | None                | None                                 |
+| `/pause-word-chain-game`                       | Pauses the WordChain game (Memory will remain)                                                | None                | None                                 |
+| `/stop-word-chain-game`                        | Stops the WordChain game (Memory will be cleared)                                             | None                | None                                 |
+
+
+### DingDong
+The `/ding`-command simply responds with "Dong!"
+
+**Commands**:
+
+| Command | Description  | Parameters | Requirements                     |
+|:--------|--------------|------------|----------------------------------|
+| `/ding` | Answers Dong | None       | Any user in a bottalking-channel |
+
+
+### Configuration
+The bot can be configured using the following commands:
+
+| Command                         | Description                            | Parameters    | Requirements                         |
+|:--------------------------------|----------------------------------------|---------------|--------------------------------------|
+| `/config bottalking channel-id` | Sets the general bottalking channel ID | `id` - String | An administrator in an admin-channel |
+
+There is also some configuration done in a config file.
+See the [Setup & Deployment](#setup--deployment) section of this README for more information.
+
+
+## Setup & Deployment
+> [!NOTE]
+> Any uses of a terminal are intended for a Unix-based shell. This includes Linux and macOS. If you use Windows,
+> you can either use [WSL](https://learn.microsoft.com/de-de/windows/wsl/install) or the [Git Bash](https://git-scm.com/install/windows).
 
 ### Prerequisites
 * A Discord application
@@ -16,7 +63,7 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 * Local machine with:
   * Java 17 or higher
   * OCI-runtime (e.g. Docker)
-  * docker-compose v2
+  * docker-compose (v2 – depending on the distribution)
 * Debian/Ubuntu Server with:
   * docker-compose
   * SSH access
@@ -32,7 +79,7 @@ This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/
 You can also create a `application-dev.yml` file in the `config` directory.
 This creates a second profile which you can use while developing and debugging.
 It enables you to configure different Discord servers and channels for this purpose while still remaining the prod config.
-This profile is also the default profile.
+This profile is also the default profile for local development.
 
 ### Deployment
 To deploy the bot, you first need to copy the [`docker-compose.yml`](docker-compose.yml) file to the server and run `docker-compose up -d`.
@@ -57,29 +104,41 @@ To do so, you can use `/config` and its sub-commands.
 #### Unit Tests
 The deployment script already runs all unit tests before packaging the application.
 
-You can run them separately with the Gradle task `check`:
+You can run them separately with the Gradle task `test`:
 
 ```shell
-./gradlew check
+./gradlew app:test
 ```
 
 Find the test results in [the test report](app/build/reports/tests/test/index.html) afterwards.
 
 #### Integration Tests
 Additionally to the unit tests, there are some integration tests that connect to a local database (in a docker container
-using [Zonky Embedded Database](https://github.com/zonkyio/embedded-database-spring-test)), to the Wiktionary API, and
-to a Discord server.
+using [Zonky Embedded Database](https://github.com/zonkyio/embedded-database-spring-test)) and to the Wiktionary API.
+The deployment script already runs all integration tests before packaging the application.
 
-While the database runs completely locally, the Discord server has to be a "real" one.
-In order for the Discord-related integration tests to run, see configuration file [application.yml](app/src/integTest/resources/application.yml)
-in the integration test source set (`integTest`) and set the environment variables that are needed there. Use e.g., a
-run configuration in your IDE for that.
-
-You can run the integration tests with the Gradle task `integTest`:
+You can run them seperatly with the Gradle task `integTest`:
 
 ```shell
 ./gradlew app:integTest
 ```
+
+Find the test results in [the test report](app/build/reports/tests/integTest/index.html) afterwards.
+
+#### End-to-End Tests
+The end-to-end tests additionally connect to a Discord server.
+While the database runs completely locally, the Discord server has to be a "real" one.
+In order for the tests to run, take a look at the
+[`app/src/main/resources/application.yml`](app/src/main/resources/application.yml) and set the environment variables
+that are needed there. Use e.g., a run configuration in your IDE for that.
+
+You can run them seperatly with the Gradle task `e2eTest`:
+
+```shell
+./gradlew app:e2eTest
+```
+
+Find the test results in [the test report](app/build/reports/tests/e2eTest/index.html) afterwards.
 
 ## On the server
 
@@ -111,9 +170,3 @@ To stop the bot, enter the following command on the server:
 ```bash
 screen -XS bot_run quit
 ```
-
-
-## Functions
-
-### Commands
-* `/ding` - Responds with "Dong!" and only works in the channel with the name "🤖｜bot-spielplatz"

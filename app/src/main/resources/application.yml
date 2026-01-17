@@ -29,7 +29,7 @@ zonky:
 # Here,
 # 1. some default values are provided so that the App can start locally
 #    without having to configure anything.
-# 2. Environment variables may override the default values for integration testing.
+# 2. Environment variables may override the default values for integration/e2e testing.
 
 bot-auth.token: ${AUTH_TOKEN:offline}
 
