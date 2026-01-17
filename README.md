@@ -1,6 +1,8 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
+![Tech stack](https://skillicons.dev/icons?i=kotlin,gradle,docker,postgres,githubactions)
+
 ## Features
 ### WordChain game
 The WordChain game is a game where players have to find a word that begins with the letter of the previously written word.
