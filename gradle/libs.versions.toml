@@ -1,5 +1,5 @@
 [versions]
-flyway-plugin = "11.20.1"
+flyway-plugin = "11.20.2"
 jda = "6.3.0"
 json = "20251224"
 kotlin = "2.3.0"
