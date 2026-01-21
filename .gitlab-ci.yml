@@ -24,9 +24,9 @@ build:
 
 integration_tests:
   stage: test
-  image: docker:27
+  image: docker:29
   services:
-    - docker:27-dind
+    - docker:29-dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
@@ -41,9 +41,9 @@ integration_tests:
 
 e2e_tests:
   stage: test
-  image: docker:27
+  image: docker:29
   services:
-    - docker:27-dind
+    - docker:29-dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
