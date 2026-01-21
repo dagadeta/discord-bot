@@ -3,7 +3,7 @@ stages:
   - test
 
 default:
-  image: gradle:8.14-jdk17
+  image: gradle:9.3-jdk17
   cache:
     key: "$CI_COMMIT_REF_SLUG"
     paths:
