@@ -8,9 +8,9 @@ default:
     - key:
         files:
           - gradle/wrapper/gradle-wrapper.properties
-        paths:
-          - .gradle/wrapper
-          - .gradle/notifications
+      paths:
+        - .gradle/wrapper
+        - .gradle/notifications
     - key: "$CI_COMMIT_REF_SLUG"
       paths:
         - .gradle/caches
