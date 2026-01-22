@@ -5,10 +5,15 @@ stages:
 default:
   image: gradle:9.3-jdk17
   cache:
-    key: "$CI_COMMIT_REF_SLUG"
-    paths:
-      - .gradle/wrapper
-      - .gradle/caches
+    - key:
+        files:
+          - gradle/wrapper/gradle-wrapper.properties
+        paths:
+          - .gradle/wrapper
+          - .gradle/notifications
+    - key: "$CI_COMMIT_REF_SLUG"
+      paths:
+        - .gradle/caches
 
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
