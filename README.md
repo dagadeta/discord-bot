@@ -1,7 +1,7 @@
 # Discord Bot
 This is a simple Discord bot written in Kotlin that uses [JDA](https://jda.wiki/introduction/jda/).
 
-![Tech stack](https://skillicons.dev/icons?i=kotlin,gradle,docker,postgres,githubactions)
+![Tech stack](https://skillicons.dev/icons?i=discord,gradle,kotlin,spring,docker,postgres&perline=3)
 
 ## Features
 ### WordChain game
