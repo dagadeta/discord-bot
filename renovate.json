@@ -1,5 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Berlin",
+  "schedule": ["* 1-3 * * *"],
+  "updateNotScheduled": true,
+  "minimumReleaseAge": "3 days",
+  "rebaseWhen": "conflicted",
   "dependencyDashboard": true,
   "labels": ["renovate"]
 }
