@@ -28,13 +28,7 @@ build:
   artifacts:
     paths:
       - build/reports
-      - app/build/distributions
-      - app/build/kover
-      - app/build/libs
-      - app/build/reports
-      - app/build/resources
-      - app/build/scripts
-      - app/build/test-results
+      - app/build
     reports:
       junit: "app/build/test-results/**/TEST-*.xml"
     expire_in: 1 week
