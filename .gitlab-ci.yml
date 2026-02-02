@@ -14,9 +14,11 @@ default:
     - key: "$CI_COMMIT_REF_SLUG"
       paths:
         - .gradle/caches
+        - .gradle/configuration-cache
 
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 build:
   stage: build
@@ -26,8 +28,11 @@ build:
     - ./gradlew build koverLog -x app:integTest -x app:e2eTest
   artifacts:
     paths:
-      - build/
-      - "**/build/"
+      - build/reports
+      - app/build
+    reports:
+      junit: "app/build/test-results/**/TEST-*.xml"
+    expire_in: 1 week
 
 integration_tests:
   stage: test
@@ -38,15 +43,18 @@ integration_tests:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
   rules:
-    - when: always
+    - when: on_success
+  dependencies:
+    - build
   before_script:
     - apk add --no-cache openjdk17-jdk bash
   script:
-    - ./gradlew app:integTest koverLog -x app:e2eTest
+    - ./gradlew app:integTest -x app:e2eTest koverLog
   artifacts:
     when: always
     reports:
-      junit: "**/build/test-results/**/TEST-*.xml"
+      junit: "app/build/test-results/**/TEST-*.xml"
+    expire_in: 1 week
 
 e2e_tests:
   stage: test
@@ -60,14 +68,18 @@ e2e_tests:
     - if: '$CI_PROJECT_PATH == "dagadeta-public/discord-bot"'
       when: on_success
     - when: never
+  dependencies:
+    - build
   before_script:
     - apk add --no-cache openjdk17-jdk bash
   script:
-    - ./gradlew app:e2eTest koverXmlReport koverLog
+    - ./gradlew app:e2eTest -x app:integTest koverXmlReport koverLog
   coverage: '/Code Coverage: \d+\.\d+%/' # Regex to extract coverage from koverLog
   artifacts:
+    when: always
     reports:
-      junit: "**/build/test-results/**/TEST-*.xml"
+      junit: "app/build/test-results/**/TEST-*.xml"
       coverage_report:
         coverage_format: jacoco
-        path: "**/build/reports/kover/report.xml"
+        path: "app/build/reports/kover/report.xml"
+    expire_in: 1 week
