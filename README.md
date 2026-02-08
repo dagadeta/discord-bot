@@ -27,14 +27,12 @@ The WordChain game is a game where players have to find a word that begins with 
 | `/stop-word-chain-game`                        | Stops the WordChain game (Memory will be cleared)                                             | None                | None                                 |
 
 
-### DingDong
-The `/ding`-command simply responds with "Dong!"
+### Fun commands
 
-**Commands**:
-
-| Command | Description  | Parameters | Requirements                     |
-|:--------|--------------|------------|----------------------------------|
-| `/ding` | Answers Dong | None       | Any user in a bottalking-channel |
+| Command      | Description                             | Parameters | Requirements                     |
+|:-------------|-----------------------------------------|------------|----------------------------------|
+| `/could-you` | Responds with a random rejection reason | None       | Any user in a bottalking-channel |
+| `/ding`      | Answers Dong                            | None       | Any user in a bottalking-channel |
 
 
 ### Configuration
