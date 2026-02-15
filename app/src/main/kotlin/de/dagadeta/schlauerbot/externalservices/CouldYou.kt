@@ -1,8 +1,7 @@
-package de.dagadeta.schlauerbot.couldyou
+package de.dagadeta.schlauerbot.externalservices
 
 import de.dagadeta.schlauerbot.botconfig.Bottalking
 import de.dagadeta.schlauerbot.discord.Logging
-import de.dagadeta.schlauerbot.externalservices.CouldYouGetter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
@@ -14,21 +13,22 @@ import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
-private const val COULD_YOU_COMMAND_NAME = "could-you"
 
-@Service
-class CouldYou(
+open class ExternalServiceCaller(
     private val bottalking: Bottalking,
     private val logging: Logging,
     private val api: JDA,
-    private val couldYouGetter: CouldYouGetter,
+    private val externalService: HttpGetter,
+    private val commandName: String,
+    private val serviceName: String?,
+    private val serviceDescription: String,
 ) : ListenerAdapter() {
 
     @PostConstruct
     fun startListener() {
         api.addEventListener(this)
-        api.upsertCommand(Commands.slash(COULD_YOU_COMMAND_NAME, "No, but creative")).queue()
-        logging.log("${CouldYou::class.simpleName} started.")
+        api.upsertCommand(Commands.slash(commandName, serviceDescription)).queue()
+        logging.log("$serviceName started.")
         if (bottalking.channelId.isEmpty()) {
             logging.log("WARNING: The bottalking channel ID is not yet configured. Use the `/config`-command to set it.")
         }
@@ -37,18 +37,34 @@ class CouldYou(
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("${CouldYou::class.simpleName} stopped.")
+        logging.log("$serviceName stopped.")
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.channel.id != bottalking.channelId) return
-        if (event.name != COULD_YOU_COMMAND_NAME) return
+        if (event.name != commandName) return
 
-        logger.info { "received /could-you" }
+        logger.info { "received /$commandName" }
         event.deferReply().queue()
 
-        val reason = couldYouGetter.getAnswer()
-        event.hook.sendMessage(reason).queue()
+        val answer = externalService.getAnswer()
+        event.hook.sendMessage(answer).queue()
     }
 }
+
+@Service
+class CouldYou(
+    bottalking: Bottalking,
+    logging: Logging,
+    api: JDA,
+    couldYouGetter: CouldYouGetter,
+) : ExternalServiceCaller(
+    bottalking,
+    logging,
+    api,
+    externalService = couldYouGetter,
+    commandName = "could-you",
+    serviceName = CouldYou::class.simpleName,
+    serviceDescription = "No, but creative"
+)

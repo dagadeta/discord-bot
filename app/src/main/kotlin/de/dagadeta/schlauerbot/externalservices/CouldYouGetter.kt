@@ -6,7 +6,7 @@ import okhttp3.Request
 import org.json.JSONObject
 import org.springframework.stereotype.Service
 
-open class HttpGetter(
+abstract class HttpGetter(
     private val logger: Logging, private val url: String, val propertyName: String, val serviceName: String
 ) {
     private val client = OkHttpClient()
