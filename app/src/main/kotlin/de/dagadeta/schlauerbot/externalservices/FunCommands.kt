@@ -15,7 +15,7 @@ class CouldYou(
     bottalking,
     logging,
     api,
-    externalService = couldYouGetter,
+    answerProvider = couldYouGetter,
     commandName = "could-you",
     serviceName = CouldYou::class.simpleName,
     serviceDescription = "No, but creative",
@@ -31,7 +31,7 @@ class RandomUselessFact(
     bottalking,
     logging,
     api,
-    externalService = randomUselessFactGetter,
+    answerProvider = randomUselessFactGetter,
     commandName = "random-useless-fact",
     serviceName = RandomUselessFact::class.simpleName,
     serviceDescription = "Tells you a random useless fact",
@@ -47,8 +47,23 @@ class RandomCatFact(
     bottalking,
     logging,
     api,
-    externalService = randomCatFactGetter,
+    answerProvider = randomCatFactGetter,
     commandName = "random-cat-fact",
     serviceName = RandomCatFact::class.simpleName,
     serviceDescription = "Tells you a random cat fact",
+)
+
+@Service
+class DingDong(
+    bottalking: Bottalking,
+    logging: Logging,
+    api: JDA,
+) : ExternalServiceCaller(
+    bottalking,
+    logging,
+    api,
+    answerProvider = { "Dong!" },
+    commandName = "ding",
+    serviceName = DingDong::class.simpleName,
+    serviceDescription = "Answers Dong",
 )

@@ -17,7 +17,7 @@ open class ExternalServiceCaller(
     private val bottalking: Bottalking,
     private val logging: Logging,
     private val api: JDA,
-    private val externalService: HttpGetter,
+    private val answerProvider: AnswerProvider,
     private val commandName: String,
     private val serviceName: String?,
     private val serviceDescription: String,
@@ -47,7 +47,7 @@ open class ExternalServiceCaller(
         logger.info { "received /$commandName" }
         event.deferReply().queue()
 
-        val answer = externalService.getAnswer()
+        val answer = answerProvider.getAnswer()
         event.hook.sendMessage(answer).queue()
     }
 }
