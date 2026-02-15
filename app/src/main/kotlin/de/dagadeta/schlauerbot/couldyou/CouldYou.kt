@@ -2,6 +2,7 @@ package de.dagadeta.schlauerbot.couldyou
 
 import de.dagadeta.schlauerbot.botconfig.Bottalking
 import de.dagadeta.schlauerbot.discord.Logging
+import de.dagadeta.schlauerbot.externalservices.CouldYouGetter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
@@ -47,7 +48,7 @@ class CouldYou(
         logger.info { "received /could-you" }
         event.deferReply().queue()
 
-        val reason = couldYouGetter.getRejectionReason()
+        val reason = couldYouGetter.getAnswer()
         event.hook.sendMessage(reason).queue()
     }
 }
