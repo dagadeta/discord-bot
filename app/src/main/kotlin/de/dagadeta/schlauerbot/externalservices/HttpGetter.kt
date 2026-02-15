@@ -4,7 +4,6 @@ import de.dagadeta.schlauerbot.discord.Logging
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
-import org.springframework.stereotype.Service
 
 abstract class HttpGetter(
     private val logger: Logging, private val url: String, val propertyName: String, val serviceName: String
@@ -29,11 +28,3 @@ abstract class HttpGetter(
         }
     }
 }
-
-@Service
-class CouldYouGetter(logger: Logging) : HttpGetter(
-    logger = logger,
-    url = "https://naas.isalman.dev/no",
-    propertyName = "reason",
-    serviceName = "No-as-a-Service",
-)

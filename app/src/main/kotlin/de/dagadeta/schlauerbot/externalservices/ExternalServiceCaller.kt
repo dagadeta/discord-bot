@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
@@ -52,19 +51,3 @@ open class ExternalServiceCaller(
         event.hook.sendMessage(answer).queue()
     }
 }
-
-@Service
-class CouldYou(
-    bottalking: Bottalking,
-    logging: Logging,
-    api: JDA,
-    couldYouGetter: CouldYouGetter,
-) : ExternalServiceCaller(
-    bottalking,
-    logging,
-    api,
-    externalService = couldYouGetter,
-    commandName = "could-you",
-    serviceName = CouldYou::class.simpleName,
-    serviceDescription = "No, but creative"
-)
