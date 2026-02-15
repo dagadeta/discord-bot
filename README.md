@@ -25,6 +25,7 @@ The WordChain game is a game where players have to find a word that begins with 
 | `/restart-word-chain-game`                     | Restarts the WordChain game                                                                   | None                | None                                 |
 | `/pause-word-chain-game`                       | Pauses the WordChain game (Memory will remain)                                                | None                | None                                 |
 | `/stop-word-chain-game`                        | Stops the WordChain game (Memory will be cleared)                                             | None                | None                                 |
+| `/word-chain-game-stats`                       | Shows statistics about the WordChain game                                                     | None                | None                                 |
 
 
 ### Fun commands

@@ -54,6 +54,7 @@ class DiscordWordChainGame(
             WiktionaryWordChecker(language, logging, wordCheckerConfig.userAgent),
             gameStateRepo,
             usedWordRepo,
+            WordChainGameStatistics(usedWordRepo),
             botConfigRepo.findByIdOrNull(ConfigId(group, CHECK_WORD_EXISTENCE_SUBCOMMAND_NAME))?.value?.toBoolean() ?: DEFAULT_CHECK_WORD_EXISTENCE
         )
     }
@@ -89,6 +90,7 @@ class DiscordWordChainGame(
             WordChainGameCommand.Stop.command -> game.stopGame()
             WordChainGameCommand.Pause.command -> game.pauseGame()
             WordChainGameCommand.Restart.command -> game.restartGame()
+            WordChainGameCommand.Statistics.command -> game.generateStatisticsMessage()
             else -> "Unknown command '${event.name}'"
         }
         event.hook.sendMessage(message).queue()

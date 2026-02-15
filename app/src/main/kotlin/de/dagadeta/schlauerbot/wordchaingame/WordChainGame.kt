@@ -17,6 +17,7 @@ class WordChainGame(
     private var wordChecker: WordChecker,
     private val gameStateRepo: WordChainGameStatePersistenceService,
     private val usedWordRepo: UsedWordRepository,
+    private val wordChainGameStatistics: WordChainGameStatistics,
     var checkWordExistence: Boolean,
 ) {
     private val minWordLength = 2
@@ -161,6 +162,31 @@ class WordChainGame(
         }
     }
 
+    fun generateStatisticsMessage(): String {
+        val totalWords = wordChainGameStatistics.getTotalWords()
+
+        if (totalWords.toInt() == 0) return "No statistics available yet."
+
+        val endingLetters = wordChainGameStatistics.getMostCommonEndingLetters()
+        val formattedEndingLetters = if (endingLetters.isEmpty()) {
+            "No data available"
+        } else {
+            "\n" + endingLetters.entries.joinToString("\n") { (letter, count) ->
+                "              $letter: $count ${if (count == 1) "time" else "times"}"
+            }
+        }
+
+        return """
+            📊 WordChainGame Statistics:
+
+            🔢 Total words: $totalWords
+            📏 Longest word: "${wordChainGameStatistics.getLongestWord()}" (${wordChainGameStatistics.getLongestWord()?.length} letters)
+            📊 Average word length: ${wordChainGameStatistics.getAverageWordLength()} letters
+
+            🔠 Most common ending letters: $formattedEndingLetters
+        """.trimIndent()
+    }
+
     private fun saveState() = gameStateRepo.upsert(WordChainGameState(theGameId, started, lastUserId))
 
     fun setLanguage(language: String, wordChecker: WordChecker) {
@@ -174,4 +200,5 @@ enum class WordChainGameCommand(val command: String, val description: String) {
     Stop("stop-word-chain-game", "Stops the WordChain game (Memory will be cleared)"),
     Pause("pause-word-chain-game", "Pauses the WordChain game (Memory will remain)"),
     Restart("restart-word-chain-game", "Restarts the WordChain game"),
+    Statistics("word-chain-game-stats", "Shows statistics about the WordChain game"),
 }

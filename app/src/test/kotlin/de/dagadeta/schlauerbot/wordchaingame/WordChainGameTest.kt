@@ -12,8 +12,16 @@ import org.mockito.kotlin.whenever
 class WordChainGameTest {
     private val gameStateRepo = mock<WordChainGameStatePersistenceService>()
     private val usedWordRepo = mock<UsedWordRepository>()
+    val wordChainGameStatistics = WordChainGameStatistics(usedWordRepo)
 
-    private val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo, true)
+    private val game = WordChainGame(
+        "en",
+        { true },
+        gameStateRepo,
+        usedWordRepo,
+        wordChainGameStatistics,
+        true
+    )
 
     @Test
     fun `a game can be started`() {
@@ -238,7 +246,7 @@ class WordChainGameTest {
     fun `saved case-sensitive words are handled case-insensitive after the game is restored`() {
         whenever(gameStateRepo.findByIdOrNull(0)).thenReturn(WordChainGameState(0, true, "han-solo"))
         whenever(usedWordRepo.findAll()).thenReturn(listOf(UsedWord("aiBohPhoBia")))
-        val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo, true)
+        val game = WordChainGame("en", { true }, gameStateRepo, usedWordRepo, wordChainGameStatistics, true)
 
         assertThat(game.describeInitialState()).isEqualTo("Resuming WordChainGame with 1 word(s) in memory. Last word was \"aibohphobia\".")
 
@@ -250,7 +258,7 @@ class WordChainGameTest {
 
     @Test
     fun `an invalid word gets rejected`() {
-        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, true)
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, wordChainGameStatistics, true)
         game.startGame()
 
         val result = game.onMessageReceived("user-1", "sdoitskl")
@@ -261,7 +269,7 @@ class WordChainGameTest {
 
     @Test
     fun `an invalid word is not rejected when wordChecker is disabled`() {
-        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, false)
+        val game = WordChainGame("en", { false }, gameStateRepo, usedWordRepo, wordChainGameStatistics, false)
         game.startGame()
 
         val result = game.onMessageReceived("user-1", "sdoitskl")
@@ -296,5 +304,11 @@ class WordChainGameTest {
         assertThat(game.describeInitialState()).isEqualTo("""
             Resuming WordChainGame with 1 word(s) in memory. Last word was "something".
             Game paused.""".trimIndent())
+    }
+
+    @Test
+    fun `on a started game, generateStatisticsMessage() returns that there are no statistics yet`() {
+        game.startGame()
+        assertThat(game.generateStatisticsMessage()).isEqualTo("No statistics available yet.")
     }
 }
