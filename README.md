@@ -29,10 +29,12 @@ The WordChain game is a game where players have to find a word that begins with 
 
 ### Fun commands
 
-| Command      | Description                             | Parameters | Requirements                     |
-|:-------------|-----------------------------------------|------------|----------------------------------|
-| `/could-you` | Responds with a random rejection reason | None       | Any user in a bottalking-channel |
-| `/ding`      | Answers Dong                            | None       | Any user in a bottalking-channel |
+| Command                | Description                             | Parameters | Requirements                     |
+|:-----------------------|-----------------------------------------|------------|----------------------------------|
+| `/could-you`           | Responds with a random rejection reason | None       | Any user in a bottalking-channel |
+| `/random-useless-fact` | Tells you a random useless fact         | None       | Any user in a bottalking-channel |
+| `/random-cat-fact`     | Tells you a random cat fact             | None       | Any user in a bottalking-channel |
+| `/ding`                | Answers Dong                            | None       | Any user in a bottalking-channel |
 
 
 ### Configuration
