@@ -36,3 +36,19 @@ class RandomUselessFact(
     serviceName = RandomUselessFact::class.simpleName,
     serviceDescription = "Tells you a random useless fact",
 )
+
+@Service
+class RandomCatFact(
+    bottalking: Bottalking,
+    logging: Logging,
+    api: JDA,
+    randomCatFactGetter: RandomCatFactGetter,
+) : ExternalServiceCaller(
+    bottalking,
+    logging,
+    api,
+    externalService = randomCatFactGetter,
+    commandName = "random-cat-fact",
+    serviceName = RandomCatFact::class.simpleName,
+    serviceDescription = "Tells you a random cat fact",
+)

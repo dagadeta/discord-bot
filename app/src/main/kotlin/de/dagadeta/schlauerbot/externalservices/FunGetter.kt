@@ -18,3 +18,11 @@ class RandomUselessFactGetter(logger: Logging) : HttpGetter(
     propertyName = "text",
     serviceName = "Random-Useless-Facts",
 )
+
+@Service
+class RandomCatFactGetter(logger: Logging) : HttpGetter(
+    logger = logger,
+    url = "https://meowfacts.herokuapp.com/",
+    propertyName = "data[0]",
+    serviceName = "Random-Cat-Facts",
+)

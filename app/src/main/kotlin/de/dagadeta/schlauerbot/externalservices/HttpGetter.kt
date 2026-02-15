@@ -1,9 +1,9 @@
 package de.dagadeta.schlauerbot.externalservices
 
+import com.jayway.jsonpath.JsonPath
 import de.dagadeta.schlauerbot.discord.Logging
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONObject
 
 abstract class HttpGetter(
     private val logger: Logging, private val url: String, val propertyName: String, val serviceName: String
@@ -23,8 +23,7 @@ abstract class HttpGetter(
             }
 
             val responseBody = response.body.string()
-            val json = JSONObject(responseBody)
-            return json.optString(propertyName, "").trim()
+            return JsonPath.parse(responseBody).read<String>(propertyName).trim()
         }
     }
 }

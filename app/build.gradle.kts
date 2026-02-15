@@ -53,6 +53,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation(libs.jda)
     implementation(libs.json)
+    implementation(libs.json.path)
     implementation(libs.kotlin.logging)
     implementation(libs.okhttp)
     runtimeOnly("org.postgresql:postgresql")

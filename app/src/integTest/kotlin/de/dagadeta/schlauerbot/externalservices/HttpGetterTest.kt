@@ -20,4 +20,11 @@ class HttpGetterTest {
         val fact = getter.getAnswer()
         assert(fact.isNotBlank())
     }
+
+    @Test
+    fun `a random cat fact is returned`() {
+        val getter = RandomCatFactGetter(logger)
+        val fact = getter.getAnswer()
+        assert(fact.isNotBlank())
+    }
 }
