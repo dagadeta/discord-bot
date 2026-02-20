@@ -20,7 +20,7 @@ variables:
 
 build:
   stage: build
-  image: docker:29
+  image: registry.gitlab.com/dagadeta-public/dind-jdk-image@sha256:7b5cb0ab427591b4b3059ec71ab6abb73a9d424eb091ea40ac356b293264df9e
   services:
     - docker:29-dind
   variables:
@@ -30,8 +30,6 @@ build:
     - if: '$CI_PROJECT_PATH == "dagadeta-public/discord-bot"'
       when: always
     - when: never
-  before_script:
-    - apk add --no-cache openjdk17-jdk bash
   script:
     - ./gradlew test integTest e2eTest build koverLog koverXmlReport
   coverage: '/Code Coverage: \d+\.\d+%/' # Regex to extract coverage from koverLog
