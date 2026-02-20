@@ -1,7 +1,15 @@
 stages:
   - build
+  - test
+  - secret-detection
 
-default:
+variables:
+  SECRET_DETECTION_ENABLED: 'true'
+
+.gradle-cache:
+  variables:
+    GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+    GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   cache:
     - key:
         files:
@@ -14,12 +22,9 @@ default:
         - .gradle/caches
         - .gradle/configuration-cache
 
-variables:
-  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-
 build:
   stage: build
+  extends: .gradle-cache
   image: registry.gitlab.com/dagadeta-public/dind-jdk-image@sha256:7b5cb0ab427591b4b3059ec71ab6abb73a9d424eb091ea40ac356b293264df9e
   services:
     - docker:29-dind
@@ -44,3 +49,11 @@ build:
         coverage_format: jacoco
         path: "app/build/reports/kover/report.xml"
     expire_in: 1 week
+
+sast:
+  stage: test
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+secret_detection:
+  stage: secret-detection
