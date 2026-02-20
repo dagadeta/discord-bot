@@ -1,9 +1,7 @@
 stages:
   - build
-  - test
 
 default:
-  image: gradle:9.3-jdk17
   cache:
     - key:
         files:
@@ -22,61 +20,26 @@ variables:
 
 build:
   stage: build
-  rules:
-    - when: always
-  script:
-    - ./gradlew build koverLog -x app:integTest -x app:e2eTest
-  artifacts:
-    paths:
-      - build/reports
-      - app/build
-    reports:
-      junit: "app/build/test-results/**/TEST-*.xml"
-    expire_in: 1 week
-
-integration_tests:
-  stage: test
   image: docker:29
   services:
     - docker:29-dind
   variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  rules:
-    - when: on_success
-  dependencies:
-    - build
-  before_script:
-    - apk add --no-cache openjdk17-jdk bash
-  script:
-    - ./gradlew app:integTest -x app:e2eTest koverLog
-  artifacts:
-    when: always
-    reports:
-      junit: "app/build/test-results/**/TEST-*.xml"
-    expire_in: 1 week
-
-e2e_tests:
-  stage: test
-  image: docker:29
-  services:
-    - docker:29-dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
+    DOCKER_HOST: unix:///var/run/docker.sock
     DOCKER_TLS_CERTDIR: ""
   rules:
     - if: '$CI_PROJECT_PATH == "dagadeta-public/discord-bot"'
-      when: on_success
+      when: always
     - when: never
-  dependencies:
-    - build
   before_script:
     - apk add --no-cache openjdk17-jdk bash
   script:
-    - ./gradlew app:e2eTest -x app:integTest koverXmlReport koverLog
+    - ./gradlew test integTest e2eTest build koverLog koverXmlReport
   coverage: '/Code Coverage: \d+\.\d+%/' # Regex to extract coverage from koverLog
   artifacts:
     when: always
+    paths:
+      - build/reports
+      - app/build/reports
     reports:
       junit: "app/build/test-results/**/TEST-*.xml"
       coverage_report:
