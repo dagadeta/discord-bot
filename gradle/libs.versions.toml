@@ -1,5 +1,5 @@
 [versions]
-flyway-plugin = "12.2.0"
+flyway-plugin = "12.3.0"
 jda = "6.4.0"
 json = "20251224"
 json-path = "3.0.0"
