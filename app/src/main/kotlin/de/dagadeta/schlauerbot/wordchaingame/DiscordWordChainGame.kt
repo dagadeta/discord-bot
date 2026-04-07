@@ -1,6 +1,7 @@
 package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.common.onFailure
+import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.config.WordCheckerConfig
 import de.dagadeta.schlauerbot.discord.Logging
@@ -11,6 +12,7 @@ import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -99,6 +101,7 @@ class DiscordWordChainGame(
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.id != channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
+            .onSuccess { event.message.addReaction(Emoji.fromUnicode("✅")).queue() }
             .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
     }
 
