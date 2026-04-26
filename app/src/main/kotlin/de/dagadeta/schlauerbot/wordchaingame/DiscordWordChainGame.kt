@@ -101,7 +101,7 @@ class DiscordWordChainGame(
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.id != channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
-            .onSuccess { event.message.addReaction(Emoji.fromUnicode("✅")).queue() }
+            .onSuccess { event.message.addReaction(Emoji.fromUnicode("🐸")).queue() }
             .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
     }
 
