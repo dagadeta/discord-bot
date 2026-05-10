@@ -64,13 +64,13 @@ See the [Setup & Deployment](#setup--deployment) section of this README for more
     https://discord.com/oauth2/authorize?client_id=[ENTER_YOUR_ID]&permissions=8&integration_type=0&scope=bot
     ```
 * Local machine with:
-  * Java 17 or higher
+  * Java 21 or higher
   * OCI-runtime (e.g. Docker)
   * docker-compose (v2 – depending on the distribution)
 * Debian/Ubuntu Server with:
   * docker-compose
   * SSH access
-  * Java 17 or higher
+  * Java 21 or higher
   * [Screen](https://www.gnu.org/software/screen/manual/screen.html#Invoking-Screen)
 
 ### Local setup
