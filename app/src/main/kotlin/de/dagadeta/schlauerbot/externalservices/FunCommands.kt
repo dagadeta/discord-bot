@@ -2,6 +2,7 @@ package de.dagadeta.schlauerbot.externalservices
 
 import de.dagadeta.schlauerbot.botconfig.Bottalking
 import de.dagadeta.schlauerbot.discord.Logging
+import de.dagadeta.schlauerbot.discord.PermissionValidator
 import net.dv8tion.jda.api.JDA
 import org.springframework.stereotype.Service
 
@@ -19,6 +20,7 @@ class CouldYou(
     commandName = "could-you",
     serviceName = CouldYou::class.simpleName,
     serviceDescription = "No, but creative",
+    permissionValidator = PermissionValidator(),
 )
 
 @Service
@@ -35,6 +37,7 @@ class RandomUselessFact(
     commandName = "random-useless-fact",
     serviceName = RandomUselessFact::class.simpleName,
     serviceDescription = "Tells you a random useless fact",
+    permissionValidator = PermissionValidator(),
 )
 
 @Service
@@ -51,6 +54,7 @@ class RandomCatFact(
     commandName = "random-cat-fact",
     serviceName = RandomCatFact::class.simpleName,
     serviceDescription = "Tells you a random cat fact",
+    permissionValidator = PermissionValidator(),
 )
 
 @Service
@@ -66,4 +70,5 @@ class DingDong(
     commandName = "ding",
     serviceName = DingDong::class.simpleName,
     serviceDescription = "Answers Dong",
+    permissionValidator = PermissionValidator(),
 )

@@ -20,6 +20,7 @@ private const val CHANNEL_ID_OPTION_NAME = "id"
 class Bottalking(
     private val botConfigRepo: BotConfigPersistenceService,
     private val adminConfig: AdminConfig,
+    private val permissionValidator: PermissionValidator,
 ) : SubCommandGroupProvider {
     private val kLogger = KotlinLogging.logger {}
     override val group = "bottalking"
@@ -36,7 +37,7 @@ class Bottalking(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
-        if (!PermissionValidator().checkAdminAccess(event, adminConfig)) return
+        if (!permissionValidator.checkAdminAccess(event, adminConfig)) return
 
         event.deferReply().queue()
 

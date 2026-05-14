@@ -43,6 +43,7 @@ class DiscordWordChainGame(
     private val botConfigRepo: BotConfigPersistenceService,
     private val adminConfig: AdminConfig,
     private val wordCheckerConfig: WordCheckerConfig,
+    private val permissionValidator: PermissionValidator,
 ) : ListenerAdapter(), SubCommandGroupProvider {
     override val group = "word-chain-game"
     private val kLogger = KotlinLogging.logger {}
@@ -143,7 +144,7 @@ class DiscordWordChainGame(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
-        if (!PermissionValidator().checkAdminAccess(event, adminConfig)) return
+        if (!permissionValidator.checkAdminAccess(event, adminConfig)) return
 
         event.deferReply().queue()
         val message = when (event.interaction.subcommandName) {

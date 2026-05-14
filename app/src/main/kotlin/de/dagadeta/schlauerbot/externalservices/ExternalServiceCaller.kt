@@ -22,6 +22,7 @@ open class ExternalServiceCaller(
     private val commandName: String,
     private val serviceName: String?,
     private val serviceDescription: String,
+    private val permissionValidator: PermissionValidator,
 ) : ListenerAdapter() {
 
     @PostConstruct
@@ -43,10 +44,7 @@ open class ExternalServiceCaller(
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         if (event.name != commandName) return
-        if (event.channel.id != bottalking.channelId) {
-            PermissionValidator().sendWrongChannelMessage(event)
-            return
-        }
+        if (!permissionValidator.checkCorrectChannel(event, bottalking.channelId)) return
 
         logger.info { "received /$commandName" }
         event.deferReply().queue()
