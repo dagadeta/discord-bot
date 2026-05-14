@@ -1,6 +1,7 @@
 package de.dagadeta.schlauerbot.botconfig
 
 import de.dagadeta.schlauerbot.config.AdminConfig
+import de.dagadeta.schlauerbot.discord.PermissionValidator
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.persistance.BotConfig
 import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
@@ -35,8 +36,7 @@ class Bottalking(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
-        if (event.channel.id != adminConfig.channelId) return
-        if (event.member?.roles?.none { it.id == adminConfig.roleId } == true) return
+        if (!PermissionValidator().checkAdminAccess(event, adminConfig)) return
 
         event.deferReply().queue()
 

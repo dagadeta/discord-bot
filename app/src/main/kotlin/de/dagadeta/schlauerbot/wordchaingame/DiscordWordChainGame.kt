@@ -4,6 +4,7 @@ import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.config.WordCheckerConfig
+import de.dagadeta.schlauerbot.discord.PermissionValidator
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
 import de.dagadeta.schlauerbot.persistance.*
@@ -142,8 +143,7 @@ class DiscordWordChainGame(
     }
 
     override fun onConfigureEvent(event: SlashCommandInteractionEvent) {
-        if (event.channel.id != adminConfig.channelId) return
-        if (event.member?.roles?.none { it.id == adminConfig.roleId } == true) return
+        if (!PermissionValidator().checkAdminAccess(event, adminConfig)) return
 
         event.deferReply().queue()
         val message = when (event.interaction.subcommandName) {

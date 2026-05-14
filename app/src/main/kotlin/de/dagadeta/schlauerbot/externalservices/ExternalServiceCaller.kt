@@ -1,6 +1,7 @@
 package de.dagadeta.schlauerbot.externalservices
 
 import de.dagadeta.schlauerbot.botconfig.Bottalking
+import de.dagadeta.schlauerbot.discord.PermissionValidator
 import de.dagadeta.schlauerbot.discord.Logging
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
@@ -41,8 +42,11 @@ open class ExternalServiceCaller(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        if (event.channel.id != bottalking.channelId) return
         if (event.name != commandName) return
+        if (event.channel.id != bottalking.channelId) {
+            PermissionValidator().sendWrongChannelMessage(event)
+            return
+        }
 
         logger.info { "received /$commandName" }
         event.deferReply().queue()
