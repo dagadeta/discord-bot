@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot.countinggame
 
+import de.dagadeta.schlauerbot.common.FailureType
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.config.AdminConfig
@@ -68,19 +69,17 @@ class DiscordCountingGame(
 
         game.onMessageReceived(event.author.id, parsedMessage)
             .onSuccess { event.message.addReaction(Emoji.fromUnicode("🐸")).queue() }
-            .onFailure { answer -> onInvalidMessage(event, answer) }
+            .onFailure { message, type -> onInvalidMessage(event, message, type) }
     }
 
-    fun parseMessage(message: String): Int? {
-        return message.toIntOrNull()
-    }
+    private fun parseMessage(message: String) = message.toIntOrNull()
 
-    fun onInvalidMessage(event: MessageReceivedEvent, replyMessage: String) {
-        when (replyMessage) {
-            "You're not alone here! Let the others write numbers too!" -> sendWarningMessage(event, replyMessage)
-            else -> {
+    fun onInvalidMessage(event: MessageReceivedEvent, replyMessage: String, failureType: FailureType) {
+        when (failureType) {
+            FailureType.Unspectacular -> sendWarningMessage(event, replyMessage)
+            FailureType.Critical -> {
                 event.message.reply(replyMessage).queue()
-                game.resetGame()
+                event.message.addReaction(Emoji.fromUnicode("💥")).queue()
             }
         }
     }
@@ -96,12 +95,10 @@ class DiscordCountingGame(
         event.message.author.openPrivateChannel()
             .queue({ channel ->
                 channel.sendMessage(replyMessage).queue(
-                    { _ -> event.message.delete().queue() },
-                    { _ -> temporaryReplyFallback() }
+                    { event.message.delete().queue() },
+                    { temporaryReplyFallback() }
                 )
-            }, { _ ->
-                temporaryReplyFallback()
-            })
+            }, { temporaryReplyFallback() })
     }
 
     fun writeInitialStateTo(logging: Logging) {

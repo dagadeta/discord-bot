@@ -1,6 +1,5 @@
-package de.dagadeta.schlauerbot.wordchaingame
+package de.dagadeta.schlauerbot.countinggame
 
-import de.dagadeta.schlauerbot.countinggame.CountingGame
 import de.dagadeta.schlauerbot.persistance.CountingGameStatePersistenceService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -56,6 +55,15 @@ class CountingGameTest {
     fun `resetting the game works`() {
         game.onMessageReceived("voldemort", 0)
         game.resetGame()
+        val result = game.onMessageReceived("voldemort", 0)
+
+        assertThat(result.isSuccess).isTrue
+    }
+
+    @Test
+    fun `after a wrong number is written, the game is reset`() {
+        game.onMessageReceived("voldemort", 0)
+        game.onMessageReceived("snape", 2)
         val result = game.onMessageReceived("voldemort", 0)
 
         assertThat(result.isSuccess).isTrue

@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot.countinggame
 
+import de.dagadeta.schlauerbot.common.FailureType
 import de.dagadeta.schlauerbot.common.Result
 import de.dagadeta.schlauerbot.common.Result.Companion.failure
 import de.dagadeta.schlauerbot.common.Result.Companion.success
@@ -31,8 +32,15 @@ class CountingGame(
         }
         number != currentNumber + 1 -> {
             when (currentNumber) {
-                startingNumber - 1 -> failure("You didn't even manage to write the first number! Let's try that again (Tip: It's $startingNumber...)")
-                else -> failure("You RUINED it at $currentNumber! Let's start over with $startingNumber...")
+                startingNumber - 1 -> {
+                    resetGame()
+                    failure("You didn't even manage to write the first number! Let's try that again (Tip: It's $startingNumber...)")
+                }
+                else -> {
+                    val ruinedNumber = currentNumber
+                    resetGame()
+                    failure("You RUINED it at $ruinedNumber! Let's start over with $startingNumber...", FailureType.Critical)
+                }
             }
         }
         else -> {

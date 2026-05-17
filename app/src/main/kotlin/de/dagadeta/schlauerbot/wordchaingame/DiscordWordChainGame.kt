@@ -104,7 +104,7 @@ class DiscordWordChainGame(
         if (event.channel.id != channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
             .onSuccess { event.message.addReaction(Emoji.fromUnicode("🐸")).queue() }
-            .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
+            .onFailure { message, _ -> sendInvalidWordMessage(event.message, message) }
     }
 
     private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
@@ -118,12 +118,10 @@ class DiscordWordChainGame(
         originalMessage.author.openPrivateChannel()
             .queue({ channel ->
                 channel.sendMessage(replyMessage).queue(
-                    { _ -> originalMessage.delete().queue() },
-                    { _ -> temporaryReplyFallback() }
+                    { originalMessage.delete().queue() },
+                    { temporaryReplyFallback() }
                 )
-            }, { _ ->
-                temporaryReplyFallback()
-            })
+            }, { temporaryReplyFallback() })
     }
 
     fun writeInitialStateTo(logging: Logging) {

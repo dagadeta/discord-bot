@@ -23,35 +23,52 @@ value class Result<out T> internal constructor(
             else -> null
         }
 
+    fun failureTypeOrNull(): FailureType? =
+        when (value) {
+            is Failure -> value.type
+            else -> null
+        }
+
     companion object {
         fun <T> success(value: T): Result<T> = Result(value)
-        fun <T> failure(message: String): Result<T> =
-            Result(createFailure(message))
+        fun <T> failure(message: String, type: FailureType = FailureType.Unspectacular): Result<T> =
+            Result(createFailure(message, type))
 
     }
 
+    @PublishedApi
     internal class Failure(
+        @PublishedApi
         @JvmField
-        val message: String
+        internal val message: String,
+        @PublishedApi
+        @JvmField
+        internal val type: FailureType
     )
 }
 
-internal fun createFailure(message: String): Any =
-    Result.Failure(message)
+internal fun createFailure(message: String, type: FailureType): Any =
+    Result.Failure(message, type)
 
-inline fun <R, T : R> Result<T>.getOrElse(onFailure: (message: String) -> R): R {
-    return when (val message = failureOrNull()) {
-        null -> value as T
-        else -> onFailure(message)
+inline fun <R, T : R> Result<T>.getOrElse(onFailure: (message: String, type: FailureType) -> R): R {
+    return when (value) {
+        is Result.Failure -> onFailure(value.message, value.type)
+        else -> value as T
     }
 }
 
-inline fun <T> Result<T>.onFailure(action: (message: String) -> Unit): Result<T> {
-    failureOrNull()?.let { action(it) }
+inline fun <T> Result<T>.onFailure(action: (message: String, type: FailureType) -> Unit): Result<T> {
+    if (value is Result.Failure) {
+        action(value.message, value.type)
+    }
     return this
 }
 
 inline fun <T> Result<T>.onSuccess(action: (value: T) -> Unit): Result<T> {
     if (isSuccess) action(value as T)
     return this
+}
+
+enum class FailureType {
+    Unspectacular, Critical
 }

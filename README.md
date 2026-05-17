@@ -31,7 +31,7 @@ The WordChain game is a game where players have to find a word that begins with 
 
 
 ### Counting game
-The Counting game is a game where players have to count. Can truly be heard sometimes.
+The Counting game is a game where players have to count. Can truly be hard sometimes.
 
 **Rules**:
 * The game starts with 0
