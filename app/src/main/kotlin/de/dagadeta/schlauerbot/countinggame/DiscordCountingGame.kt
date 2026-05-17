@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
+import org.mariuszgromada.math.mxparser.Expression
 import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 import java.util.concurrent.TimeUnit
@@ -72,7 +73,20 @@ class DiscordCountingGame(
             .onFailure { message, type -> onInvalidMessage(event, message, type) }
     }
 
-    private fun parseMessage(message: String) = message.toIntOrNull()
+    private fun parseMessage(message: String): Int? {
+        val directInt = message.toIntOrNull()
+        if (directInt != null) return directInt
+
+        val e = Expression(message)
+        if (!e.checkSyntax()) return null
+        val result = e.calculate()
+
+        return if (!result.isNaN() && result % 1.0 == 0.0) {
+            result.toInt()
+        } else {
+            null
+        }
+    }
 
     fun onInvalidMessage(event: MessageReceivedEvent, replyMessage: String, failureType: FailureType) {
         when (failureType) {

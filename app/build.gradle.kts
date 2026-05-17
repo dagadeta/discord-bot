@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.json.path)
     implementation(libs.kotlin.logging)
     implementation(libs.okhttp)
+    implementation(libs.mxparser)
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.flywaydb:flyway-database-postgresql")
