@@ -1,9 +1,11 @@
 package de.dagadeta.schlauerbot.countinggame
 
+import de.dagadeta.schlauerbot.persistance.CountingGameState
 import de.dagadeta.schlauerbot.persistance.CountingGameStatePersistenceService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 
 class CountingGameTest {
     private val gameStateRepo = mock<CountingGameStatePersistenceService>()
@@ -67,5 +69,13 @@ class CountingGameTest {
         val result = game.onMessageReceived("voldemort", 0)
 
         assertThat(result.isSuccess).isTrue
+    }
+
+    @Test
+    fun `the game state can be restored`() {
+        whenever(gameStateRepo.findByIdOrNull(0)).thenReturn(CountingGameState(0, 1955, "martymcfly"))
+        val game = CountingGame(gameStateRepo)
+
+        assertThat(game.describeInitialState()).isEqualTo("Resuming CountingGame at 1955.")
     }
 }
