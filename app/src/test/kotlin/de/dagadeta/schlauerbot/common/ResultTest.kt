@@ -1,5 +1,6 @@
 package de.dagadeta.schlauerbot.common
 
+import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
 import de.dagadeta.schlauerbot.common.Result.Companion.failure
 import de.dagadeta.schlauerbot.common.Result.Companion.success
 import org.assertj.core.api.Assertions.assertThat
@@ -29,9 +30,9 @@ class ResultTest {
     }
 
     @Test
-    fun `failureOrNull returns the failure message, otherwise null`() {
+    fun `failureOrNull returns the failure message and failureType, otherwise null`() {
         assertThat(success.failureOrNull()).isNull()
-        assertThat(failure.failureOrNull()).isEqualTo("Oh no!")
+        assertThat(failure.failureOrNull()).isEqualTo("Oh no!" to Unspectacular)
     }
 
     @Test

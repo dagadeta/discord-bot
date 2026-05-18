@@ -1,6 +1,8 @@
 package de.dagadeta.schlauerbot.countinggame
 
 import de.dagadeta.schlauerbot.common.FailureType
+import de.dagadeta.schlauerbot.common.FailureType.Critical
+import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.config.AdminConfig
@@ -90,8 +92,8 @@ class DiscordCountingGame(
 
     fun onInvalidMessage(event: MessageReceivedEvent, replyMessage: String, failureType: FailureType) {
         when (failureType) {
-            FailureType.Unspectacular -> sendWarningMessage(event, replyMessage)
-            FailureType.Critical -> {
+            Unspectacular -> sendWarningMessage(event, replyMessage)
+            Critical -> {
                 event.message.reply(replyMessage).queue()
                 event.message.addReaction(Emoji.fromUnicode("💥")).queue()
             }

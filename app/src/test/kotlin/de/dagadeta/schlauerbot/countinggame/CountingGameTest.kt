@@ -1,5 +1,8 @@
 package de.dagadeta.schlauerbot.countinggame
 
+import de.dagadeta.schlauerbot.common.FailureType
+import de.dagadeta.schlauerbot.common.FailureType.Critical
+import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
 import de.dagadeta.schlauerbot.persistance.CountingGameState
 import de.dagadeta.schlauerbot.persistance.CountingGameStatePersistenceService
 import org.assertj.core.api.Assertions.assertThat
@@ -24,7 +27,7 @@ class CountingGameTest {
         val result = game.onMessageReceived("voldemort", 7)
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("You didn't even manage to write the first number! Let's try that again (Tip: It's 0...)")
+        assertThat(result.failureOrNull()).isEqualTo("You didn't even manage to write the first number! Let's try that again (Tip: It's 0...)" to Unspectacular)
     }
 
     @Test
@@ -41,7 +44,7 @@ class CountingGameTest {
         val result = game.onMessageReceived("voldemort", 1)
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("You're not alone here! Let the others write numbers too!")
+        assertThat(result.failureOrNull()).isEqualTo("You're not alone here! Let the others write numbers too!" to Unspectacular)
     }
 
     @Test
@@ -50,7 +53,7 @@ class CountingGameTest {
         val result = game.onMessageReceived("snape", 2)
 
         assertThat(result.isFailure).isTrue
-        assertThat(result.failureOrNull()).isEqualTo("You RUINED it at 0! Let's start over with 0...")
+        assertThat(result.failureOrNull()).isEqualTo("You RUINED it at 0! Let's start over with 0..." to Critical)
     }
 
     @Test

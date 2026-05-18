@@ -2,6 +2,9 @@
 
 package de.dagadeta.schlauerbot.common
 
+import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
+import de.dagadeta.schlauerbot.common.Result.Failure
+
 
 @JvmInline
 value class Result<out T> internal constructor(
@@ -17,23 +20,16 @@ value class Result<out T> internal constructor(
             else -> value as T
         }
 
-    fun failureOrNull(): String? =
+    fun failureOrNull(): Pair<String, FailureType>? =
         when (value) {
-            is Failure -> value.message
-            else -> null
-        }
-
-    fun failureTypeOrNull(): FailureType? =
-        when (value) {
-            is Failure -> value.type
+            is Failure -> value.message to value.type
             else -> null
         }
 
     companion object {
         fun <T> success(value: T): Result<T> = Result(value)
-        fun <T> failure(message: String, type: FailureType = FailureType.Unspectacular): Result<T> =
+        fun <T> failure(message: String, type: FailureType = Unspectacular): Result<T> =
             Result(createFailure(message, type))
-
     }
 
     @PublishedApi
@@ -47,18 +43,17 @@ value class Result<out T> internal constructor(
     )
 }
 
-internal fun createFailure(message: String, type: FailureType): Any =
-    Result.Failure(message, type)
+internal fun createFailure(message: String, type: FailureType): Any = Failure(message, type)
 
 inline fun <R, T : R> Result<T>.getOrElse(onFailure: (message: String, type: FailureType) -> R): R {
     return when (value) {
-        is Result.Failure -> onFailure(value.message, value.type)
+        is Failure -> onFailure(value.message, value.type)
         else -> value as T
     }
 }
 
 inline fun <T> Result<T>.onFailure(action: (message: String, type: FailureType) -> Unit): Result<T> {
-    if (value is Result.Failure) {
+    if (value is Failure) {
         action(value.message, value.type)
     }
     return this
