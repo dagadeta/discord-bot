@@ -5,6 +5,7 @@ import de.dagadeta.schlauerbot.common.FailureType.Critical
 import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
+import de.dagadeta.schlauerbot.common.sendPrivateMessage
 import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.PermissionValidator
@@ -27,7 +28,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.mariuszgromada.math.mxparser.Expression
 import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
-import java.util.concurrent.TimeUnit
 
 private const val CHANNEL_ID_SUBCOMMAND_NAME = "channel-id"
 private const val CHANNEL_ID_OPTION_NAME = "id"
@@ -92,29 +92,12 @@ class DiscordCountingGame(
 
     fun onInvalidMessage(event: MessageReceivedEvent, replyMessage: String, failureType: FailureType) {
         when (failureType) {
-            Unspectacular -> sendWarningMessage(event, replyMessage)
+            Unspectacular -> sendPrivateMessage(event.message, replyMessage)
             Critical -> {
                 event.message.reply(replyMessage).queue()
                 event.message.addReaction(Emoji.fromUnicode("💥")).queue()
             }
         }
-    }
-
-    fun sendWarningMessage(event: MessageReceivedEvent, replyMessage: String) {
-        fun temporaryReplyFallback() {
-            event.message.reply(replyMessage).queue { reply ->
-                event.message.delete().queueAfter(3, TimeUnit.SECONDS)
-                reply.delete().queueAfter(3, TimeUnit.SECONDS)
-            }
-        }
-
-        event.message.author.openPrivateChannel()
-            .queue({ channel ->
-                channel.sendMessage(replyMessage).queue(
-                    { event.message.delete().queue() },
-                    { temporaryReplyFallback() }
-                )
-            }, { temporaryReplyFallback() })
     }
 
     fun writeInitialStateTo(logging: Logging) {
