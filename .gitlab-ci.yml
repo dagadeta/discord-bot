@@ -25,7 +25,7 @@ variables:
 build:
   stage: build
   extends: .gradle-cache
-  image: registry.gitlab.com/dagadeta-public/dind-jdk-image@sha256:1eb0a172c8f09d304cc9b600ae2000a174b9af96cdb8cc4bae1416cfa2013fc7
+  image: registry.gitlab.com/dagadeta-public/dind-jdk-image@sha256:6dbb2fe3f6d0bedbdbcc374273256a1a1fd47c9574e1eba338e5a1fd1683e583
   services:
     - docker:29-dind
   variables:
