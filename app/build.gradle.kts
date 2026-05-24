@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.json.path)
     implementation(libs.kotlin.logging)
     implementation(libs.okhttp)
+    implementation(libs.mxparser)
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.flywaydb:flyway-database-postgresql")
@@ -102,7 +103,7 @@ flyway {
     url = "jdbc:postgresql://localhost:5432/discordbot"
     user = "pguser"
     password = "pguser"
-    schemas = arrayOf("wordchaingame", "discordbot")
+    schemas = arrayOf("wordchaingame", "discordbot", "countinggame")
     baselineOnMigrate = true
 }
 
