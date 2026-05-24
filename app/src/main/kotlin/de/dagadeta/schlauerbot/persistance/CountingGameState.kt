@@ -7,8 +7,8 @@ import jakarta.persistence.Table
 import org.hibernate.proxy.HibernateProxy
 
 @Entity
-@Table(schema = "wordchaingame", name = "game_state")
-class WordChainGameState(@Id var id: Int, var started: Boolean, var lastUser: String) {
+@Table(schema = "countinggame", name = "game_state")
+class CountingGameState(@Id var id: Int, var count: Int, var lastUser: String) {
     @Generated
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -18,7 +18,7 @@ class WordChainGameState(@Id var id: Int, var started: Boolean, var lastUser: St
         val thisEffectiveClass =
             if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
         if (thisEffectiveClass != oEffectiveClass) return false
-        other as WordChainGameState
+        other as CountingGameState
 
         return id != null && id == other.id
     }
@@ -29,8 +29,8 @@ class WordChainGameState(@Id var id: Int, var started: Boolean, var lastUser: St
 }
 
 @Entity
-@Table(schema = "wordchaingame", name = "used_words")
-class UsedWord(@Id var word: String) {
+@Table(schema = "countinggame", name = "user_state")
+class UserState(@Id var userId: String, var streak: Int, var longestStreak: Int, var canNotCount: Boolean) {
     @Generated
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -40,9 +40,9 @@ class UsedWord(@Id var word: String) {
         val thisEffectiveClass =
             if (this is HibernateProxy) this.hibernateLazyInitializer.persistentClass else this.javaClass
         if (thisEffectiveClass != oEffectiveClass) return false
-        other as UsedWord
+        other as UserState
 
-        return word != null && word == other.word
+        return userId != null && userId == other.userId
     }
 
     @Generated

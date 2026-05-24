@@ -30,6 +30,22 @@ The WordChain game is a game where players have to find a word that begins with 
 | `/word-chain-game-stats`                       | Shows statistics about the WordChain game                                                     | None                | None                                 |
 
 
+### Counting game
+The Counting game is a game where players have to count. Can truly be hard sometimes.
+
+**Rules**:
+* The game starts with 0
+* The counter resets when a player writes a wrong number
+* A player that writes a wrong number gets a `can-not-count` role
+
+**Commands**:
+
+| Command                                       | Description                                   | Parameters    | Requirements                         |
+|:----------------------------------------------|-----------------------------------------------|---------------|--------------------------------------|
+| `/config counting-game channel-id`            | Sets the counting game's channel ID           | `id` - String | An administrator in an admin-channel |
+| `/config counting-game can-not-count-role-id` | Sets the role ID for users that can not count | `id` - String | An administrator in an admin-channel |
+
+
 ### Fun commands
 
 | Command                | Description                             | Parameters | Requirements                     |

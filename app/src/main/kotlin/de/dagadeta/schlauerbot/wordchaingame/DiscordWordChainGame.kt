@@ -2,6 +2,7 @@ package de.dagadeta.schlauerbot.wordchaingame
 
 import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
+import de.dagadeta.schlauerbot.common.sendPrivateMessage
 import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.config.WordCheckerConfig
 import de.dagadeta.schlauerbot.discord.PermissionValidator
@@ -12,7 +13,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
-import java.util.concurrent.TimeUnit
 
 private const val CHANNEL_ID_SUBCOMMAND_NAME = "channel-id"
 private const val CHANNEL_ID_OPTION_NAME = "id"
@@ -85,7 +84,6 @@ class DiscordWordChainGame(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        // don't react on unknown commands; there might be others that are not word chain game related
         if (event.name !in allCommandNames) return
 
         event.deferReply().queue()
@@ -104,26 +102,7 @@ class DiscordWordChainGame(
         if (event.channel.id != channelId || event.author.isBot) return
         game.onMessageReceived(event.author.id, event.message.contentDisplay)
             .onSuccess { event.message.addReaction(Emoji.fromUnicode("🐸")).queue() }
-            .onFailure { answer -> sendInvalidWordMessage(event.message, answer) }
-    }
-
-    private fun sendInvalidWordMessage(originalMessage: Message, replyMessage: String) {
-        fun temporaryReplyFallback() {
-            originalMessage.reply(replyMessage).queue { reply ->
-                originalMessage.delete().queueAfter(3, TimeUnit.SECONDS)
-                reply.delete().queueAfter(3, TimeUnit.SECONDS)
-            }
-        }
-
-        originalMessage.author.openPrivateChannel()
-            .queue({ channel ->
-                channel.sendMessage(replyMessage).queue(
-                    { _ -> originalMessage.delete().queue() },
-                    { _ -> temporaryReplyFallback() }
-                )
-            }, { _ ->
-                temporaryReplyFallback()
-            })
+            .onFailure { message, _ -> sendPrivateMessage(event.message, message) }
     }
 
     fun writeInitialStateTo(logging: Logging) {
