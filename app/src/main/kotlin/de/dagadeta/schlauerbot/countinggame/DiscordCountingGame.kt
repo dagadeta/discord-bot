@@ -95,7 +95,7 @@ class DiscordCountingGame(
 
         game.onMessageReceived(event.author.id, parsedMessage)
             .onSuccess { canNotCountFlag ->
-                event.message.addReaction(Emoji.fromUnicode("🐸")).queue()
+                event.message.addReaction(Emoji.fromUnicode("🌳")).queue()
                 if (canNotCountFlag == RESET) {
                     event.guild.getRoleById(canNotCountRoleId)?.let {
                         event.guild.removeRoleFromMember(event.author, it).queue()
