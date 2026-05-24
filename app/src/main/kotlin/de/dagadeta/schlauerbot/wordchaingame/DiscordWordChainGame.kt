@@ -84,7 +84,6 @@ class DiscordWordChainGame(
     }
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        // don't react on unknown commands; there might be others that are not word chain game related
         if (event.name !in allCommandNames) return
 
         event.deferReply().queue()

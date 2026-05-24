@@ -48,6 +48,7 @@ class DiscordCountingGame(
 ) : ListenerAdapter(), SubCommandGroupProvider {
     override val group = "counting-game"
     private val kLogger = KotlinLogging.logger {}
+    private val allCommandNames = CountingGameCommand.entries.map(CountingGameCommand::command)
     private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo)
     private var channelId = botConfigRepo.findByIdOrNull(ConfigId(group, CHANNEL_ID_SUBCOMMAND_NAME))?.value ?: ""
     private var canNotCountRoleId = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME))?.value ?: ""
@@ -55,6 +56,9 @@ class DiscordCountingGame(
     @PostConstruct
     fun startListener() {
         api.addEventListener(this)
+        CountingGameCommand.entries.forEach {
+            api.upsertCommand(it.command, it.description).queue()
+        }
         writeInitialStateTo(logging)
 
         logging.log("${DiscordCountingGame::class.simpleName} started.")
@@ -70,6 +74,17 @@ class DiscordCountingGame(
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
+        if (event.name !in allCommandNames) return
+
+        event.deferReply().queue()
+        val message = when (event.name) {
+            CountingGameCommand.Streak.command -> game.generateStreakMessage(event.user.id)
+            else -> "Unknown command '${event.name}'"
+        }
+        event.hook.sendMessage(message).queue()
+    }
+
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.channel.id != channelId || event.author.isBot) return
         val parsedMessage = parseMessage(event.message.contentDisplay) ?: return
@@ -81,6 +96,7 @@ class DiscordCountingGame(
                     event.guild.getRoleById(canNotCountRoleId)?.let {
                         event.guild.removeRoleFromMember(event.author, it).queue()
                     }
+                    event.message.reply("At least for now it seems like you can count again! Phew.").queue()
                 }
             }
             .onFailure {

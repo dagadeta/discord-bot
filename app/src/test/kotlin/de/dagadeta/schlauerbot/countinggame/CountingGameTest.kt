@@ -156,4 +156,30 @@ class CountingGameTest {
         assertThat(userStateCaptor.firstValue.canNotCount).isFalse
         assertThat(userStateCaptor.firstValue.streak).isEqualTo(10)
     }
+
+    @Test
+    fun `generateStreakMessage generates a correct streak message`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 9, 22, false))
+        val message = game.generateStreakMessage(user1)
+        assertThat(message).isEqualTo("""
+            Streak: 9
+            Longest Streak: 22
+        """.trimIndent())
+    }
+
+    @Test
+    fun `generateStreakMessage generates a correct streak message when there is no streak yet`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 0, 0, false))
+        val message = game.generateStreakMessage(user1)
+        assertThat(message).isEqualTo("""
+            Streak: 0
+            Longest Streak: 0
+        """.trimIndent())
+    }
+
+    @Test
+    fun `generateStreakMessage generates a correct streak message when there is no user state yet`() {
+        val message = game.generateStreakMessage(user1)
+        assertThat(message).isEqualTo("You haven't counted yet! 🥲")
+    }
 }

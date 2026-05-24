@@ -99,9 +99,24 @@ class CountingGame(
 
     fun describeInitialState(): String = "Resuming CountingGame at $currentNumber."
 
+    fun generateStreakMessage(userId: String): String {
+        return if (userStateRepo.findByIdOrNull(userId)?.longestStreak == null) {
+            "You haven't counted yet! 🥲"
+        } else {
+            """
+                Streak: ${userStateRepo.findByIdOrNull(userId)?.streak ?: 0}
+                Longest Streak: ${userStateRepo.findByIdOrNull(userId)?.longestStreak ?: 0}
+            """.trimIndent()
+        }
+    }
+
     private fun saveState() = gameStateRepo.upsert(CountingGameState(theGameId, currentNumber, lastUserId))
 
     enum class CanNotCountFlag {
         RESET, UNCHANGED
     }
+}
+
+enum class CountingGameCommand(val command: String, val description: String) {
+    Streak("counting-game-streak", "Shows your current streak")
 }
