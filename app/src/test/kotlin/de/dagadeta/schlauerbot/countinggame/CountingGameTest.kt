@@ -19,8 +19,10 @@ import org.mockito.kotlin.whenever
 class CountingGameTest {
     private val gameStateRepo = mock<CountingGameStatePersistenceService>()
     private val userStateRepo = mock<UserStatePersistenceService>()
+    private val canNotCountResetThreshold = 10
+    private val oneBeforeCanNotCountResetThreshold = canNotCountResetThreshold - 1
 
-    private val game = CountingGame(gameStateRepo, userStateRepo)
+    private val game = CountingGame(gameStateRepo, userStateRepo, canNotCountResetThreshold)
 
     private val user1 = "Voldemort"
     private val user2 = "Snape"
@@ -87,7 +89,7 @@ class CountingGameTest {
     @Test
     fun `the game state can be restored`() {
         whenever(gameStateRepo.findByIdOrNull(0)).thenReturn(CountingGameState(0, 1955, "MartyMcFly"))
-        val game = CountingGame(gameStateRepo, userStateRepo)
+        val game = CountingGame(gameStateRepo, userStateRepo, canNotCountResetThreshold)
 
         assertThat(game.describeInitialState()).isEqualTo("Resuming CountingGame at 1955.")
     }
@@ -132,7 +134,7 @@ class CountingGameTest {
 
     @Test
     fun `reaching the streak threshold resets canNotCount`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 9, 9, true))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, true))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -140,13 +142,27 @@ class CountingGameTest {
         val userStateCaptor = argumentCaptor<UserState>()
         verify(userStateRepo).upsert(userStateCaptor.capture())
         assertThat(userStateCaptor.firstValue.canNotCount).isFalse
-        assertThat(userStateCaptor.firstValue.streak).isEqualTo(10)
-        assertThat(userStateCaptor.firstValue.longestStreak).isEqualTo(10)
+        assertThat(userStateCaptor.firstValue.streak).isEqualTo(canNotCountResetThreshold)
+        assertThat(userStateCaptor.firstValue.longestStreak).isEqualTo(canNotCountResetThreshold)
+    }
+
+    @Test
+    fun `reaching the streak threshold with longest streak does not reset canNotCount`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, canNotCountResetThreshold - 2, canNotCountResetThreshold, true))
+
+        val result = game.onMessageReceived(user1, 0)
+
+        assertThat(result.getOrNull()).isEqualTo(UNCHANGED)
+        val userStateCaptor = argumentCaptor<UserState>()
+        verify(userStateRepo).upsert(userStateCaptor.capture())
+        assertThat(userStateCaptor.firstValue.canNotCount).isTrue
+        assertThat(userStateCaptor.firstValue.streak).isEqualTo(oneBeforeCanNotCountResetThreshold)
+        assertThat(userStateCaptor.firstValue.longestStreak).isEqualTo(canNotCountResetThreshold)
     }
 
     @Test
     fun `streak increases but canNotCount remains false if not previously true`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 9, 9, false))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, false))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -154,15 +170,15 @@ class CountingGameTest {
         val userStateCaptor = argumentCaptor<UserState>()
         verify(userStateRepo).upsert(userStateCaptor.capture())
         assertThat(userStateCaptor.firstValue.canNotCount).isFalse
-        assertThat(userStateCaptor.firstValue.streak).isEqualTo(10)
+        assertThat(userStateCaptor.firstValue.streak).isEqualTo(canNotCountResetThreshold)
     }
 
     @Test
     fun `generateStreakMessage generates a correct streak message`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 9, 22, false))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 22, false))
         val message = game.generateStreakMessage(user1)
         assertThat(message).isEqualTo("""
-            Streak: 9
+            Streak: 5
             Longest Streak: 22
         """.trimIndent())
     }

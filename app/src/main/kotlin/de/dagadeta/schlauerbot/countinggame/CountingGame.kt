@@ -15,14 +15,13 @@ private val logger = KotlinLogging.logger {}
 class CountingGame(
     private val gameStateRepo: CountingGameStatePersistenceService,
     private val userStateRepo: UserStatePersistenceService,
+    private val canNotCountResetThreshold: Int,
 ) {
     private val theGameId = 0
 
     private val startingNumber = 0
     private var currentNumber: Int = startingNumber - 1
     private var lastUserId: String = ""
-
-    private val canNotCountResetThreshold = 10
 
     init {
         gameStateRepo.findByIdOrNull(theGameId)?.let {
@@ -75,7 +74,7 @@ class CountingGame(
     private fun saveCountingSucceeded(userState: UserState): CanNotCountFlag {
         userState.streak++
         userState.longestStreak = maxOf(userState.longestStreak, userState.streak)
-        val canNotCountFlag = if (userState.longestStreak >= canNotCountResetThreshold && userState.canNotCount) {
+        val canNotCountFlag = if (userState.streak >= canNotCountResetThreshold && userState.canNotCount) {
             userState.canNotCount = false
             CanNotCountFlag.RESET
         } else {

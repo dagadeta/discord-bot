@@ -35,6 +35,8 @@ private const val CHANNEL_ID_SUBCOMMAND_NAME = "channel-id"
 private const val CHANNEL_ID_OPTION_NAME = "id"
 private const val CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME = "can-not-count-role-id"
 private const val CAN_NOT_COUNT_ROLE_ID_OPTION_NAME = "id"
+private const val CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME = "can-not-count-reset-threshold"
+private const val CAN_NOT_COUNT_RESET_THRESHOLD_OPTION_NAME = "streak"
 
 @Service
 class DiscordCountingGame(
@@ -49,9 +51,11 @@ class DiscordCountingGame(
     override val group = "counting-game"
     private val kLogger = KotlinLogging.logger {}
     private val allCommandNames = CountingGameCommand.entries.map(CountingGameCommand::command)
-    private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo)
     private var channelId = botConfigRepo.findByIdOrNull(ConfigId(group, CHANNEL_ID_SUBCOMMAND_NAME))?.value ?: ""
     private var canNotCountRoleId = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME))?.value ?: ""
+    private val defaultCanNotCountThreshold = 10
+    private var canNotCountResetThreshold = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME))?.value?.toIntOrNull() ?: defaultCanNotCountThreshold
+    private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo, canNotCountResetThreshold)
 
     @PostConstruct
     fun startListener() {
@@ -143,6 +147,8 @@ class DiscordCountingGame(
                 .addOption(OptionType.STRING, CHANNEL_ID_OPTION_NAME, "The channel ID", true),
             SubcommandData(CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME, "Sets the role ID for users that can not count")
                 .addOption(OptionType.STRING, CAN_NOT_COUNT_ROLE_ID_OPTION_NAME, "The role ID", true),
+            SubcommandData(CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME, "Sets the counting streak at which the can-not-count role is removed (default: $defaultCanNotCountThreshold)")
+                .addOption(OptionType.INTEGER, CAN_NOT_COUNT_RESET_THRESHOLD_OPTION_NAME, "The required streak", true),
         )
         return countingGameGroup
     }
@@ -161,6 +167,11 @@ class DiscordCountingGame(
                 canNotCountRoleId = event.getOption(CAN_NOT_COUNT_ROLE_ID_OPTION_NAME)?.asString ?: ""
                 botConfigRepo.upsert(BotConfig(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME, canNotCountRoleId))
                 "Can not count role ID set to '$canNotCountRoleId'."
+            }
+            CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME -> {
+                canNotCountResetThreshold = event.getOption(CAN_NOT_COUNT_RESET_THRESHOLD_OPTION_NAME)?.asInt ?: canNotCountResetThreshold
+                botConfigRepo.upsert(BotConfig(group, CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME, canNotCountResetThreshold.toString()))
+                "Can not count reset threshold set to '$canNotCountResetThreshold'."
             }
             else -> "Unknown subcommand '${event.interaction.subcommandName}'"
         }
