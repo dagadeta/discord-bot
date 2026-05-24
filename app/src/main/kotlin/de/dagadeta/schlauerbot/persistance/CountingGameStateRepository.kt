@@ -20,3 +20,20 @@ class CountingGameStatePersistenceService(val repo: CountingGameStateRepository)
 
     fun findByIdOrNull(id: Int) = repo.findByIdOrNull(id)
 }
+
+interface UserStateRepository: JpaRepository<UserState, String>
+
+@Component
+class UserStatePersistenceService(val repo: UserStateRepository) {
+    @Transactional
+    fun upsert(state: UserState): UserState {
+        val toSave = repo.findByIdOrNull(state.userId)?.apply {
+            streak = state.streak
+            longestStreak = state.longestStreak
+            canNotCount = state.canNotCount
+        } ?: state
+        return repo.save(toSave)
+    }
+
+    fun findByIdOrNull(id: String) = repo.findByIdOrNull(id)
+}

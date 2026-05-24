@@ -7,6 +7,7 @@ import de.dagadeta.schlauerbot.common.onFailure
 import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.common.sendPrivateMessage
 import de.dagadeta.schlauerbot.config.AdminConfig
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CanNotCountFlag.RESET
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.PermissionValidator
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
@@ -14,6 +15,7 @@ import de.dagadeta.schlauerbot.persistance.BotConfig
 import de.dagadeta.schlauerbot.persistance.BotConfigPersistenceService
 import de.dagadeta.schlauerbot.persistance.ConfigId
 import de.dagadeta.schlauerbot.persistance.CountingGameStatePersistenceService
+import de.dagadeta.schlauerbot.persistance.UserStatePersistenceService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
@@ -39,14 +41,16 @@ class DiscordCountingGame(
     private val logging: Logging,
     private val api: JDA,
     gameStateRepo: CountingGameStatePersistenceService,
+    userStateRepo: UserStatePersistenceService,
     private val botConfigRepo: BotConfigPersistenceService,
     private val adminConfig: AdminConfig,
     private val permissionValidator: PermissionValidator,
 ) : ListenerAdapter(), SubCommandGroupProvider {
     override val group = "counting-game"
     private val kLogger = KotlinLogging.logger {}
-    private val game: CountingGame = CountingGame(gameStateRepo)
+    private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo)
     private var channelId = botConfigRepo.findByIdOrNull(ConfigId(group, CHANNEL_ID_SUBCOMMAND_NAME))?.value ?: ""
+    private var canNotCountRoleId = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME))?.value ?: ""
 
     @PostConstruct
     fun startListener() {
@@ -71,8 +75,20 @@ class DiscordCountingGame(
         val parsedMessage = parseMessage(event.message.contentDisplay) ?: return
 
         game.onMessageReceived(event.author.id, parsedMessage)
-            .onSuccess { event.message.addReaction(Emoji.fromUnicode("🐸")).queue() }
-            .onFailure { message, type -> onInvalidMessage(event, message, type) }
+            .onSuccess { canNotCountFlag ->
+                event.message.addReaction(Emoji.fromUnicode("🐸")).queue()
+                if (canNotCountFlag == RESET) {
+                    event.guild.getRoleById(canNotCountRoleId)?.let {
+                        event.guild.removeRoleFromMember(event.author, it).queue()
+                    }
+                }
+            }
+            .onFailure {
+                message, type -> onInvalidMessage(event, message, type)
+                event.guild.getRoleById(canNotCountRoleId)?.let {
+                    event.guild.addRoleToMember(event.author, it).queue()
+                }
+            }
     }
 
     private fun parseMessage(message: String): Int? {
@@ -126,9 +142,9 @@ class DiscordCountingGame(
                 "Channel ID set to '$channelId'."
             }
             CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME -> {
-                val roleId = event.getOption(CAN_NOT_COUNT_ROLE_ID_OPTION_NAME)?.asString ?: ""
-                botConfigRepo.upsert(BotConfig(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME, roleId))
-                "Can not count role ID set to '$roleId'."
+                canNotCountRoleId = event.getOption(CAN_NOT_COUNT_ROLE_ID_OPTION_NAME)?.asString ?: ""
+                botConfigRepo.upsert(BotConfig(group, CAN_NOT_COUNT_ROLE_ID_SUBCOMMAND_NAME, canNotCountRoleId))
+                "Can not count role ID set to '$canNotCountRoleId'."
             }
             else -> "Unknown subcommand '${event.interaction.subcommandName}'"
         }
