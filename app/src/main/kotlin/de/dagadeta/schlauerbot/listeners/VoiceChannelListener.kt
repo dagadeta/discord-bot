@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
+import java.util.concurrent.ConcurrentHashMap
 
 private const val PING_ROLE_ID_SUBCOMMAND_NAME = "ping-role-id"
 private const val PING_ROLE_ID_OPTION_NAME = "id"
@@ -35,6 +36,8 @@ class VoiceChannelListener(
     override val group = "voice-channel-listener"
     private val kLogger = KotlinLogging.logger {}
     private var voiceChannelPingRoleId = botConfigRepo.findByIdOrNull(ConfigId(group, PING_ROLE_ID_SUBCOMMAND_NAME))?.value ?: ""
+
+    private val activePings = ConcurrentHashMap<String, String>()
 
     @PostConstruct
     fun startListener() {
@@ -54,12 +57,30 @@ class VoiceChannelListener(
     }
 
     override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
-        val joinedChannel = event.channelJoined ?: return
         if (event.member.user.isBot) return
+        if (event.channelJoined != null) onVoiceChannelJoin(event)
+        if (event.channelLeft != null) onVoiceChannelLeave(event)
+    }
+
+    private fun onVoiceChannelJoin(event: GuildVoiceUpdateEvent) {
+        val joinedChannel = event.channelJoined ?: return
 
         if (joinedChannel is VoiceChannel && joinedChannel.members.size == 1) {
-            kLogger.info { "User ${event.member.effectiveName} joined voice channel ${joinedChannel.name}" }
-            joinedChannel.sendMessage("<@&$voiceChannelPingRoleId> **${event.member.effectiveName}** just started a voice call!").queue()
+            kLogger.info { "User ${event.member.effectiveName} started call in voice channel ${joinedChannel.name}" }
+            joinedChannel.sendMessage("<@&$voiceChannelPingRoleId> **${event.member.effectiveName}** just started a voice call!").queue { message ->
+                activePings[joinedChannel.id] = message.id
+            }
+        }
+    }
+
+    private fun onVoiceChannelLeave(event: GuildVoiceUpdateEvent) {
+        val leftChannel = event.channelLeft ?: return
+
+        if (leftChannel is VoiceChannel && leftChannel.members.isEmpty()) {
+            kLogger.info { "User ${event.member.effectiveName} ended call in voice channel ${leftChannel.name}" }
+            val messageId = activePings.remove(leftChannel.id)
+
+            if (messageId != null) leftChannel.deleteMessageById(messageId).queue()
         }
     }
 
