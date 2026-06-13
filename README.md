@@ -58,6 +58,16 @@ The Counting game is a game where players have to count. Can truly be hard somet
 | `/ding`                | Answers Dong                            | None       | Any user in a bottalking-channel |
 
 
+### Voice Channel Pings
+The bot sends a message to a voice channel when the first user joins it.
+
+**Commands**:
+
+| Command                                       | Description                         | Parameters    | Requirements                         |
+|:----------------------------------------------|-------------------------------------|---------------|--------------------------------------|
+| `/config voice-channel-listener ping-role-id` | Sets the voice channel ping role ID | `id` - String | An administrator in an admin-channel |
+
+
 ### Configuration
 The bot can be configured using the following commands:
 
