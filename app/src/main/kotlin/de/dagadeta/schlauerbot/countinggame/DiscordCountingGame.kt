@@ -56,6 +56,19 @@ class DiscordCountingGame(
     private val defaultCanNotCountThreshold = 10
     private var canNotCountResetThreshold = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME))?.value?.toIntOrNull() ?: defaultCanNotCountThreshold
     private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo, canNotCountResetThreshold)
+    private val numberReactionEmojis = listOf(
+        NumberReactionEmoji(13, Emoji.fromUnicode("🍀")),
+        NumberReactionEmoji(42, Emoji.fromUnicode("💡")),
+        NumberReactionEmoji(69, Emoji.fromUnicode("😏")),
+        NumberReactionEmoji(88, Emoji.fromUnicode("🤮")),
+        NumberReactionEmoji(99, Emoji.fromUnicode("🎈")),
+        NumberReactionEmoji(100, Emoji.fromUnicode("💯")),
+        NumberReactionEmoji(161, Emoji.fromUnicode("🚩")),
+        NumberReactionEmoji(175, Emoji.fromUnicode("🌈")),
+        NumberReactionEmoji(420, Emoji.fromUnicode("🌿")),
+        NumberReactionEmoji(666, Emoji.fromUnicode("😈")),
+        NumberReactionEmoji(777, Emoji.fromUnicode("🎰")),
+    )
 
     @PostConstruct
     fun startListener() {
@@ -96,6 +109,9 @@ class DiscordCountingGame(
         game.onMessageReceived(event.author.id, parsedMessage)
             .onSuccess { canNotCountFlag ->
                 event.message.addReaction(Emoji.fromUnicode("🌳")).queue()
+                numberReactionEmojis.find { it.number == parsedMessage }?.let {
+                    event.message.addReaction(it.emoji).queue()
+                }
                 if (canNotCountFlag == RESET) {
                     event.guild.getRoleById(canNotCountRoleId)?.let {
                         event.guild.removeRoleFromMember(event.author, it).queue()
@@ -178,4 +194,9 @@ class DiscordCountingGame(
         kLogger.info { message }
         event.hook.sendMessage(message).queue()
     }
+
+    data class NumberReactionEmoji(
+        val number: Int,
+        val emoji: Emoji,
+    )
 }
