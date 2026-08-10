@@ -108,10 +108,13 @@ class DiscordCountingGame(
 
         game.onMessageReceived(event.author.id, parsedMessage)
             .onSuccess { canNotCountFlag ->
-                event.message.addReaction(Emoji.fromUnicode("🌳")).queue()
-                numberReactionEmojis.find { it.number == parsedMessage }?.let {
-                    event.message.addReaction(it.emoji).queue()
+                val numberReactionEmoji = numberReactionEmojis.find { it.number == parsedMessage }
+                if (numberReactionEmoji != null) {
+                    event.message.addReaction(numberReactionEmoji.emoji).queue()
+                } else {
+                    event.message.addReaction(Emoji.fromUnicode("🌳")).queue()
                 }
+
                 if (canNotCountFlag == RESET) {
                     event.guild.getRoleById(canNotCountRoleId)?.let {
                         event.guild.removeRoleFromMember(event.author, it).queue()
