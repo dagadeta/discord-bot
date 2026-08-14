@@ -56,19 +56,23 @@ class DiscordCountingGame(
     private val defaultCanNotCountThreshold = 10
     private var canNotCountResetThreshold = botConfigRepo.findByIdOrNull(ConfigId(group, CAN_NOT_COUNT_RESET_THRESHOLD_SUBCOMMAND_NAME))?.value?.toIntOrNull() ?: defaultCanNotCountThreshold
     private val game: CountingGame = CountingGame(gameStateRepo, userStateRepo, canNotCountResetThreshold)
-    private val numberReactionEmojis = listOf(
-        NumberReactionEmoji(13, Emoji.fromUnicode("🍀")),
-        NumberReactionEmoji(42, Emoji.fromUnicode("💡")),
-        NumberReactionEmoji(69, Emoji.fromUnicode("😏")),
-        NumberReactionEmoji(88, Emoji.fromUnicode("🤮")),
-        NumberReactionEmoji(99, Emoji.fromUnicode("🎈")),
-        NumberReactionEmoji(100, Emoji.fromUnicode("💯")),
-        NumberReactionEmoji(161, Emoji.fromUnicode("🚩")),
-        NumberReactionEmoji(175, Emoji.fromUnicode("🌈")),
-        NumberReactionEmoji(420, Emoji.fromUnicode("🌿")),
-        NumberReactionEmoji(666, Emoji.fromUnicode("😈")),
-        NumberReactionEmoji(777, Emoji.fromUnicode("🎰")),
+
+    private val numberReactionEmojis = mapOf(
+        0 to "✅",
+        13 to "🍀",
+        42 to "💡",
+        69 to "😏",
+        88 to "🤮",
+        99 to "🎈",
+        100 to "💯",
+        161 to "🚩",
+        175 to "🌈",
+        420 to "🌿",
+        666 to "😈",
+        777 to "🎰",
     )
+        .mapValues { Emoji.fromUnicode(it.value) }
+        .withDefault { Emoji.fromUnicode("🌳") }
 
     @PostConstruct
     fun startListener() {
@@ -108,12 +112,7 @@ class DiscordCountingGame(
 
         game.onMessageReceived(event.author.id, parsedMessage)
             .onSuccess { canNotCountFlag ->
-                val numberReactionEmoji = numberReactionEmojis.find { it.number == parsedMessage }
-                if (numberReactionEmoji != null) {
-                    event.message.addReaction(numberReactionEmoji.emoji).queue()
-                } else {
-                    event.message.addReaction(Emoji.fromUnicode("🌳")).queue()
-                }
+                event.message.addReaction(numberReactionEmojis.getValue(parsedMessage)).queue()
 
                 if (canNotCountFlag == RESET) {
                     event.guild.getRoleById(canNotCountRoleId)?.let {
@@ -197,9 +196,4 @@ class DiscordCountingGame(
         kLogger.info { message }
         event.hook.sendMessage(message).queue()
     }
-
-    data class NumberReactionEmoji(
-        val number: Int,
-        val emoji: Emoji,
-    )
 }
