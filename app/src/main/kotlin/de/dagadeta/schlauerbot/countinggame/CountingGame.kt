@@ -109,6 +109,39 @@ class CountingGame(
         }
     }
 
+    fun generateLeaderboardMessage(userId: String): String {
+        val allUsers = userStateRepo.findAll()
+
+        fun formatLeaderboard(
+            title: String,
+            selector: (UserState) -> Int,
+            limit: Int = 10
+        ): String {
+            val sortedUsers = allUsers.sortedByDescending(selector)
+            val bestUsers = sortedUsers.take(limit)
+
+            val builder = StringBuilder("**$title**\n")
+            bestUsers.forEachIndexed { index, userState ->
+                builder.append("${index + 1}. <@${userState.userId}> | ${selector(userState)}\n")
+            }
+
+            if (bestUsers.none { it.userId == userId }) {
+                val userIndex = sortedUsers.indexOfFirst { it.userId == userId }
+                if (userIndex != -1) {
+                    builder.append("...\n")
+                    builder.append("${userIndex + 1}. <@$userId> | ${selector(sortedUsers[userIndex])}\n")
+                }
+            }
+
+            return builder.toString()
+        }
+
+        val currentStreakLeaderboard = formatLeaderboard("Current Streaks", { it.streak })
+        val longestStreakLeaderboard = formatLeaderboard("Longest Streaks", { it.longestStreak })
+
+        return "$currentStreakLeaderboard\n$longestStreakLeaderboard".trimIndent()
+    }
+
     private fun saveState() = gameStateRepo.upsert(CountingGameState(theGameId, currentNumber, lastUserId))
 
     enum class CanNotCountFlag {
@@ -117,5 +150,6 @@ class CountingGame(
 }
 
 enum class CountingGameCommand(val command: String, val description: String) {
-    Streak("counting-game-streak", "Shows your current streak")
+    Streak("counting-game-streak", "Shows your current streak"),
+    Leaderboard("counting-game-leaderboard", "Shows a server-wide leaderboard for the counting game")
 }

@@ -198,4 +198,35 @@ class CountingGameTest {
         val message = game.generateStreakMessage(user1)
         assertThat(message).isEqualTo("You haven't counted yet! 🥲")
     }
+
+    @Test
+    fun `generateLeaderboardMessage generates a correct leaderboard message`() {
+        val userStates = listOf(
+            UserState("user1", 10, 20, false),
+            UserState("user2", 5, 25, false),
+            UserState("user3", 15, 15, false),
+            UserState("user4", 0, 0, false),
+            UserState("user5", 1, 1, false),
+            UserState("user6", 2, 2, false),
+            UserState("user7", 3, 3, false),
+            UserState("user8", 4, 4, false),
+            UserState("user9", 5, 5, false),
+            UserState("user10", 6, 6, false),
+            UserState("user11", 7, 7, false)
+        )
+        whenever(userStateRepo.findAll()).thenReturn(userStates)
+
+        val message = game.generateLeaderboardMessage("user4")
+
+        assertThat(message).contains("**Current Streaks**")
+        assertThat(message).contains("1. <@user3> | 15")
+        assertThat(message).contains("2. <@user1> | 10")
+        assertThat(message).contains("...")
+        assertThat(message).contains("11. <@user4> | 0")
+
+        assertThat(message).contains("**Longest Streaks**")
+        assertThat(message).contains("1. <@user2> | 25")
+        assertThat(message).contains("2. <@user1> | 20")
+        assertThat(message).contains("11. <@user4> | 0")
+    }
 }
