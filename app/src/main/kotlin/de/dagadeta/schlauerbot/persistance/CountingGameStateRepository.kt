@@ -36,4 +36,6 @@ class UserStatePersistenceService(val repo: UserStateRepository) {
     }
 
     fun findByIdOrNull(id: String) = repo.findByIdOrNull(id)
+
+    fun findAll(): List<UserState> = repo.findAll()
 }

@@ -46,6 +46,7 @@ The Counting game is a game where players have to count. Can truly be hard somet
 | `/config counting-game can-not-count-role-id`         | Sets the role ID for users that can not count                                     | `id` - String      | An administrator in an admin-channel |
 | `/config counting-game can-not-count-reset-threshold` | Sets the counting streak at which the can-not-count role is removed (default: 10) | `streak` - Integer | An administrator in an admin-channel |
 | `/counting-game-streak`                               | Shows your current streak                                                         | None               | None                                 |
+| `/counting-game-leaderboard`                          | Shows a server-wide leaderboard for the counting game                             | None               | None                                 |
 
 
 ### Fun commands
