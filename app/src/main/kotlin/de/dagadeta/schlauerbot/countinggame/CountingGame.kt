@@ -112,18 +112,14 @@ class CountingGame(
         }
     }
 
-    fun generateLeaderboardMessage(userId: String): String {
+    fun generateLeaderboardMessage(userId: String, leaderboards: List<CountingGameLeaderboard>): String {
         val allUsers = userStateRepo.findAll()
 
-        fun formatLeaderboard(
-            title: String,
-            selector: (UserState) -> Int,
-            limit: Int = 10
-        ): String {
+        fun CountingGameLeaderboard.formatLeaderboard(): String {
             val sortedUsers = allUsers.sortedByDescending(selector)
             val bestUsers = sortedUsers.take(limit)
 
-            val builder = StringBuilder("**$title**\n")
+            val builder = StringBuilder("**${title}**\n")
             bestUsers.forEachIndexed { index, userState ->
                 builder.append("${index + 1}. <@${userState.userId}> | ${selector(userState)}\n")
             }
@@ -139,17 +135,23 @@ class CountingGame(
             return builder.toString()
         }
 
-        val currentStreakLeaderboard = formatLeaderboard("Current Streaks", { it.streak })
-        val longestStreakLeaderboard = formatLeaderboard("Longest Streaks", { it.longestStreak })
-        val correctNumbersLeaderboard = formatLeaderboard("Total Correct Numbers", { it.correctNumbersAmount })
-
-        return "$currentStreakLeaderboard\n$longestStreakLeaderboard\n$correctNumbersLeaderboard".trimIndent()
+        return leaderboards.joinToString("\n") { it.formatLeaderboard() }
     }
 
     private fun saveState() = gameStateRepo.upsert(CountingGameState(theGameId, currentNumber, lastUserId))
 
     enum class CanNotCountFlag {
         RESET, UNCHANGED
+    }
+
+    enum class CountingGameLeaderboard(
+        val title: String,
+        val selector: (UserState) -> Int,
+        val limit: Int = 10,
+    ) {
+        CurrentStreak("Current Streaks", { it.streak }),
+        LongestStreak("Longest Streaks", { it.longestStreak }),
+        CorrectNumbers("Total Correct Numbers", { it.correctNumbersAmount }),
     }
 }
 

@@ -8,6 +8,7 @@ import de.dagadeta.schlauerbot.common.onSuccess
 import de.dagadeta.schlauerbot.common.sendPrivateMessage
 import de.dagadeta.schlauerbot.config.AdminConfig
 import de.dagadeta.schlauerbot.countinggame.CountingGame.CanNotCountFlag.RESET
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CountingGameLeaderboard
 import de.dagadeta.schlauerbot.discord.Logging
 import de.dagadeta.schlauerbot.discord.PermissionValidator
 import de.dagadeta.schlauerbot.discord.SubCommandGroupProvider
@@ -109,7 +110,7 @@ class DiscordCountingGame(
         event.deferReply().queue()
         val message = when (event.name) {
             CountingGameCommand.Stats.command -> game.generateStatsMessage(event.user.id)
-            CountingGameCommand.Leaderboard.command -> game.generateLeaderboardMessage(event.user.id)
+            CountingGameCommand.Leaderboard.command -> game.generateLeaderboardMessage(event.user.id, CountingGameLeaderboard.entries)
             else -> "Unknown command '${event.name}'"
         }
         event.hook.sendMessage(message).queue()

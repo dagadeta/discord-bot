@@ -4,11 +4,17 @@ import de.dagadeta.schlauerbot.common.FailureType.Critical
 import de.dagadeta.schlauerbot.common.FailureType.Unspectacular
 import de.dagadeta.schlauerbot.countinggame.CountingGame.CanNotCountFlag.RESET
 import de.dagadeta.schlauerbot.countinggame.CountingGame.CanNotCountFlag.UNCHANGED
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CountingGameLeaderboard
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CountingGameLeaderboard.CorrectNumbers
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CountingGameLeaderboard.CurrentStreak
+import de.dagadeta.schlauerbot.countinggame.CountingGame.CountingGameLeaderboard.LongestStreak
 import de.dagadeta.schlauerbot.persistance.CountingGameState
 import de.dagadeta.schlauerbot.persistance.CountingGameStatePersistenceService
 import de.dagadeta.schlauerbot.persistance.UserState
 import de.dagadeta.schlauerbot.persistance.UserStatePersistenceService
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.argumentCaptor
@@ -214,8 +220,8 @@ class CountingGameTest {
         assertThat(message).isEqualTo("You haven't counted yet! 🥲")
     }
 
-    @Test
-    fun `generateLeaderboardMessage generates a correct leaderboard message`() {
+    @Nested
+    inner class WithUserStates {
         val userStates = listOf(
             UserState("user1", 10, 20, false, 100),
             UserState("user2", 5, 25, false, 200),
@@ -229,24 +235,71 @@ class CountingGameTest {
             UserState("user10", 6, 6, false, 6),
             UserState("user11", 7, 7, false, 7)
         )
-        whenever(userStateRepo.findAll()).thenReturn(userStates)
 
-        val message = game.generateLeaderboardMessage("user4")
+        @BeforeEach
+        fun setUp() {
+            whenever(userStateRepo.findAll()).thenReturn(userStates)
+        }
 
-        assertThat(message).contains("**Current Streaks**")
-        assertThat(message).contains("1. <@user3> | 15")
-        assertThat(message).contains("2. <@user1> | 10")
-        assertThat(message).contains("...")
-        assertThat(message).contains("11. <@user4> | 0")
+        @Test
+        fun `generateLeaderboardMessage generates a correct leaderboard message`() {
+            val message = game.generateLeaderboardMessage("user4", CountingGameLeaderboard.entries)
 
-        assertThat(message).contains("**Longest Streaks**")
-        assertThat(message).contains("1. <@user2> | 25")
-        assertThat(message).contains("2. <@user1> | 20")
-        assertThat(message).contains("11. <@user4> | 0")
+            assertThat(message).contains("**Current Streaks**")
+            assertThat(message).contains("1. <@user3> | 15")
+            assertThat(message).contains("2. <@user1> | 10")
+            assertThat(message).contains("...")
+            assertThat(message).contains("11. <@user4> | 0")
 
-        assertThat(message).contains("**Total Correct Numbers**")
-        assertThat(message).contains("1. <@user3> | 300")
-        assertThat(message).contains("2. <@user2> | 200")
-        assertThat(message).contains("3. <@user1> | 100")
+            assertThat(message).contains("**Longest Streaks**")
+            assertThat(message).contains("1. <@user2> | 25")
+            assertThat(message).contains("2. <@user1> | 20")
+            assertThat(message).contains("11. <@user4> | 0")
+
+            assertThat(message).contains("**Total Correct Numbers**")
+            assertThat(message).contains("1. <@user3> | 300")
+            assertThat(message).contains("2. <@user2> | 200")
+            assertThat(message).contains("3. <@user1> | 100")
+        }
+
+        @Test
+        fun `generateLeaderboardMessage generates a correct Current Streaks leaderboard message`() {
+            val message = game.generateLeaderboardMessage("user4", listOf(CurrentStreak))
+
+            assertThat(message).contains("**Current Streaks**")
+            assertThat(message).contains("1. <@user3> | 15")
+            assertThat(message).contains("2. <@user1> | 10")
+            assertThat(message).contains("...")
+            assertThat(message).contains("11. <@user4> | 0")
+
+            assertThat(message).doesNotContain("**Longest Streaks**")
+            assertThat(message).doesNotContain("**Total Correct Numbers**")
+        }
+
+        @Test
+        fun `generateLeaderboardMessage generates a correct Longest Streaks leaderboard message`() {
+            val message = game.generateLeaderboardMessage("user4", listOf(LongestStreak))
+
+            assertThat(message).contains("**Longest Streaks**")
+            assertThat(message).contains("1. <@user2> | 25")
+            assertThat(message).contains("2. <@user1> | 20")
+            assertThat(message).contains("11. <@user4> | 0")
+
+            assertThat(message).doesNotContain("**Current Streaks**")
+            assertThat(message).doesNotContain("**Total Correct Numbers**")
+        }
+
+        @Test
+        fun `generateLeaderboardMessage generates a correct Total Correct Numbers leaderboard message`() {
+            val message = game.generateLeaderboardMessage("user4", listOf(CorrectNumbers))
+
+            assertThat(message).contains("**Total Correct Numbers**")
+            assertThat(message).contains("1. <@user3> | 300")
+            assertThat(message).contains("2. <@user2> | 200")
+            assertThat(message).contains("3. <@user1> | 100")
+
+            assertThat(message).doesNotContain("**Current Streaks**")
+            assertThat(message).doesNotContain("**Longest Streaks**")
+        }
     }
 }
