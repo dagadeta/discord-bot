@@ -84,14 +84,8 @@ class ServerStats(
     }
 
     internal fun countUsers(members: List<Member>): UserCount {
-        var humanCount = 0
-        var botCount = 0
-
-        for (member in members) {
-            if (member.user.isBot) botCount++ else humanCount++
-        }
-
-        return UserCount(humanCount = humanCount, botCount = botCount)
+        val (bots, humans) = members.partition { it.user.isBot }
+        return UserCount(humanCount = humans.count(), botCount = bots.count())
     }
 
     override fun getConfigureSubCommandGroup(): SubcommandGroupData {
