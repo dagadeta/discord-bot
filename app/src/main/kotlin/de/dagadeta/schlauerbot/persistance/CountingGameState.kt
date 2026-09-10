@@ -20,7 +20,7 @@ class CountingGameState(@Id var id: Int, var count: Int, var lastUser: String) {
         if (thisEffectiveClass != oEffectiveClass) return false
         other as CountingGameState
 
-        return id != null && id == other.id
+        return id == other.id
     }
 
     @Generated
@@ -30,7 +30,7 @@ class CountingGameState(@Id var id: Int, var count: Int, var lastUser: String) {
 
 @Entity
 @Table(schema = "countinggame", name = "user_state")
-class UserState(@Id var userId: String, var streak: Int, var longestStreak: Int, var canNotCount: Boolean) {
+class UserState(@Id var userId: String, var streak: Int, var longestStreak: Int, var canNotCount: Boolean, var correctNumbersAmount: Int) {
     @Generated
     final override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -42,7 +42,7 @@ class UserState(@Id var userId: String, var streak: Int, var longestStreak: Int,
         if (thisEffectiveClass != oEffectiveClass) return false
         other as UserState
 
-        return userId != null && userId == other.userId
+        return userId == other.userId
     }
 
     @Generated
