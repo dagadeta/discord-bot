@@ -22,7 +22,9 @@ import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -87,7 +89,18 @@ class DiscordCountingGame(
     fun startListener() {
         api.addEventListener(this)
         CountingGameCommand.entries.forEach {
-            api.upsertCommand(it.command, it.description).queue()
+            if (it == CountingGameCommand.Leaderboard) {
+                api.upsertCommand(it.command, it.description)
+                    .addOption(
+                        OptionType.STRING,
+                        "leaderboard",
+                        "The leaderboard to show",
+                        false,
+                        true
+                    ).queue()
+            } else {
+                api.upsertCommand(it.command, it.description).queue()
+            }
         }
         writeInitialStateTo(logging)
 
@@ -110,10 +123,28 @@ class DiscordCountingGame(
         event.deferReply().queue()
         val message = when (event.name) {
             CountingGameCommand.Stats.command -> game.generateStatsMessage(event.user.id)
-            CountingGameCommand.Leaderboard.command -> game.generateLeaderboardMessage(event.user.id, CountingGameLeaderboard.entries)
+            CountingGameCommand.Leaderboard.command -> {
+                val selectedLeaderboard = event.getOption("leaderboard")?.asString
+                val leaderboards = if (selectedLeaderboard != null) {
+                    listOfNotNull(CountingGameLeaderboard.entries.find { it.name == selectedLeaderboard })
+                } else {
+                    CountingGameLeaderboard.entries
+                }
+                game.generateLeaderboardMessage(event.user.id, leaderboards.ifEmpty { CountingGameLeaderboard.entries })
+            }
+
             else -> "Unknown command '${event.name}'"
         }
         event.hook.sendMessage(message).queue()
+    }
+
+    override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
+        if (event.name == CountingGameCommand.Leaderboard.command && event.focusedOption.name == "leaderboard") {
+            val choices = CountingGameLeaderboard.entries
+                .filter { it.title.contains(event.focusedOption.value, ignoreCase = true) }
+                .map { Choice(it.title, it.name) }
+            event.replyChoices(choices).queue()
+        }
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
