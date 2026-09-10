@@ -97,7 +97,7 @@ class CountingGameTest {
     @Test
     fun `failing to count sets canNotCount to true and resets streak`() {
         game.onMessageReceived(user2, 0)
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 5, false))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 5, false, 0))
 
         game.onMessageReceived(user1, 7)
 
@@ -109,8 +109,20 @@ class CountingGameTest {
     }
 
     @Test
+    fun `failing to count does not change correctNumbersAmount`() {
+        game.onMessageReceived(user2, 0)
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 5, false, 10))
+
+        game.onMessageReceived(user1, 7)
+
+        val userStateCaptor = argumentCaptor<UserState>()
+        verify(userStateRepo, atLeastOnce()).upsert(userStateCaptor.capture())
+        assertThat(userStateCaptor.secondValue.correctNumbersAmount).isEqualTo(10)
+    }
+
+    @Test
     fun `starting the game with a wrong number also sets canNotCount to true`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 5, false))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 5, false, 0))
 
         game.onMessageReceived(user1, 1)
 
@@ -120,8 +132,8 @@ class CountingGameTest {
     }
 
     @Test
-    fun `succeeding to count increases streak and longestStreak`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 2, 2, false))
+    fun `succeeding to count increases streak, longestStreak and correctNumbersAmount`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 2, 2, false, 10))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -130,11 +142,12 @@ class CountingGameTest {
         verify(userStateRepo).upsert(userStateCaptor.capture())
         assertThat(userStateCaptor.firstValue.streak).isEqualTo(3)
         assertThat(userStateCaptor.firstValue.longestStreak).isEqualTo(3)
+        assertThat(userStateCaptor.firstValue.correctNumbersAmount).isEqualTo(11)
     }
 
     @Test
     fun `reaching the streak threshold resets canNotCount`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, true))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, true, 0))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -148,7 +161,7 @@ class CountingGameTest {
 
     @Test
     fun `reaching the streak threshold with longest streak does not reset canNotCount`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, canNotCountResetThreshold - 2, canNotCountResetThreshold, true))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, canNotCountResetThreshold - 2, canNotCountResetThreshold, true, 0))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -162,7 +175,7 @@ class CountingGameTest {
 
     @Test
     fun `streak increases but canNotCount remains false if not previously true`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, false))
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, oneBeforeCanNotCountResetThreshold, oneBeforeCanNotCountResetThreshold, false, 0))
 
         val result = game.onMessageReceived(user1, 0)
 
@@ -174,45 +187,47 @@ class CountingGameTest {
     }
 
     @Test
-    fun `generateStreakMessage generates a correct streak message`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 22, false))
-        val message = game.generateStreakMessage(user1)
+    fun `generateStatsMessage generates a correct stats message`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 5, 22, false, 1337))
+        val message = game.generateStatsMessage(user1)
         assertThat(message).isEqualTo("""
             Streak: 5
             Longest Streak: 22
+            Total Correct Numbers: 1337
         """.trimIndent())
     }
 
     @Test
-    fun `generateStreakMessage generates a correct streak message when there is no streak yet`() {
-        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 0, 0, false))
-        val message = game.generateStreakMessage(user1)
+    fun `generateStatsMessage generates a correct stats message when there is no streak yet`() {
+        whenever(userStateRepo.findByIdOrNull(user1)).thenReturn(UserState(user1, 0, 0, false, 0))
+        val message = game.generateStatsMessage(user1)
         assertThat(message).isEqualTo("""
             Streak: 0
             Longest Streak: 0
+            Total Correct Numbers: 0
         """.trimIndent())
     }
 
     @Test
-    fun `generateStreakMessage generates a correct streak message when there is no user state yet`() {
-        val message = game.generateStreakMessage(user1)
+    fun `generateStatsMessage generates a correct stats message when there is no user state yet`() {
+        val message = game.generateStatsMessage(user1)
         assertThat(message).isEqualTo("You haven't counted yet! 🥲")
     }
 
     @Test
     fun `generateLeaderboardMessage generates a correct leaderboard message`() {
         val userStates = listOf(
-            UserState("user1", 10, 20, false),
-            UserState("user2", 5, 25, false),
-            UserState("user3", 15, 15, false),
-            UserState("user4", 0, 0, false),
-            UserState("user5", 1, 1, false),
-            UserState("user6", 2, 2, false),
-            UserState("user7", 3, 3, false),
-            UserState("user8", 4, 4, false),
-            UserState("user9", 5, 5, false),
-            UserState("user10", 6, 6, false),
-            UserState("user11", 7, 7, false)
+            UserState("user1", 10, 20, false, 100),
+            UserState("user2", 5, 25, false, 200),
+            UserState("user3", 15, 15, false, 300),
+            UserState("user4", 0, 0, false, 0),
+            UserState("user5", 1, 1, false, 1),
+            UserState("user6", 2, 2, false, 2),
+            UserState("user7", 3, 3, false, 3),
+            UserState("user8", 4, 4, false, 4),
+            UserState("user9", 5, 5, false, 5),
+            UserState("user10", 6, 6, false, 6),
+            UserState("user11", 7, 7, false, 7)
         )
         whenever(userStateRepo.findAll()).thenReturn(userStates)
 
@@ -228,5 +243,10 @@ class CountingGameTest {
         assertThat(message).contains("1. <@user2> | 25")
         assertThat(message).contains("2. <@user1> | 20")
         assertThat(message).contains("11. <@user4> | 0")
+
+        assertThat(message).contains("**Total Correct Numbers**")
+        assertThat(message).contains("1. <@user3> | 300")
+        assertThat(message).contains("2. <@user2> | 200")
+        assertThat(message).contains("3. <@user1> | 100")
     }
 }

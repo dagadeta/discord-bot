@@ -31,6 +31,7 @@ class UserStatePersistenceService(val repo: UserStateRepository) {
             streak = state.streak
             longestStreak = state.longestStreak
             canNotCount = state.canNotCount
+            correctNumbersAmount = state.correctNumbersAmount
         } ?: state
         return repo.save(toSave)
     }

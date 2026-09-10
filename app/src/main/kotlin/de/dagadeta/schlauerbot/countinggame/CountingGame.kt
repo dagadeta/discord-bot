@@ -31,7 +31,7 @@ class CountingGame(
     }
 
     fun onMessageReceived(userId: String, number: Int): Result<CanNotCountFlag> {
-        val userState = userStateRepo.findByIdOrNull(userId) ?: UserState(userId, 0, 0, false)
+        val userState = userStateRepo.findByIdOrNull(userId) ?: UserState(userId, 0, 0, false, 0)
 
         return when {
             lastUserId == userId -> {
@@ -73,6 +73,7 @@ class CountingGame(
 
     private fun saveCountingSucceeded(userState: UserState): CanNotCountFlag {
         userState.streak++
+        userState.correctNumbersAmount++
         userState.longestStreak = maxOf(userState.longestStreak, userState.streak)
         val canNotCountFlag = if (userState.streak >= canNotCountResetThreshold && userState.canNotCount) {
             userState.canNotCount = false
@@ -98,13 +99,15 @@ class CountingGame(
 
     fun describeInitialState(): String = "Resuming CountingGame at $currentNumber."
 
-    fun generateStreakMessage(userId: String): String {
-        return if (userStateRepo.findByIdOrNull(userId)?.longestStreak == null) {
+    fun generateStatsMessage(userId: String): String {
+        val state = userStateRepo.findByIdOrNull(userId)
+        return if (state?.longestStreak == null) {
             "You haven't counted yet! 🥲"
         } else {
             """
-                Streak: ${userStateRepo.findByIdOrNull(userId)?.streak ?: 0}
-                Longest Streak: ${userStateRepo.findByIdOrNull(userId)?.longestStreak ?: 0}
+                Streak: ${state.streak}
+                Longest Streak: ${state.longestStreak}
+                Total Correct Numbers: ${state.correctNumbersAmount}
             """.trimIndent()
         }
     }
@@ -138,8 +141,9 @@ class CountingGame(
 
         val currentStreakLeaderboard = formatLeaderboard("Current Streaks", { it.streak })
         val longestStreakLeaderboard = formatLeaderboard("Longest Streaks", { it.longestStreak })
+        val correctNumbersLeaderboard = formatLeaderboard("Total Correct Numbers", { it.correctNumbersAmount })
 
-        return "$currentStreakLeaderboard\n$longestStreakLeaderboard".trimIndent()
+        return "$currentStreakLeaderboard\n$longestStreakLeaderboard\n$correctNumbersLeaderboard".trimIndent()
     }
 
     private fun saveState() = gameStateRepo.upsert(CountingGameState(theGameId, currentNumber, lastUserId))
@@ -150,6 +154,6 @@ class CountingGame(
 }
 
 enum class CountingGameCommand(val command: String, val description: String) {
-    Streak("counting-game-streak", "Shows your current streak"),
+    Stats("counting-game-stats", "Shows your counting game statistics"),
     Leaderboard("counting-game-leaderboard", "Shows a server-wide leaderboard for the counting game")
 }

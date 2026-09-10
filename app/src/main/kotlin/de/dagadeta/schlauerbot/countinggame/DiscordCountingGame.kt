@@ -108,7 +108,7 @@ class DiscordCountingGame(
 
         event.deferReply().queue()
         val message = when (event.name) {
-            CountingGameCommand.Streak.command -> game.generateStreakMessage(event.user.id)
+            CountingGameCommand.Stats.command -> game.generateStatsMessage(event.user.id)
             CountingGameCommand.Leaderboard.command -> game.generateLeaderboardMessage(event.user.id)
             else -> "Unknown command '${event.name}'"
         }
