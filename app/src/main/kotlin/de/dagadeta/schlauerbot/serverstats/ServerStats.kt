@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.ChannelType.VOICE
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -61,11 +62,14 @@ class ServerStats(
 
     private fun setServerStats() {
         if (channelId.isEmpty()) return
-        val channel = api.getTextChannelById(channelId)
+
+        val channel = api.getVoiceChannelById(channelId)
         if (channel == null) {
             logging.log("WARNING: The set server stats channel ID is not valid.")
             return
         }
+
+
 
         channel.guild.loadMembers().onSuccess { members ->
             val userCount = countUsers(members)
@@ -106,9 +110,13 @@ class ServerStats(
         val message = when (event.interaction.subcommandName) {
             CHANNEL_ID_SUBCOMMAND_NAME -> {
                 channelId = event.getOption(CHANNEL_ID_OPTION_NAME)?.asString ?: channelId
-                botConfigRepo.upsert(BotConfig(group, CHANNEL_ID_SUBCOMMAND_NAME, channelId))
-                setServerStats()
-                "Channel ID set to '$channelId'. Server stats are being updated."
+                if (api.getGuildChannelById(channelId)?.type == VOICE) {
+                    botConfigRepo.upsert(BotConfig(group, CHANNEL_ID_SUBCOMMAND_NAME, channelId))
+                    setServerStats()
+                    "Channel ID set to '$channelId'. Server stats are being updated."
+                } else {
+                    "The Channel ID is either not valid or not a voice channel."
+                }
             }
             else -> "Unknown subcommand '${event.interaction.subcommandName}'"
         }
