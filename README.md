@@ -69,6 +69,21 @@ The bot sends a message to a voice channel when the first user joins it.
 | `/config voice-channel-listener ping-role-id` | Sets the voice channel ping role ID | `id` - String | An administrator in an admin-channel |
 
 
+### Server Stats
+The bot renames a voice channel into some stats about the Discord server
+
+> [!tip]
+> In the permissions of the voice channel, you can disable the "Connect" and "Send Messages" permissions.
+> This way, normal users only see the title of the channel with the stats without being able to use it as a voice chat.
+
+**Commands**:
+
+| Command                           | Description                                                    | Parameters    | Requirements                         |
+|-----------------------------------|----------------------------------------------------------------|---------------|--------------------------------------|
+| `/config server-stats channel-id` | Sets the server stats channel ID (needs to be a voice channel) | `id` - String | An administrator in an admin-channel |
+
+
+
 ### Configuration
 The bot can be configured using the following commands:
 

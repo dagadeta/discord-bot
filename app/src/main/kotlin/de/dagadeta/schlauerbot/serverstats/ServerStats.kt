@@ -97,7 +97,7 @@ class ServerStats(
     override fun getConfigureSubCommandGroup(): SubcommandGroupData {
         val serverStatsGroup = SubcommandGroupData(group, "configure the server stats channel")
         serverStatsGroup.addSubcommands(
-            SubcommandData(CHANNEL_ID_SUBCOMMAND_NAME, "Sets the server stats channel ID")
+            SubcommandData(CHANNEL_ID_SUBCOMMAND_NAME, "Sets the server stats channel ID (needs to be a voice channel)")
                 .addOption(OptionType.STRING, CHANNEL_ID_OPTION_NAME, "The channel ID", true),
         )
         return serverStatsGroup
