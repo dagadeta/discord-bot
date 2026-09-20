@@ -22,6 +22,6 @@ class BotConfiguration(
             configCommand.addSubcommandGroups(it.getConfigureSubCommandGroup())
         }
         api.upsertCommand(configCommand).queue()
-        logging.log("${BotConfiguration::class.simpleName} started.")
+        logging.info { "${BotConfiguration::class.simpleName} started." }
     }
 }

@@ -22,7 +22,7 @@ abstract class HttpGetter(
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                logger.log("Error with $serviceName API request: ${response.code}")
+                logger.info { "Error with $serviceName API request: ${response.code}" }
                 return "Even the $serviceName API is down, I can't help you!"
             }
 

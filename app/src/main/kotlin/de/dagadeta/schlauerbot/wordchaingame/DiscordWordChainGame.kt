@@ -70,16 +70,16 @@ class DiscordWordChainGame(
         }
         writeInitialStateTo(logging)
 
-        logging.log("${DiscordWordChainGame::class.simpleName} started (language=${game.language}, checkWordExistence=${game.checkWordExistence}).")
+        logging.info { "${DiscordWordChainGame::class.simpleName} started (language=${game.language}, checkWordExistence=${game.checkWordExistence})." }
         if (channelId.isEmpty()) {
-            logging.log("WARNING: The word chain game channel ID is not yet configured. Use the `/config`-command to set it.")
+            logging.warn { "The word chain game channel ID is not yet configured. Use the `/config`-command to set it." }
         }
     }
 
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("${DiscordWordChainGame::class.simpleName} stopped.")
+        logging.info { "${DiscordWordChainGame::class.simpleName} stopped." }
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 
@@ -106,7 +106,7 @@ class DiscordWordChainGame(
     }
 
     fun writeInitialStateTo(logging: Logging) {
-        logging.log(game.describeInitialState())
+        logging.info { game.describeInitialState() }
     }
 
     override fun getConfigureSubCommandGroup(): SubcommandGroupData {

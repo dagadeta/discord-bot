@@ -43,16 +43,16 @@ class VoiceChannelListener(
     fun startListener() {
         api.addEventListener(this)
 
-        logging.log("${VoiceChannelListener::class.simpleName} started.")
+        logging.info { "${VoiceChannelListener::class.simpleName} started." }
         if (voiceChannelPingRoleId.isEmpty()) {
-            logging.log("WARNING: The voice channel ping role ID is not yet configured. Use the `/config`-command to set it.")
+            logging.warn { "The voice channel ping role ID is not yet configured. Use the `/config`-command to set it." }
         }
     }
 
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("${VoiceChannelListener::class.simpleName} stopped.")
+        logging.info { "${VoiceChannelListener::class.simpleName} stopped." }
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 

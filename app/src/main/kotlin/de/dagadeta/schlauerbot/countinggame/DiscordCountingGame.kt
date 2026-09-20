@@ -104,16 +104,16 @@ class DiscordCountingGame(
         }
         writeInitialStateTo(logging)
 
-        logging.log("${DiscordCountingGame::class.simpleName} started.")
+        logging.info { "${DiscordCountingGame::class.simpleName} started." }
         if (channelId.isEmpty()) {
-            logging.log("WARNING: The counting game channel ID is not yet configured. Use the `/config`-command to set it.")
+            logging.warn { "The counting game channel ID is not yet configured. Use the `/config`-command to set it." }
         }
     }
 
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("${DiscordCountingGame::class.simpleName} stopped.")
+        logging.info { "${DiscordCountingGame::class.simpleName} stopped." }
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 
@@ -196,7 +196,7 @@ class DiscordCountingGame(
     }
 
     fun writeInitialStateTo(logging: Logging) {
-        logging.log(game.describeInitialState())
+        logging.info { game.describeInitialState() }
     }
 
     override fun getConfigureSubCommandGroup(): SubcommandGroupData {

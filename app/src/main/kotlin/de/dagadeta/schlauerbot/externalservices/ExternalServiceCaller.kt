@@ -29,16 +29,16 @@ open class ExternalServiceCaller(
     fun startListener() {
         api.addEventListener(this)
         api.upsertCommand(Commands.slash(commandName, serviceDescription)).queue()
-        logging.log("$serviceName started.")
+        logging.info { "$serviceName started." }
         if (bottalking.channelId.isEmpty()) {
-            logging.log("WARNING: The bottalking channel ID is not yet configured. Use the `/config`-command to set it.")
+            logging.warn { "The bottalking channel ID is not yet configured. Use the `/config`-command to set it." }
         }
     }
 
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("$serviceName stopped.")
+        logging.info { "$serviceName stopped." }
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 

@@ -29,7 +29,7 @@ class WiktionaryWordChecker(val language: String, var logger: Logging, val userA
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) {
-                logger.log("Error with Wiktionary API request: ${response.code}")
+                logger.info { "Error with Wiktionary API request: ${response.code}" }
                 return false
             }
 

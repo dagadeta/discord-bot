@@ -42,9 +42,9 @@ class ServerStats(
     fun startListener() {
         api.addEventListener(this)
 
-        logging.log("${ServerStats::class.simpleName} started.")
+        logging.info { "${ServerStats::class.simpleName} started." }
         if (channelId.isEmpty()) {
-            logging.log("WARNING: The server stats channel ID is not yet configured. Use the `/config`-command to set it.")
+            logging.warn { "The server stats channel ID is not yet configured. Use the `/config`-command to set it." }
         }
 
         setServerStats()
@@ -53,7 +53,7 @@ class ServerStats(
     @PreDestroy
     fun stopListener() {
         api.removeEventListener(this)
-        logging.log("${ServerStats::class.simpleName} stopped.")
+        logging.info { "${ServerStats::class.simpleName} stopped." }
         sleep(2000) // give the asynchronous tasks time to finish before cutting the connection
     }
 
@@ -65,21 +65,18 @@ class ServerStats(
 
         val channel = api.getVoiceChannelById(channelId)
         if (channel == null) {
-            logging.log("WARNING: The set server stats channel ID is not valid.")
+            logging.warn { "The set server stats channel ID is not valid." }
             return
         }
-
-
 
         channel.guild.loadMembers().onSuccess { members ->
             val userCount = countUsers(members)
             val title = "👥・${userCount.humanCount}｜🤖・${userCount.botCount}"
 
             channel.manager.setName(title).queue()
-            logging.log("Server stats updated: '$title'")
+            logging.info { "Server stats updated: '$title'" }
         }.onError { error ->
-            kLogger.error(error) { "Failed to load members for server stats: ${error.message}" }
-            logging.log("ERROR: Failed to load server members for server stats: ${error.message}")
+            logging.error(error) { "Failed to load server members for server stats: ${error.message}" }
         }
     }
 
