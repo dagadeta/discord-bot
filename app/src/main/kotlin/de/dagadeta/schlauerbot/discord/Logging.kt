@@ -11,17 +11,17 @@ class Logging(private val guild: JDA?, private val config: LoggingConfig) {
 
     fun info(message: () -> Any) {
         logger.info(message)
-        if (guild != null) sendMessageToDiscordChannelById(config.channelId, message.toString())
+        if (guild != null) sendMessageToDiscordChannelById(config.channelId, message().toString())
     }
 
     fun warn(message: () -> Any?) {
         logger.warn(message)
-        if (guild != null) sendMessageToDiscordChannelById(config.channelId, "**WARNING**: $message")
+        if (guild != null) sendMessageToDiscordChannelById(config.channelId, "**WARNING**: ${message()}")
     }
 
     fun error(throwable: Throwable?, message: () -> Any?) {
         logger.error(throwable, message)
-        if (guild != null) sendMessageToDiscordChannelById(config.channelId, "**ERROR**: $message")
+        if (guild != null) sendMessageToDiscordChannelById(config.channelId, "**ERROR**: ${message()}")
     }
 
     private fun sendMessageToDiscordChannelById(channelId: String, message: String) {
