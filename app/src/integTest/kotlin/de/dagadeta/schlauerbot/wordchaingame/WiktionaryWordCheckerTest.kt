@@ -10,7 +10,7 @@ class WiktionaryWordCheckerTest {
     private val wordChecker = WiktionaryWordChecker(
         "en",
         Logging(null, LoggingConfig(0, "0")),
-        "https://gitlab.com/dagadeta-public/discord-bot",
+        "https://github.com/dagadeta/discord-bot",
     )
 
     @Test

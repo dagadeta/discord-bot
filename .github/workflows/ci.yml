@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+jobs:
+  build:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v6
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+      - name: Build with Gradle
+        run: ./gradlew build -x app:integTest -x app:e2eTest
+      - name: Run integration tests
+        run: ./gradlew app:integTest -x app:e2eTest
+      - name: Run e2e tests
+        if: ${{ github.repository == 'dagadeta/discord-bot' }}
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          GUILD_ID: ${{ vars.GUILD_ID }}
+          LOGGING_CHANNEL_ID: ${{ vars.LOGGING_CHANNEL_ID }}
+          ADMIN_ROLE_ID: ${{ vars.ADMIN_ROLE_ID }}
+          ADMIN_CHANNEL_ID: ${{ vars.ADMIN_CHANNEL_ID }}
+          WIKTIONARY_USER_AGENT: ${{ vars.WIKTIONARY_USER_AGENT }}
+        run: ./gradlew app:e2eTest
+      - name: Generate coverage report
+        run: ./gradlew koverXmlReport koverLog -x app:e2eTest
+      - name: Test Report
+        uses: dorny/test-reporter@v2.5.0
+        if: ${{ !cancelled() }}  # run this step even if a previous step failed
+        with:
+          name: JUnit Tests
+          path: ${{ github.workspace }}/**/build/test-results/**/TEST-*.xml
+          reporter: java-junit
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: ${{ github.workspace }}/**/build/reports/kover/report.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          title: Code Coverage
+          update-comment: true
+          comment-type: ${{ github.event_name == 'pull_request' && 'both' || 'summary' }}
+          fail-emoji: ':apple:'
+          pass-emoji: ':green_apple:'
+  secret-detection:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
