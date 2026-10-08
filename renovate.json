@@ -8,7 +8,7 @@
     }
   ],
   "timezone": "Europe/Berlin",
-  "schedule": ["* 1-3 * * *"],
+  "schedule": ["* 1-5 * * *"],
   "updateNotScheduled": true,
   "minimumReleaseAge": "3 days",
   "rebaseWhen": "conflicted",
