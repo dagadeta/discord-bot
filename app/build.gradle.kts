@@ -33,16 +33,16 @@ testing {
     }
 }
 
-val integTestImplementation: Configuration by configurations.getting {
+val integTestImplementation: Configuration = configurations.getByName("integTestImplementation") {
     extendsFrom(configurations.testImplementation.get())
 }
-val integTestRuntimeOnly: Configuration by configurations.getting {
+val integTestRuntimeOnly: Configuration = configurations.getByName("integTestRuntimeOnly") {
     extendsFrom(configurations.testRuntimeOnly.get())
 }
-val e2eTestImplementation: Configuration by configurations.getting {
+val e2eTestImplementation: Configuration = configurations.getByName("e2eTestImplementation") {
     extendsFrom(integTestImplementation)
 }
-val e2eTestRuntimeOnly: Configuration by configurations.getting {
+val e2eTestRuntimeOnly: Configuration = configurations.getByName("e2eTestRuntimeOnly") {
     extendsFrom(integTestRuntimeOnly)
 }
 
