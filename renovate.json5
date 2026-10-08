@@ -26,6 +26,12 @@
   "separateMultipleMajor": true, // Separate PRs for multiple major versions to simplify version migration
   "minimumReleaseAge": "3 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional", // Allow updating dependencies without a release timestamp
+  "logLevelRemap": [
+    { // Since this warning is expected behavior, this remaps the warning to info log level
+      "matchMessage": "/Some .+ did not have a releaseTimestamp, but as we're running with minimumReleaseAgeBehaviour=timestamp-optional, proceeding/",
+      "newLogLevel": "info"
+    }
+  ],
   "abandonmentThreshold": "1 year", // Marks packages as abandoned after not being updated for 1 year
 
   "vulnerabilityAlerts": {
