@@ -1,0 +1,50 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests", // Pin to SHAs instead of versions
+    "docker:pinDigests",
+    ":configMigration", // Update renovate config
+    "abandonments:recommended",
+  ],
+
+  "dependencyDashboard": true,
+
+  "timezone": "Europe/Berlin",
+  "schedule": ["* 1-5 * * *"],
+
+  "prConcurrentLimit": 20,
+  "prHourlyLimit": 5,
+  "prBodyColumns": [
+    "Package",
+    "Type",
+    "Update",
+    "Change",
+    "Pending",
+    "References",
+  ],
+  "separateMultipleMajor": true, // Separate PRs for multiple major versions to simplify version migration
+  "minimumReleaseAge": "3 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional", // Allow updating dependencies without a release timestamp
+  "abandonmentThreshold": "1 year", // Marks packages as abandoned after not being updated for 1 year
+
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"],
+  },
+
+  "packageRules": [
+    {
+      // Group GitHub Actions updates
+      "groupName": "GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch"], // Group minor and patch, leaving major seperate
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+    },
+  ],
+
+  "labels": ["renovate"],
+}
