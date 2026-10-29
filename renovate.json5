@@ -32,7 +32,6 @@
       "newLogLevel": "info"
     }
   ],
-  "abandonmentThreshold": "1 year", // Marks packages as abandoned after not being updated for 1 year
 
   "vulnerabilityAlerts": {
     "enabled": true,
@@ -47,11 +46,21 @@
       "matchUpdateTypes": ["minor", "patch"], // Group minor and patch, leaving major seperate
     },
     {
-      // In order for the CI pipeline to be as close to prod as possible, the java version should not be automatically updated
+      // Warn when updating Java version in GitHub Actions
       "matchFileNames": [".github/actions/*.yml"],
       "matchPackageNames": ["java-jdk"],
-      "enabled": false,
-    },
+      "prBodyNotes": [
+        "> [!WARNING]",
+        "> **Keep CI and prod in sync.** The CI pipeline should remain as close to prod as possible. If you merge this pull request, please also update the Java version in `app/build.gradle.kts` accordingly:",
+        "> ```kotlin",
+        "> java {",
+        ">     toolchain {",
+        ">         languageVersion = JavaLanguageVersion.of(25)",
+        ">     }",
+        "> }",
+        "> ```"
+      ],
+    }
   ],
 
   "labels": ["renovate"],
