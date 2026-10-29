@@ -47,14 +47,10 @@
       "matchUpdateTypes": ["minor", "patch"], // Group minor and patch, leaving major seperate
     },
     {
-      // In order for the CI-pipeline to be as close to prod as possible, the java version should not be automatically updated
+      // In order for the CI pipeline to be as close to prod as possible, the java version should not be automatically updated
       "matchFileNames": [".github/actions/*.yml"],
       "matchPackageNames": ["java-jdk"],
       "enabled": false,
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "automerge": true,
     },
   ],
 
