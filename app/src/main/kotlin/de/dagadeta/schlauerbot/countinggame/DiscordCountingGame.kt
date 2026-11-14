@@ -135,7 +135,7 @@ class DiscordCountingGame(
 
             else -> "Unknown command '${event.name}'"
         }
-        event.hook.sendMessage(message).queue()
+        event.hook.sendMessage(message).setAllowedMentions(emptyList()).queue()
     }
 
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
